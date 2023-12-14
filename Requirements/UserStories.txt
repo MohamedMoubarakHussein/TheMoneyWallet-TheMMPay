@@ -2,8 +2,10 @@
 A user service:
     As a guest, I want to register for an account so that I can access the app.
     As a user, I want a secure Authentication process so that I can log in and manage my account.     
-    As a user, I want to set up and manage my profile to provide my information.
-    As a user, I want to update my profile so that my data keep up to date.
+    As a user, I want to validate my email address and phone number.
+    As a user, I want to set up and manage my profile to provide my information and keep my data up to date.
+    As an admin, I want to create special accounts for manager so that they can see usage detailes of the app.
+    
 
  
 
