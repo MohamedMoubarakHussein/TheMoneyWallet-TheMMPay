@@ -1,4 +1,4 @@
-package com.themoneywallet.entity;
+package com.themoneywallet.usermanagmentservice.entity;
 
 import java.util.Date;
 import jakarta.persistence.Column;

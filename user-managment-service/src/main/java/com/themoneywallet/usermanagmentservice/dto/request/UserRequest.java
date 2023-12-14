@@ -1,4 +1,4 @@
-package com.themoneywallet.dto.request;
+package com.themoneywallet.usermanagmentservice.dto.request;
 
 
 import lombok.Getter;
