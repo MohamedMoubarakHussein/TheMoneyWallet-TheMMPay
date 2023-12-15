@@ -3,10 +3,15 @@ package com.themoneywallet.usermanagmentservice.controller;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.themoneywallet.usermanagmentservice.dto.request.UserRequest;
+import com.themoneywallet.usermanagmentservice.service.UserService;
+import com.themoneywallet.usermanagmentservice.utilite.ValidationErrorMessageConverter;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -19,11 +24,17 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 @RequestMapping("/user")
 @RequiredArgsConstructor
 public class UserController {
+    private final ValidationErrorMessageConverter validConvertor;    
+    private final UserService userService;
     
     @PostMapping("/create")
     @ResponseStatus(HttpStatus.CREATED)
-    public String signUp(@RequestBody UserRequest user){
-        return "";
+    public ResponseEntity<String> signUp(@Valid @RequestBody UserRequest user , BindingResult result){
+        if(result.hasErrors()){
+            return  ResponseEntity.badRequest().body(this.validConvertor.Convert(result));
+        }
+         
+        return this.userService.signUp(user);
     }
 
 
@@ -39,13 +50,13 @@ public class UserController {
        return "";
     }
 
-     @GetMapping("/getbyemail")
+     @GetMapping("/getbyemail1")
     @ResponseStatus(HttpStatus.ACCEPTED)
     public String updateUser(@RequestParam("email") String email){
        return "";
     }
 
- @GetMapping("/getbyemail")
+ @GetMapping("/getbyemail2")
     @ResponseStatus(HttpStatus.ACCEPTED)
     public String deleteUser(@RequestParam("email") String email){
        return "";
