@@ -1,0 +1,18 @@
+User identity:
+	Id, email,password, firstName, lastName , Role ,userName,createdAt
+Methods:
+	String: Post signUp(User)
+	String[Token]: Post signIn(Username , password)
+	String :Update UserInfo(Token , User)
+	String :delete User(Token)
+	
+	User : Get userInfoByToken(Token)
+	User : Get userInfoByEmail(Token)
+	User : Get userInfoByUserName(Token)
+	
+	
+
+
+vaildation 
+error-handleing
+unit test
