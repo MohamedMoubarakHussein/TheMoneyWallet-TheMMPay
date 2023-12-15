@@ -26,8 +26,8 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 public class UserController {
     private final ValidationErrorMessageConverter validConvertor;    
     private final UserService userService;
-    
-    @PostMapping("/create")
+
+    @PostMapping("/signup")
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<String> signUp(@Valid @RequestBody UserRequest user , BindingResult result){
         if(result.hasErrors()){

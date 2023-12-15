@@ -1,7 +1,6 @@
 package com.themoneywallet.usermanagmentservice.entity;
 
 import java.util.Date;
-import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -50,7 +49,7 @@ public class User {
     private String lastName;
 
     @NotNull(message = "email cannot be null.")
-    @Size(min=4,max=16,message = "email should be between 4 and 16 characters.")
+    @Size(min=4,max=64,message = "email should be between 4 and 64 characters.")
     @Email(message = "You should put a vaild email address.")
     private String email;
 

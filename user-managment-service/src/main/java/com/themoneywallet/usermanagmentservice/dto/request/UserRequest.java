@@ -3,11 +3,13 @@ package com.themoneywallet.usermanagmentservice.dto.request;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import lombok.Builder;
 import lombok.Data;
 import lombok.Getter;
 
 @Getter
 @Data
+@Builder
 public class UserRequest {
 
     @NotNull(message = "user name cannot be null.")
@@ -23,7 +25,7 @@ public class UserRequest {
     private String lastName;
 
     @NotNull(message = "email cannot be null.")
-    @Size(min=4,max=16,message = "email should be between 4 and 16 characters.")
+    @Size(min=4,max=64,message = "email should be between 4 and 64 characters.")
     @Email(message = "You should put a vaild email address.")
     private String email;
 

@@ -1,6 +1,7 @@
 package com.themoneywallet.usermanagmentservice.service;
 
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -30,7 +31,7 @@ public class UserService {
         }catch(DataIntegrityViolationException e){
             return ResponseEntity.badRequest().body(this.getDataIntegrityErrorMessage.getMessage(e));
         }
-        return ResponseEntity.ok().body(user.toString());
+        return ResponseEntity.status(HttpStatusCode.valueOf(201)).body(user.toString());
     }
    
 }
