@@ -3,6 +3,8 @@ package com.themoneywallet.usermanagmentservice.controller;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.themoneywallet.usermanagmentservice.dto.request.UserRequest;
+import com.themoneywallet.usermanagmentservice.dto.request.UserUpdate;
+import com.themoneywallet.usermanagmentservice.entity.User;
 import com.themoneywallet.usermanagmentservice.service.UserService;
 import com.themoneywallet.usermanagmentservice.utilite.ValidationErrorMessageConverter;
 
@@ -12,8 +14,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -27,8 +31,8 @@ public class UserController {
     private final ValidationErrorMessageConverter validConvertor;    
     private final UserService userService;
 
+    //TODO currently we handling database data violation in the backend not in the database itself
     @PostMapping("/signup")
-    @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<String> signUp(@Valid @RequestBody UserRequest user , BindingResult result){
         if(result.hasErrors()){
             return  ResponseEntity.badRequest().body(this.validConvertor.Convert(result));
@@ -37,29 +41,37 @@ public class UserController {
         return this.userService.signUp(user);
     }
 
+    @PutMapping("/updateuser")
+    public ResponseEntity<String> updateUser(@RequestParam("email") String email 
+                     ,@Valid @RequestBody UserUpdate user 
+                     ,BindingResult result
+                     ){
+            if(result.hasErrors()){
+                return  ResponseEntity.badRequest().body(this.validConvertor.Convert(result));
+            }
+          return this.userService.updateUser(email,user);
+    }
 
     @GetMapping("/getbyemail")
     @ResponseStatus(HttpStatus.ACCEPTED)
     public String getUserByEmail(@RequestParam("email") String email){
-       return "";
+       return this.userService.getUserByEmail(email);
+    }
+    
+    @GetMapping("/getbyusername")
+    @ResponseStatus(HttpStatus.ACCEPTED)
+    public String getUserByUserName(@RequestParam("usr") String userName){
+       return this.userService.getUserByUserName(userName);
     }
 
-  @GetMapping("/getbyusername")
-    @ResponseStatus(HttpStatus.ACCEPTED)
-    public String getUserByUserName(@RequestParam("usr") String email){
-       return "";
+    @DeleteMapping("/deletebyemail")
+    public ResponseEntity<String> deleteUser(@RequestParam("email") String email){
+       return this.userService.deleteUser(email);
     }
 
-     @GetMapping("/getbyemail1")
-    @ResponseStatus(HttpStatus.ACCEPTED)
-    public String updateUser(@RequestParam("email") String email){
-       return "";
-    }
-
- @GetMapping("/getbyemail2")
-    @ResponseStatus(HttpStatus.ACCEPTED)
-    public String deleteUser(@RequestParam("email") String email){
-       return "";
+    @GetMapping("/get")
+    public Iterable<User> returnAll(){
+        return this.userService.returnAll();
     }
     
 }
