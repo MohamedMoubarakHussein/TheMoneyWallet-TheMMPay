@@ -42,14 +42,11 @@ public class UserController {
     }
 
     @PutMapping("/updateuser")
-    public ResponseEntity<String> updateUser(@RequestParam("email") String email 
-                     ,@Valid @RequestBody UserUpdate user 
-                     ,BindingResult result
-                     ){
-            if(result.hasErrors()){
-                return  ResponseEntity.badRequest().body(this.validConvertor.Convert(result));
-            }
-          return this.userService.updateUser(email,user);
+    public ResponseEntity<String> updateUser(@RequestParam("email") String email ,@Valid @RequestBody UserUpdate user ,BindingResult result){
+        if(result.hasErrors()){
+            return  ResponseEntity.badRequest().body(this.validConvertor.Convert(result));
+        }
+        return this.userService.updateUser(email,user);
     }
 
     @GetMapping("/getbyemail")
@@ -72,6 +69,14 @@ public class UserController {
     @GetMapping("/get")
     public Iterable<User> returnAll(){
         return this.userService.returnAll();
+    }
+
+    @PutMapping("/rest")
+    public ResponseEntity<String> restPassword(@RequestParam("email") String email,@Valid @RequestBody UserUpdate user ,BindingResult result){
+        if(result.hasErrors()){
+            return  ResponseEntity.badRequest().body(this.validConvertor.Convert(result));
+        }
+        return this.userService.updateUser(email, user);
     }
     
 }

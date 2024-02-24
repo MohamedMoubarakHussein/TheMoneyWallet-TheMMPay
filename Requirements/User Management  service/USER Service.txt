@@ -5,6 +5,7 @@ Methods:
 	String[Token]: Post signIn(Username , password)
 	String :Update UserInfo(Token , User)
 	String :delete User(Token)
+	String post restpassword(email ,NewPassword)
 	
 	User : Get userInfoByToken(Token)
 	User : Get userInfoByEmail(Token)
@@ -16,3 +17,4 @@ Methods:
 vaildation 
 error-handleing
 unit test
+

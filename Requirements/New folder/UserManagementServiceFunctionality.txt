@@ -1,6 +1,14 @@
+A user service:
+    As a guest, I want to register for an account so that I can access the app.
+    As a user, I want a secure Authentication process so that I can log in and manage my account.     
+    As a user, I want to validate my email address and phone number.
+    As a user, I want to set up and manage my profile to provide my information and keep my data up to date.
+    As an admin, I want to create special accounts for manager so that they can see usage detailes of the app.
+    
+
 User Registration: 
    Allowing users to sign up 
-   Validating user-provided information during registration, such as email addresses or phone numbers.
+   Validating user-provided information during registration, such as email addresses or phone numbers [also in user verification].
 
 User Profile Management:
    Allowing users to update their profiles, including personal information, contact details, and preferences.
@@ -8,25 +16,22 @@ User Profile Management:
 
 User Roles and Permissions:
    Assigning roles to users (e.g., regular user, admin, etc.).
-   - Managing permissions associated with each role.
-   - Ensuring proper access control based on roles and permissions.
 
-5. **Password Management**:
-   - Enabling users to reset their passwords.
-   - Implementing password policy rules (e.g., complexity requirements).
-   - Handling password recovery mechanisms.
+Password Management:
+    Enabling users to reset their passwords.
+    Handling password recovery mechanisms.
 
-6. **User Verification**:
-   - Verifying user identities, such as email verification or phone number verification.
-   - Implementing two-factor authentication (2FA) if necessary.
+User Verification:
+    Verifying user identities, such as email verification or phone number verification.
+    Implementing two-factor authentication (2FA) if necessary.
 
-7. **User Deactivation/Reactivation**:
-   - Supporting account deactivation and reactivation, if needed.
-   - Handling user requests for account deletion.
+User Deactivation/Reactivation:
+   Supporting account deactivation and reactivation, if needed.
+   Handling user requests for account deletion.
 
-8. **User Search and Retrieval**:
-   - Providing the ability to search for users by various criteria (e.g., username, email).
-   - Retrieving user information for other services that require it.
+User Search and Retrieval:
+   Providing the ability to search for users by various criteria (e.g., username, email).
+   Retrieving user information for other services that require it.
 
 9. **User Activity Logging**:
    - Logging user-related activities for audit and security purposes.
