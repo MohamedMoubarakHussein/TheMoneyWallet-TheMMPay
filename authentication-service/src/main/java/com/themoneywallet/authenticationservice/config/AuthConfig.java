@@ -13,7 +13,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
-import com.themoneywallet.authenticationservice.service.MyUserDetailsService;
+import com.themoneywallet.authenticationservice.service.implementation.MyUserDetailsService;
 
 @EnableWebSecurity
 @Configuration

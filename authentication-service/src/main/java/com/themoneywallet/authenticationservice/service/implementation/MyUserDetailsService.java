@@ -1,4 +1,4 @@
-package com.themoneywallet.authenticationservice.service;
+package com.themoneywallet.authenticationservice.service.implementation;
 
 import java.util.Optional;
 
@@ -8,7 +8,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
 
-import com.themoneywallet.authenticationservice.entity.MyUserDetails;
+
 import com.themoneywallet.authenticationservice.entity.UserCredential;
 import com.themoneywallet.authenticationservice.repository.UserCredentialRepository;
 
@@ -24,8 +24,11 @@ public class MyUserDetailsService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         Optional<UserCredential> user = this.userCredentialRepository.findByEmail(email);
-        return user.map(MyUserDetails::new).orElseThrow(()-> new UsernameNotFoundException("this email dosen't exist "+ email));
-
+        if(user.isPresent()){
+            return user.get();
+        }else{
+            throw new UsernameNotFoundException("UserName Not Found");
+        }
     }
     
 }

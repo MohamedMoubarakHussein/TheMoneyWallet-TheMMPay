@@ -14,8 +14,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.themoneywallet.authenticationservice.dto.request.AuthRequest;
+import com.themoneywallet.authenticationservice.dto.request.SignUpRequest;
+import com.themoneywallet.authenticationservice.dto.response.JwtToken;
 import com.themoneywallet.authenticationservice.entity.UserCredential;
-import com.themoneywallet.authenticationservice.service.AuthService;
+import com.themoneywallet.authenticationservice.service.implementation.AuthService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -24,27 +26,20 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class AuthController {
     private final AuthService authService;
-    private final  AuthenticationManager authenticationManager;
 
-    @PostMapping("/register")
-    public ResponseEntity<String> Register(@RequestBody UserCredential user){
-        return this.authService.save(user);
+    @PostMapping("/signup")
+    public ResponseEntity<JwtToken> Register(@RequestBody SignUpRequest user){
+        return this.authService.signUp(user);
     }
 
-    @PostMapping("/token")
-    public ResponseEntity<String> getToken(@RequestBody AuthRequest user){
-        Authentication authentication = authenticationManager
-                                        .authenticate(new UsernamePasswordAuthenticationToken(user.getEmail(), user.getPassword()));
-        if(authentication.isAuthenticated()){
-            return new ResponseEntity<>(this.authService.generateToken(user.getEmail()), HttpStatus.OK);
-        }else{
-            return new ResponseEntity<>("Invaild access" , HttpStatus.BAD_REQUEST);
-        }
+    @PostMapping("/signin")
+    public ResponseEntity<JwtToken> signIn(@RequestBody AuthRequest user){
+        return this.authService.signIn(user);
     }
 
     @GetMapping("/vaildate")
     public ResponseEntity<String> validateToken(@RequestParam("token") String token){
-        this.authService.validateToken(token);
+         this.authService.validToken(token);
         return new ResponseEntity<>("Token is valid" , HttpStatus.OK);
     }
 
