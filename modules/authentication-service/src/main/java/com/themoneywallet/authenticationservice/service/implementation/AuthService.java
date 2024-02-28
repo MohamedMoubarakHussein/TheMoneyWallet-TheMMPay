@@ -7,6 +7,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.reactive.function.client.WebClient;
 
 import com.themoneywallet.authenticationservice.dto.request.AuthRequest;
 import com.themoneywallet.authenticationservice.dto.request.SignUpRequest;
@@ -27,6 +28,7 @@ public class AuthService implements AuthServiceDefintion {
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
     private final DatabaseHelper databaseHelper;
+    private final WebClient webClient;
     
     @Override
     public ResponseEntity<String> signUp(SignUpRequest request) {
@@ -62,7 +64,7 @@ public class AuthService implements AuthServiceDefintion {
                                     .id(credential.getId())
                                     .build();
         // make a call to the user managment service
-
+        //.post()
         String token =  this.jwtService.generateToken(request.getEmail());
         return new ResponseEntity<>(token , HttpStatus.CREATED);
     }
