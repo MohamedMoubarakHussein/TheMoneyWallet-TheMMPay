@@ -1,6 +1,5 @@
 package com.themoneywallet.authenticationservice.utilities;
 
-import org.hibernate.annotations.Comment;
 import org.springframework.stereotype.Component;
 
 import com.themoneywallet.authenticationservice.repository.UserCredentialRepository;

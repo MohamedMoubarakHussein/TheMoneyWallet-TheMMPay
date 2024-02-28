@@ -3,7 +3,6 @@ package com.themoneywallet.authenticationservice.entity;
 import java.util.Date;
 
 
-import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.validation.constraints.Email;

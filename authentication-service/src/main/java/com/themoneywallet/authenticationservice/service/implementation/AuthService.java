@@ -10,7 +10,6 @@ import org.springframework.stereotype.Service;
 
 import com.themoneywallet.authenticationservice.dto.request.AuthRequest;
 import com.themoneywallet.authenticationservice.dto.request.SignUpRequest;
-import com.themoneywallet.authenticationservice.dto.response.JwtToken;
 import com.themoneywallet.authenticationservice.entity.UserCredential;
 import com.themoneywallet.authenticationservice.entity.UserManagmentService;
 import com.themoneywallet.authenticationservice.entity.UserRole;
