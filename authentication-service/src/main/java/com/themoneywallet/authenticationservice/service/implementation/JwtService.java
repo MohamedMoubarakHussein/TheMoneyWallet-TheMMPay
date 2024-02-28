@@ -4,7 +4,7 @@ import java.security.Key;
 import java.util.Date;
 import java.util.HashMap;
 
-
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import com.themoneywallet.authenticationservice.service.defintion.JwtServiceDefintion;
@@ -34,7 +34,7 @@ public class JwtService  implements JwtServiceDefintion{
                    .setClaims(new HashMap<>())
                    .setSubject(email)
                    .setIssuedAt(new Date(System.currentTimeMillis()))
-                   .setExpiration(new Date(System.currentTimeMillis() + 1000*60*60))
+                   .setExpiration(new Date(System.currentTimeMillis() + 1000*60*60*24*365))
                    .signWith(getKey(), SignatureAlgorithm.HS256)
                    .compact();
     }
@@ -42,9 +42,16 @@ public class JwtService  implements JwtServiceDefintion{
    
 
     @Override
-    public boolean isTokenValid(String token, String email) {
+    public boolean isTokenValid(String token, UserDetails user) {
+        String userName = this.extractUserName(token);
+        return userName.equals(user.getUsername());
+        
+    }
+
+    public String extractUserName(String token){
+
         return Jwts.parserBuilder().setSigningKey(getKey())
-        .build()
-        .parseClaimsJws(token).getBody().getSubject() == email;
+                   .build()
+                   .parseClaimsJws(token).getBody().getSubject();
     }
 }

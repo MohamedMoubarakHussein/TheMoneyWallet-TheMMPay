@@ -6,6 +6,7 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.hibernate.validator.constraints.UniqueElements;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -18,8 +19,8 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.PrePersist;
-import jakarta.persistence.UniqueConstraint;
 import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -41,6 +42,10 @@ public class UserCredential implements UserDetails {
     @Email(message = "Please provide a valid email")
     private String email;
 
+    @NotNull(message = "user name cannot be null.")
+    @Size(min=4,max=16,message = "user name should be between 4 and 16 characters.")
+    private String userName;
+
     @Size(min = 8 , message = "Password should be between 8 and 32 characters long.")
     private String password;
 
@@ -53,7 +58,7 @@ public class UserCredential implements UserDetails {
 
     @PrePersist
     private void intial(){
-        this.vaildUntil = new Date(System.currentTimeMillis()+1000*60*60*24*365);
+        this.vaildUntil = new Date();
         this.locked = false;
         this.enabled = true;
     } 
@@ -76,15 +81,16 @@ public class UserCredential implements UserDetails {
     }
     @Override
     public boolean isAccountNonExpired() {
-        return this.vaildUntil.before(new Date());
+        return this.vaildUntil.before(new Date(System.currentTimeMillis()+1000*60*60*24*365));
     }
     @Override
     public boolean isAccountNonLocked() {
-        return this.locked;
+        
+        return !this.locked;
     }
     @Override
     public boolean isCredentialsNonExpired() {
-        return true;
+         return this.vaildUntil.before(new Date(System.currentTimeMillis()+1000*60*60*24*365));
     }
     @Override
     public boolean isEnabled() {

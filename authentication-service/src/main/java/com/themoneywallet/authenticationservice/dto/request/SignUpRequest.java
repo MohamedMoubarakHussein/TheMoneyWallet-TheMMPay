@@ -1,6 +1,8 @@
 package com.themoneywallet.authenticationservice.dto.request;
 
-import jakarta.persistence.Entity;
+
+import org.hibernate.validator.constraints.UniqueElements;
+
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -13,7 +15,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@Entity
 public class SignUpRequest {
     
     @NotNull(message = "user name cannot be null.")
@@ -33,5 +34,7 @@ public class SignUpRequest {
     @Email(message = "You should put a vaild email address.")
     private String email;
 
+    @NotNull(message = "password cannot be null.")
+    @Size(min=8,max=32,message = "password should be between 8 and 32 characters.")
     private String password;
 }

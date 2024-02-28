@@ -12,12 +12,18 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import com.themoneywallet.authenticationservice.config.Security.JwtAuthenticationFilter;
 import com.themoneywallet.authenticationservice.service.implementation.MyUserDetailsService;
+
+import lombok.RequiredArgsConstructor;
 
 @EnableWebSecurity
 @Configuration
+@RequiredArgsConstructor
 public class AuthConfig {
+    private final JwtAuthenticationFilter authenticationFilter;
     @Bean
     public PasswordEncoder passwordEncoder(){
         return new BCryptPasswordEncoder();
@@ -26,8 +32,11 @@ public class AuthConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception{
         return http.csrf(csrf -> csrf.disable())
-            .authorizeHttpRequests(req -> req.requestMatchers("/auth/register")
-            .permitAll().anyRequest().authenticated())
+            .authorizeHttpRequests(req -> req.requestMatchers("/auth/signup", "/auth/signin")
+                .permitAll()
+                .anyRequest().authenticated()
+            )
+            .authenticationProvider(this.authenticationProvider()).addFilterBefore(this.authenticationFilter, UsernamePasswordAuthenticationFilter.class)
             .build();
     }
 
@@ -41,7 +50,7 @@ public class AuthConfig {
         DaoAuthenticationProvider authenticationProvider = new DaoAuthenticationProvider();
         authenticationProvider.setUserDetailsService(userDetailsService());
         authenticationProvider.setPasswordEncoder(passwordEncoder());
-        return authenticationProvider();
+        return authenticationProvider;
     }
 
     @Bean

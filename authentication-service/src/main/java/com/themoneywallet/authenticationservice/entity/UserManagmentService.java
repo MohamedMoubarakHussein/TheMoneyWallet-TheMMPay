@@ -2,13 +2,10 @@ package com.themoneywallet.authenticationservice.entity;
 
 import java.util.Date;
 
-import jakarta.persistence.Column;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -21,7 +18,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@Entity
 public class UserManagmentService {
      
     private int id;
