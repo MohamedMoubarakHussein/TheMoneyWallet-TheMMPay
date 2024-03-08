@@ -2,10 +2,33 @@
     "configurations": [
         {
             "type": "java",
-            "name": "DiscoveryServiceApplication",
+            "name": "Spring Boot-Main<gateway>",
             "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "com.themoneywallet.Main",
+            "projectName": "gateway",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
+        },
+        {
+            "type": "java",
+            "name": "Spring Boot-Gateway<gateway>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "com.gatewayApi.Gateway",
+            "projectName": "gateway",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
+        },
+        {
+            "type": "java",
+            "name": "Spring Boot-DiscoveryServiceApplication<discovery-service>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
             "mainClass": "com.discovery.DiscoveryServiceApplication",
-            "projectName": "discovery-service"
+            "projectName": "discovery-service",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
         },
         {
             "type": "java",
@@ -14,16 +37,6 @@
             "cwd": "${workspaceFolder}",
             "mainClass": "com.themoneywallet.authenticationservice.AuthenticationserviceApplication",
             "projectName": "authentication-service",
-            "args": "",
-            "envFile": "${workspaceFolder}/.env"
-        },
-        {
-            "type": "java",
-            "name": "Spring Boot-Main<discovery-service>",
-            "request": "launch",
-            "cwd": "${workspaceFolder}",
-            "mainClass": "com.themoneywallet.Main",
-            "projectName": "discovery-service",
             "args": "",
             "envFile": "${workspaceFolder}/.env"
         },
