@@ -90,12 +90,12 @@ public class AuthService implements AuthServiceDefintion {
     }
 
     @Override
-    public ResponseEntity<String> validToken(String token ) {
+    public ResponseEntity<Boolean> validToken(String token ) {
         boolean isValid = this.jwtService.isTokenValid(token) ;
         if(isValid){
-            return new ResponseEntity<>("The token is valid." , HttpStatus.OK);
+            return new ResponseEntity<>(true , HttpStatus.OK);
         }else{
-            return new ResponseEntity<>("The token isn't valid." , HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(false, HttpStatus.BAD_REQUEST);
         }
         
     }

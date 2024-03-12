@@ -12,10 +12,12 @@ import com.gatewayApi.Service.HttpService;
 import com.gatewayApi.Service.OpenedAndSecuredPathsService;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Mono;
 
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class AuthenticationFilter implements GatewayFilter {
 
     private final OpenedAndSecuredPathsService openedAndSecuredPathsService;
@@ -31,8 +33,10 @@ public class AuthenticationFilter implements GatewayFilter {
                 return re.setComplete();
             }
 
-            String token = request.getHeaders().get("Authorization").get(0);
+            @SuppressWarnings("null")
+            String token = request.getHeaders().get("Authorization").get(0).substring(7);
             boolean isValid = this.httpService.isTokenValid(token);
+            
             if (!isValid) {
                 ServerHttpResponse re = exchange.getResponse();
                 re.setStatusCode(HttpStatus.UNAUTHORIZED);

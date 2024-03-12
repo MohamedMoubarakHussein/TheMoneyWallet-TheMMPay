@@ -12,7 +12,7 @@ import lombok.RequiredArgsConstructor;
 @Configuration
 @RequiredArgsConstructor
 public class SecurityConfig {
-  
+
   private final AuthenticationFilter filter;
 
   @Bean

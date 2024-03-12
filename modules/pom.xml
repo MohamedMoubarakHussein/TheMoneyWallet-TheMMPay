@@ -20,6 +20,10 @@
         <module>user-managment-service</module>
         <module>discovery-service</module>
         <module>gateway</module>
+        <module>wallet-service</module>
+        <module>transaction-service</module>
+        <module>notification-service</module>
+        <module>history-service</module>
         
     </modules>
 

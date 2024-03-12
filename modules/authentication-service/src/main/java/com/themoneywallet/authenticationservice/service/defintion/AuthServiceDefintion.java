@@ -8,5 +8,5 @@ import com.themoneywallet.authenticationservice.dto.request.SignUpRequest;
 public interface AuthServiceDefintion {
     ResponseEntity<String> signUp(SignUpRequest request);
     ResponseEntity<String> signIn(AuthRequest request);
-    ResponseEntity<String> validToken(String Token);
+    ResponseEntity<Boolean> validToken(String Token);
 }

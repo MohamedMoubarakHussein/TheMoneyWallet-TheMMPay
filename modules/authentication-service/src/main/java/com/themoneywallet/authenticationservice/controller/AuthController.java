@@ -13,15 +13,18 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.themoneywallet.authenticationservice.dto.request.AuthRequest;
 import com.themoneywallet.authenticationservice.dto.request.SignUpRequest;
+import com.themoneywallet.authenticationservice.dto.request.ValidateRequest;
 import com.themoneywallet.authenticationservice.service.implementation.AuthService;
 import com.themoneywallet.authenticationservice.utilities.ValidtionRequestHandler;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @RestController
 @RequestMapping("/auth")
 @RequiredArgsConstructor
+@Slf4j
 public class AuthController {
     private final AuthService authService;
     private final ValidtionRequestHandler validtionRequestHandlerhandler;
@@ -44,9 +47,13 @@ public class AuthController {
         return this.authService.signIn(user);
     }
 
-    @GetMapping("validate")
-    public ResponseEntity<String> isVaild(@RequestParam("token") String token){
-        return this.authService.validToken(token);
+    @PostMapping("validate")
+    public ResponseEntity<Boolean> isVaild(@RequestBody ValidateRequest req){
+        log.info("Entring authentication service isValid method before");
+        ResponseEntity<Boolean> x =  this.authService.validToken(req.getToken());
+        log.info(x.getBody()+" 00001");
+
+        return x;
     }
 
 

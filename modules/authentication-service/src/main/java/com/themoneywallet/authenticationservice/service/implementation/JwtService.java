@@ -14,54 +14,62 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Component
 @RequiredArgsConstructor
-public class JwtService  implements JwtServiceDefintion{
+@Slf4j
+public class JwtService implements JwtServiceDefintion {
     private final MyUserDetailsService userDetailsService;
 
     private static final String SECRET = "b2phbHpsdU54Z3htb2NSanBCK3ErWkxOeFNmeTdiZk9XNkR2NEt0Mkhraz0=";
-   
-    private Key  getKey(){
+
+    private Key getKey() {
         byte[] key = Decoders.BASE64.decode(SECRET);
         return Keys.hmacShaKeyFor(key);
     }
 
-    public void validateToken(String token){
+    public void validateToken(String token) {
         Jwts.parserBuilder().setSigningKey(getKey())
-            .build()
-            .parseClaimsJws(token);
-    }
-    
-    public String generateToken(String email){
-        return Jwts.builder()
-                   .setClaims(new HashMap<>())
-                   .setSubject(email)
-                   .setIssuedAt(new Date(System.currentTimeMillis()))
-                   .setExpiration(new Date(System.currentTimeMillis() + 1000*60*60*24*365))
-                   .signWith(getKey(), SignatureAlgorithm.HS256)
-                   .compact();
+                .build()
+                .parseClaimsJws(token);
     }
 
-   
+    public String generateToken(String email) {
+        return Jwts.builder()
+                .setClaims(new HashMap<>())
+                .setSubject(email)
+                .setIssuedAt(new Date(System.currentTimeMillis()))
+                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 24 * 365))
+                .signWith(getKey(), SignatureAlgorithm.HS256)
+                .compact();
+    }
 
     @Override
     public boolean isTokenValid(String token, UserDetails user) {
         String userName = this.extractUserName(token);
         return userName.equals(user.getUsername());
+
+    }
+
+    public boolean isTokenValid(String token) {
+       log.info("entring the main mthod");
+        try {
+            this.extractUserName(token);
+            return true;
+        } catch (Exception e) {
+            log.info("zzzzzzz");
+           
+        }
         
+        return false;
+
     }
 
-    public boolean isTokenValid(String token){
-        String userName = this.extractUserName(token);
-        UserDetails user = this.userDetailsService.loadUserByUsername(userName);
-        return userName.equals(user.getUsername());
-    }
-
-    public String extractUserName(String token){
+    public String extractUserName(String token) {
 
         return Jwts.parserBuilder().setSigningKey(getKey())
-                   .build()
-                   .parseClaimsJws(token).getBody().getSubject();
+                .build()
+                .parseClaimsJws(token).getBody().getSubject();
     }
 }
