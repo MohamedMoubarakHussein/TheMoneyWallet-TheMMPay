@@ -1,0 +1,28 @@
+A wallet service:
+    As a user, I want to create a digital wallet and linked to my account so that I can manage my funds.
+    As a user, I want to easily check my wallet balance so that I can monitor my funds.
+
+Certainly! Designing the requirements for a microservices project like this involves both functional and non-functional aspects. Here's an outline for the wallet service:
+
+
+
+Transaction History:
+   - The service should maintain a record of all transactions made by the user.
+
+Fund Transfer:
+   - Users should be able to transfer funds from their wallet to another user's wallet.
+
+Deposit and Withdrawal:
+   - Allow users to deposit money into their wallet.
+   - Enable users to withdraw money from their wallet.
+
+Currency Support:
+   - Support multiple currencies for transactions.
+
+Transaction Verification:
+   - Implement a secure verification process for each transaction.
+
+
+Integration with Transaction Service:
+    - Ensure seamless integration with the transaction service for recording financial transactions.
+
