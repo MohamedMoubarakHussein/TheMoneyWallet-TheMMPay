@@ -3,7 +3,7 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "FrontEnd": {
+    "Front-end": {
       "projectType": "application",
       "schematics": {
         "@schematics/angular:component": {
@@ -69,10 +69,10 @@
           "builder": "@angular-devkit/build-angular:dev-server",
           "configurations": {
             "production": {
-              "buildTarget": "FrontEnd:build:production"
+              "buildTarget": "Front-end:build:production"
             },
             "development": {
-              "buildTarget": "FrontEnd:build:development"
+              "buildTarget": "Front-end:build:development"
             }
           },
           "defaultConfiguration": "development"

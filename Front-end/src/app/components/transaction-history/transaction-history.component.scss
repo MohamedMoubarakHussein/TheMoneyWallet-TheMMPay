@@ -1,0 +1,182 @@
+// Colors
+$primary: #2a2a72;
+$secondary: #009ffd;
+$success: #4CAF50;
+$danger: #e91e63;
+$background: #f8f9fa;
+
+.transaction-history-container {
+  max-width: 1200px;
+  margin: 2rem auto;
+  padding: 2rem;
+  background: white;
+  border-radius: 15px;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+
+    h2 {
+      color: $primary;
+    }
+
+    .back-button {
+      background: $background;
+      border: none;
+      padding: 0.8rem 1.5rem;
+      border-radius: 8px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+
+      &:hover {
+        background: darken($background, 5%);
+      }
+    }
+  }
+}
+
+.filters {
+  display: flex;
+  gap: 2rem;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+
+  .date-filter {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+
+    input[type="date"] {
+      padding: 0.5rem;
+      border: 2px solid #eee;
+      border-radius: 6px;
+    }
+
+    .filter-button {
+      background: $secondary;
+      color: white;
+      border: none;
+      padding: 0.5rem 1rem;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+  }
+
+  .search-filter {
+    flex: 1;
+    
+    input {
+      width: 100%;
+      padding: 0.8rem;
+      border: 2px solid #eee;
+      border-radius: 8px;
+    }
+  }
+}
+
+.transaction-table {
+  .table-header {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 1rem;
+    padding: 1rem;
+    background: $background;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+    font-weight: 500;
+
+    .header-cell {
+      cursor: pointer;
+      user-select: none;
+      
+      &:hover {
+        color: $secondary;
+      }
+    }
+  }
+
+  .table-body {
+    .table-row {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 1rem;
+      padding: 1rem;
+      border-bottom: 1px solid #eee;
+
+      &:last-child {
+        border-bottom: none;
+      }
+
+      .date { color: #666; }
+      .amount {
+        font-weight: 600;
+        &.negative { color: $danger; }
+      }
+
+      .status-badge {
+        padding: 0.3rem 0.8rem;
+        border-radius: 15px;
+        font-size: 0.8rem;
+        text-transform: capitalize;
+
+        &.success { background: lighten($success, 45%); color: darken($success, 20%); }
+        &.pending { background: lighten($secondary, 40%); color: darken($secondary, 20%); }
+        &.failed { background: lighten($danger, 40%); color: darken($danger, 20%); }
+      }
+    }
+  }
+}
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 2rem;
+
+  button {
+    background: $background;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    cursor: pointer;
+
+    &:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    &:hover:not(:disabled) {
+      background: darken($background, 5%);
+    }
+  }
+}
+
+// Responsive Design
+@media (max-width: 768px) {
+  .transaction-history-container {
+    padding: 1rem;
+  }
+
+  .filters {
+    flex-direction: column;
+  }
+
+  .transaction-table {
+    .table-header, .table-row {
+      grid-template-columns: repeat(3, 1fr);
+      
+      .header-cell:nth-child(4), 
+      .header-cell:nth-child(5),
+      .table-cell:nth-child(4),
+      .table-cell:nth-child(5) {
+        display: none;
+      }
+    }
+  }
+}

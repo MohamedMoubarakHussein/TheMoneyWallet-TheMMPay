@@ -1,0 +1,37 @@
+<header class="main-header">
+    <div class="header-content">
+      <div class="logo">
+        <a href="/" class="nav-item" style="text-decoration: none;"> <img src="assets/logo.svg" alt="PayFlow"></a>
+       
+      </div>
+      <div *ngIf="currentRoute === '/dashboard'">
+      <nav class="nav-links">
+        <a href="#" class="nav-item">Send</a>
+        <a href="#" class="nav-item">Receive</a>
+        <a href="#" class="nav-item">Bills</a>
+        <a href="#" class="nav-item">Support</a>
+      </nav>
+    </div>
+  
+      <div class="header-actions">
+        <button class="login-btn" (click)="goToSingIn()" >Sign In</button>
+        <button class="cta-button" (click)="goToSingUp()" >Get Started</button>
+      </div>
+  
+      <div class="menu-icon" (click)="toggleMenu()">
+        <div class="bar"></div>
+        <div class="bar"></div>
+        <div class="bar"></div>
+      </div>
+    </div>
+  
+    <!-- Mobile Menu -->
+    <div class="mobile-nav" *ngIf="isMenuOpen">
+      <a href="#" class="nav-item">Send</a>
+      <a href="#" class="nav-item">Receive</a>
+      <a href="#" class="nav-item">Bills</a>
+      <a href="#" class="nav-item">Support</a>
+      <button class="login-btn">Sign In</button>
+      <button class="cta-button">Get Started</button>
+    </div>
+  </header>

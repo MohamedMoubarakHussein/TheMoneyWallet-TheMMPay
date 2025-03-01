@@ -1,0 +1,64 @@
+<div class="transaction-history-container">
+    <div class="header">
+      <h2>Transaction History</h2>
+      <button class="back-button" routerLink="/dashboard">
+        <i class="fas fa-arrow-left"></i>
+        Back to Dashboard
+      </button>
+    </div>
+  
+    <!-- Filters -->
+    <div class="filters">
+      <div class="date-filter">
+        <label>Date Range:</label>
+        <input type="date" [(ngModel)]="startDate" name="startDate">
+        <span>to</span>
+        <input type="date" [(ngModel)]="endDate" name="endDate">
+        <button class="filter-button" (click)="applyDateFilter()">Apply</button>
+      </div>
+      
+      <div class="search-filter">
+        <input type="text" [(ngModel)]="searchQuery" placeholder="Search transactions...">
+      </div>
+    </div>
+  
+    <!-- Transaction Table -->
+    <div class="transaction-table">
+      <div class="table-header">
+        <div class="header-cell" (click)="sortTransactions('date')">Date</div>
+        <div class="header-cell" (click)="sortTransactions('description')">Description</div>
+        <div class="header-cell" (click)="sortTransactions('amount')">Amount</div>
+        <div class="header-cell">Status</div>
+        <div class="header-cell">Type</div>
+      </div>
+  
+      <div class="table-body">
+        <div class="table-row" *ngFor="let transaction of displayedTransactions">
+          <div class="table-cell date">{{ transaction.date | date: 'MMM d, y' }}</div>
+          <div class="table-cell description">{{ transaction.description }}</div>
+          <div class="table-cell amount" [class.negative]="transaction.amount < 0">
+            {{ transaction.amount | currency:transaction.currency }}
+          </div>
+          <div class="table-cell status">
+            <span class="status-badge" [class.success]="transaction.status === 'completed'"
+                                  [class.pending]="transaction.status === 'pending'"
+                                  [class.failed]="transaction.status === 'failed'">
+              {{ transaction.status }}
+            </span>
+          </div>
+          <div class="table-cell type">{{ transaction.type }}</div>
+        </div>
+      </div>
+  
+      <!-- Pagination -->
+      <div class="pagination">
+        <button [disabled]="currentPage === 1" (click)="previousPage()">
+          <i class="fas fa-chevron-left"></i>
+        </button>
+        <span>Page {{ currentPage }} of {{ totalPages }}</span>
+        <button [disabled]="currentPage === totalPages" (click)="nextPage()">
+          <i class="fas fa-chevron-right"></i>
+        </button>
+      </div>
+    </div>
+  </div>

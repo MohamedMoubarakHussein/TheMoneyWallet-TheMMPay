@@ -1,0 +1,212 @@
+// notifications.component.scss
+// Colors
+$primary: #2a2a72;
+$secondary: #009ffd;
+$success: #4CAF50;
+$warning: #FFC107;
+$error: #e91e63;
+$background: #f8f9fa;
+$text-muted: #666;
+
+.notifications-container {
+  max-width: 800px;
+  margin: 2rem auto;
+  padding: 2rem;
+
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+
+    h2 {
+      color: $primary;
+      margin: 0;
+      font-size: 1.8rem;
+    }
+
+    .header-actions {
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+    }
+  }
+}
+
+.mark-all-read {
+  background: none;
+  border: none;
+  color: $primary;
+  cursor: pointer;
+  padding: 0.5rem 1rem;
+  font-weight: 500;
+
+  &:hover {
+    color: darken($primary, 10%);
+  }
+}
+
+.notifications-list {
+  background: white;
+  border-radius: 15px;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+}
+
+.notification-card {
+  display: flex;
+  align-items: flex-start;
+  padding: 1.5rem;
+  border-bottom: 1px solid #eee;
+  position: relative;
+  transition: all 0.3s ease;
+
+  &:last-child {
+    border-bottom: none;
+  }
+
+  &.unread {
+    background: lighten($secondary, 45%);
+    
+    &::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 4px;
+      background: $secondary;
+    }
+  }
+
+  &.success {
+    .notification-icon {
+      background: lighten($success, 45%);
+      color: darken($success, 20%);
+    }
+  }
+
+  &.warning {
+    .notification-icon {
+      background: lighten($warning, 35%);
+      color: darken($warning, 20%);
+    }
+  }
+
+  &.error {
+    .notification-icon {
+      background: lighten($error, 40%);
+      color: darken($error, 20%);
+    }
+  }
+
+  .notification-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 1.5rem;
+    flex-shrink: 0;
+
+    i {
+      font-size: 1.2rem;
+    }
+  }
+
+  .notification-content {
+    flex: 1;
+
+    h4 {
+      margin: 0 0 0.5rem;
+      color: $primary;
+    }
+
+    p {
+      margin: 0 0 0.25rem;
+      color: $text-muted;
+    }
+
+    .timestamp {
+      font-size: 0.85rem;
+      color: lighten($text-muted, 20%);
+    }
+  }
+
+  .dismiss-btn {
+    background: none;
+    border: none;
+    color: $text-muted;
+    cursor: pointer;
+    padding: 0.5rem;
+    margin-left: 1rem;
+    opacity: 0;
+    transition: all 0.3s ease;
+
+    &:hover {
+      color: $primary;
+    }
+  }
+
+  &:hover .dismiss-btn {
+    opacity: 1;
+  }
+}
+
+.empty-state {
+  text-align: center;
+  padding: 4rem 2rem;
+
+  .fa-bell-slash {
+    font-size: 3rem;
+    color: lighten($text-muted, 30%);
+    margin-bottom: 1rem;
+  }
+
+  h3 {
+    color: $text-muted;
+    margin: 0 0 0.5rem;
+  }
+
+  p {
+    color: lighten($text-muted, 20%);
+    margin: 0;
+  }
+}
+
+// Responsive Design
+@media (max-width: 768px) {
+  .notifications-container {
+    padding: 1rem;
+
+    .header {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 1rem;
+    }
+  }
+
+  .notification-card {
+    padding: 1rem;
+
+    .notification-icon {
+      margin-right: 1rem;
+    }
+
+    .dismiss-btn {
+      opacity: 1;
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .header-actions {
+    flex-direction: column;
+    width: 100%;
+    
+    button {
+      width: 100%;
+      justify-content: center;
+    }
+  }
+}

@@ -1,0 +1,151 @@
+<div class="pay-bill-container">
+    <div class="header">
+      <h2>Pay a Bill</h2>
+      <button class="back-button" routerLink="/dashboard">
+        <i class="fas fa-arrow-left"></i>
+        Back to Dashboard
+      </button>
+    </div>
+  
+    <div class="pay-bill-card">
+      <div class="progress-steps">
+        <div class="step" [class.active]="currentStep === 1">1. Select Biller</div>
+        <div class="step" [class.active]="currentStep === 2">2. Payment Details</div>
+        <div class="step" [class.active]="currentStep === 3">3. Confirm</div>
+      </div>
+  
+      <!-- Step 1: Select Biller -->
+      <div *ngIf="currentStep === 1" class="biller-selection">
+        <div class="search-bar">
+          <input type="text" [(ngModel)]="searchQuery" placeholder="Search billers...">
+        </div>
+        
+        <div class="biller-categories">
+          <button *ngFor="let category of categories" 
+                  [class.active]="selectedCategory === category"
+                  (click)="selectCategory(category)">
+            {{ category }}
+          </button>
+        </div>
+  
+        <div class="biller-list">
+          <div class="biller-card" *ngFor="let biller of filteredBillers" 
+               (click)="selectBiller(biller)"
+               [class.selected]="selectedBiller?.id === biller.id">
+            <img [src]="biller.logo" alt="logo" class="biller-logo">
+            <div class="biller-info">
+              <h4>{{ biller.name }}</h4>
+              <p>Account: {{ biller.accountNumber }}</p>
+            </div>
+          </div>
+        </div>
+  
+        <div class="form-actions">
+          <button class="continue-btn" (click)="nextStep()">Continue</button>
+        </div>
+      </div>
+  
+      <!-- Step 2: Payment Details -->
+      <form *ngIf="currentStep === 2" (ngSubmit)="nextStep()" class="payment-details">
+        <div class="form-group">
+          <label>Amount Due</label>
+          <div class="amount-display">
+            <span class="currency">{{ selectedBiller?.currency || 'USD' }}</span>
+            <h3>{{ selectedBiller?.amountDue | currency:selectedBiller?.currency }}</h3>
+          </div>
+        </div>
+  
+        <div class="form-group">
+          <label>Payment Amount</label>
+          <div class="amount-input">
+            <span class="currency-symbol"> currencySymbol *</span>
+            <input type="number" [(ngModel)]="paymentAmount" 
+                   name="paymentAmount" required min="0.01" step="0.01">
+          </div>
+        </div>
+  
+        <div class="form-row">
+          <div class="form-group">
+            <label>Payment Date</label>
+            <input type="date" [(ngModel)]="paymentDate" name="paymentDate" required>
+          </div>
+          <div class="form-group">
+            <label>Payment Method</label>
+            <select [(ngModel)]="selectedPaymentMethod" name="paymentMethod" required>
+              <option *ngFor="let method of paymentMethods" [value]="method.id">
+                {{ method.name }} (****{{ method.last4 }})
+              </option>
+            </select>
+          </div>
+        </div>
+  
+        <div class="form-group checkbox-group">
+          <label>
+            <input type="checkbox" [(ngModel)]="saveBiller" name="saveBiller">
+            Save this biller for future payments
+          </label>
+        </div>
+  
+        <div class="form-actions">
+          <button type="button" class="back-btn" (click)="previousStep()">Back</button>
+          <button type="submit" class="continue-btn">Continue</button>
+        </div>
+      </form>
+  
+      <!-- Step 3: Confirmation -->
+      <div *ngIf="currentStep === 3" class="confirmation-step">
+        <div class="confirmation-details">
+          <h3>Confirm Payment</h3>
+          
+          <div class="detail-item">
+            <span>Biller:</span>
+            <div class="biller-info">
+              <img [src]="selectedBiller?.logo" alt="logo" class="biller-logo">
+              <div>
+                <h4>{{ selectedBiller?.name }}</h4>
+                <p>{{ selectedBiller?.accountNumber }}</p>
+              </div>
+            </div>
+          </div>
+  
+          <div class="detail-item">
+            <span>Amount:</span>
+            <h4>{{ paymentAmount | currency:selectedBiller?.currency }}</h4>
+          </div>
+  
+          <div class="detail-item">
+            <span>Payment Date:</span>
+            <p>{{ paymentDate | date: 'MMM d, y' }}</p>
+          </div>
+  
+          <div class="detail-item">
+            <span>Payment Method:</span>
+            <p>{{ getPaymentMethod() }}</p>
+          </div>
+  
+          <div class="fee-warning">
+            <i class="fas fa-info-circle"></i>
+            Payment will be processed on {{ paymentDate | date: 'MMM d, y' }}
+          </div>
+        </div>
+  
+        <div class="form-actions">
+          <button type="button" class="back-btn" (click)="previousStep()">Back</button>
+          <button type="button" class="confirm-btn" 
+                  (click)="processPayment()"
+                  [disabled]="processing">
+            <span *ngIf="!processing">Confirm Payment</span>
+            <span *ngIf="processing">Processing...</span>
+          </button>
+        </div>
+      </div>
+  
+      <!-- Success Message -->
+      <div *ngIf="transactionComplete" class="success-message">
+        <i class="fas fa-check-circle"></i>
+        <h3>Payment Successful!</h3>
+        <p>{{ paymentAmount | currency:selectedBiller?.currency }} paid to {{ selectedBiller?.name }}</p>
+        <button class="done-btn" routerLink="/dashboard">Back to Dashboard</button>
+      </div>
+    </div>
+  </div>

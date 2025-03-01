@@ -1,0 +1,139 @@
+// Colors
+$primary: #2a2a72;
+$secondary: #009ffd;
+$background: #f8f9fa;
+
+// Mixins
+@mixin flex-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.hero {
+  background: linear-gradient(135deg, $primary 0%, $secondary 100%);
+  color: white;
+  padding: 8rem 2rem;
+  text-align: center;
+  
+  &-content {
+    max-width: 800px;
+    margin: 0 auto;
+    
+    h1 {
+      font-size: 3.5rem;
+      margin-bottom: 1.5rem;
+    }
+    
+    p {
+      font-size: 1.25rem;
+      margin-bottom: 2rem;
+    }
+  }
+}
+
+.cta-button {
+  background: white;
+  color: $primary;
+  padding: 1rem 2.5rem;
+  border: none;
+  border-radius: 30px;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  
+  &:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+  }
+}
+
+.features {
+  @include flex-center;
+  flex-wrap: wrap;
+  gap: 2rem;
+  padding: 4rem 2rem;
+  background: $background;
+  
+  .feature-card {
+    flex: 1 1 300px;
+    background: white;
+    padding: 2rem;
+    border-radius: 15px;
+    text-align: center;
+    transition: transform 0.3s ease;
+    
+    &:hover {
+      transform: translateY(-10px);
+    }
+    
+    .icon {
+      width: 80px;
+      height: 80px;
+      margin: 0 auto 1.5rem;
+      border-radius: 50%;
+      background-size: 50%;
+      background-position: center;
+      background-repeat: no-repeat;
+      
+      &.send {
+        background-color: lighten($primary, 40%);
+        background-image: url('https://img.icons8.com/ios/100/2a2a72/send-mass-email.png');
+      }
+      
+      &.receive {
+        background-color: lighten($secondary, 30%);
+        background-image: url('https://img.icons8.com/ios/100/009ffd/get-cash.png');
+      }
+      
+      &.bills {
+        background-color: lighten(green, 50%);
+        background-image: url('https://img.icons8.com/ios/100/4CAF50/bill.png');
+      }
+    }
+    
+    h3 {
+      color: $primary;
+      margin-bottom: 1rem;
+    }
+  }
+}
+
+.stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 2rem;
+  padding: 4rem 2rem;
+  text-align: center;
+  
+  .stat-item {
+    h4 {
+      font-size: 2.5rem;
+      color: $primary;
+      margin-bottom: 0.5rem;
+    }
+    
+    p {
+      color: #666;
+    }
+  }
+}
+
+// Responsive Design
+@media (max-width: 768px) {
+  .hero {
+    padding: 4rem 1rem;
+    
+    h1 {
+      font-size: 2.5rem;
+    }
+  }
+  
+  .features {
+    padding: 2rem 1rem;
+  }
+  
+  .stats {
+    grid-template-columns: 1fr;
+  }
+}

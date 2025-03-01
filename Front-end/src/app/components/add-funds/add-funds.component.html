@@ -1,0 +1,145 @@
+<div class="add-funds-container">
+  <div class="header">
+    <h2>Add Funds</h2>
+    <button class="back-button" routerLink="/dashboard">
+      <i class="fas fa-arrow-left"></i>
+      Back to Dashboard
+    </button>
+  </div>
+
+  <div class="add-funds-card">
+    <div class="progress-steps">
+      <div class="step" [class.active]="currentStep === 1">1. Method</div>
+      <div class="step" [class.active]="currentStep === 2">2. Details</div>
+      <div class="step" [class.active]="currentStep === 3">3. Confirm</div>
+    </div>
+
+    <!-- Step 1: Select Funding Method -->
+    <div *ngIf="currentStep === 1" class="method-selection">
+      <div class="method-cards">
+        <div class="method-card" 
+             *ngFor="let method of paymentMethods"
+             [class.selected]="selectedMethod === method.id"
+             (click)="selectMethod(method.id)">
+          <i class="fas" [class.fa-credit-card]="method.id === 'card'"
+                          [class.fa-bank]="method.id === 'bank'"
+                          [class.fa-wallet]="method.id === 'wallet'"></i>
+          <h4>{{ method.name }}</h4>
+          <p>{{ method.description }}</p>
+        </div>
+      </div>
+      <div class="form-actions">
+        <button class="continue-btn" (click)="nextStep()">Continue</button>
+      </div>
+    </div>
+
+    <!-- Step 2: Payment Details -->
+    <form *ngIf="currentStep === 2" (ngSubmit)="nextStep()" class="payment-details">
+      <div class="form-group">
+        <label>Amount to Add</label>
+        <div class="amount-input">
+          <span class="currency-symbol">{{ currencySymbol }}</span>
+          <input type="number" [(ngModel)]="amount" name="amount" 
+                 required min="10" step="0.01">
+        </div>
+      </div>
+
+      <div *ngIf="selectedMethod === 'card'" class="card-form">
+        <div class="form-group">
+          <label>Card Number</label>
+          <input type="text" [(ngModel)]="cardDetails.number" 
+                 name="cardNumber" placeholder="4242 4242 4242 4242" required>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Expiry Date</label>
+            <input type="text" [(ngModel)]="cardDetails.expiry" 
+                   name="expiry" placeholder="MM/YY" required>
+          </div>
+          <div class="form-group">
+            <label>CVC</label>
+            <input type="text" [(ngModel)]="cardDetails.cvc" 
+                   name="cvc" placeholder="123" required>
+          </div>
+        </div>
+      </div>
+
+      <div *ngIf="selectedMethod === 'bank'" class="bank-form">
+        <div class="form-group">
+          <label>Select Bank Account</label>
+          <select [(ngModel)]="selectedBank" name="bankAccount" required>
+            <option *ngFor="let bank of savedBanks" [value]="bank.id">
+              {{ bank.name }} (****{{ bank.last4 }})
+            </option>
+          </select>
+        </div>
+      </div>
+
+      <div *ngIf="selectedMethod === 'wallet'" class="wallet-form">
+        <div class="wallet-option">
+          <img src="assets/paypal-logo.png" alt="PayPal">
+          <button type="button" class="wallet-btn" (click)="connectWallet('paypal')">
+            Connect with PayPal
+          </button>
+        </div>
+        <div class="wallet-option">
+          <img src="assets/google-pay-logo.png" alt="Google Pay">
+          <button type="button" class="wallet-btn" (click)="connectWallet('google-pay')">
+            Connect with Google Pay
+          </button>
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <button type="button" class="back-btn" (click)="previousStep()">Back</button>
+        <button type="submit" class="continue-btn">Continue</button>
+      </div>
+    </form>
+
+    <!-- Step 3: Confirmation -->
+    <div *ngIf="currentStep === 3" class="confirmation-step">
+      <div class="confirmation-details">
+        <h3>Confirm Deposit</h3>
+        
+        <div class="detail-item">
+          <span>Method:</span>
+          <h4>{{ getMethodName(selectedMethod) }}</h4>
+        </div>
+
+        <div class="detail-item">
+          <span>Amount:</span>
+          <h4>{{ amount | currency:currencyCode }}</h4>
+        </div>
+
+        <div *ngIf="selectedMethod === 'card'" class="detail-item">
+          <span>Card:</span>
+          <h4>**** **** **** {{ cardDetails.number?.slice(-4) }}</h4>
+        </div>
+
+        <div class="fee-warning" *ngIf="processingFee > 0">
+          <i class="fas fa-info-circle"></i>
+          A processing fee of {{ processingFee | currency:currencyCode }} will be applied
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <button type="button" class="back-btn" (click)="previousStep()">Back</button>
+        <button type="button" class="confirm-btn" 
+                (click)="processPayment()"
+                [disabled]="processing">
+          <span *ngIf="!processing">Confirm Deposit</span>
+          <span *ngIf="processing">Processing...</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Success Message -->
+    <div *ngIf="transactionComplete" class="success-message">
+      <i class="fas fa-check-circle"></i>
+      <h3>Deposit Successful!</h3>
+      <p>{{ amount | currency:currencyCode }} has been added to your account</p>
+      <button class="done-btn" routerLink="/dashboard">Back to Dashboard</button>
+    </div>
+  </div>
+</div>
