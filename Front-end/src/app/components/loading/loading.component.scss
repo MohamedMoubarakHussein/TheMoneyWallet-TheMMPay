@@ -1,0 +1,111 @@
+// loading.component.scss
+$primary: #2A5C82;  // Deep trustworthy blue
+$secondary: #2ECC71; // Fresh financial green
+$accent: #FFD700;   // Gold accent for prestige
+$background: #0F172A; // Dark navy background
+
+.loader-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba($background, 0.98);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+  backdrop-filter: blur(10px);
+  font-family: 'Roboto', sans-serif;
+}
+
+.holographic-loader {
+  position: relative;
+  padding: 2rem;
+  border-radius: 16px;
+  background: linear-gradient(145deg, rgba($primary, 0.2), rgba($secondary, 0.1));
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+}
+
+.spinner {
+  width: 100px;
+  height: 100px;
+  position: relative;
+  margin: 0 auto;
+
+  &::before {
+    content: '';
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    border: 4px solid rgba($primary, 0.2);
+    border-top-color: $primary;
+    animation: spin 1.2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+  }
+
+  &::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 80%;
+    height: 80%;
+    border-radius: 50%;
+    background: radial-gradient(circle at 50% 50%, 
+      rgba($accent, 0.4) 0%, 
+      rgba($accent, 0.2) 30%, 
+      transparent 70%);
+    filter: blur(12px);
+    animation: pulse 2s ease-in-out infinite;
+  }
+}
+
+.security-badge {
+  position: absolute;
+  top: -20px;
+  right: -20px;
+  background: $secondary;
+  color: white;
+  padding: 8px 12px;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  font-weight: bold;
+  box-shadow: 0 2px 8px rgba($secondary, 0.3);
+}
+
+.text {
+  margin-top: 2rem;
+  color: white;
+  font-size: 1.1rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  position: relative;
+  
+  &::after {
+    content: '';
+    display: block;
+    width: 40px;
+    height: 2px;
+    background: $secondary;
+    margin: 8px auto;
+    animation: lineGrow 1.5s ease-in-out infinite;
+  }
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 0.6; transform: translate(-50%, -50%) scale(0.95); }
+  50% { opacity: 1; transform: translate(-50%, -50%) scale(1.05); }
+}
+
+@keyframes lineGrow {
+  0% { width: 20px; opacity: 0; }
+  50% { width: 60px; opacity: 1; }
+  100% { width: 20px; opacity: 0; }
+}
