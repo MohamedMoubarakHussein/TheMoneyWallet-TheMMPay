@@ -12,7 +12,7 @@ $background: #f8f9fa;
 .signup-container {
   display: flex;
   min-height: 100vh;
-
+  margin-top: 3rem;
   .left-section {
     flex: 1;
     @include flex-center;

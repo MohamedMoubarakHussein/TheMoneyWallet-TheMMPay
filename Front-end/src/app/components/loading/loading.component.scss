@@ -41,7 +41,7 @@ $background: #0F172A; // Dark navy background
     border-radius: 50%;
     border: 4px solid rgba($primary, 0.2);
     border-top-color: $primary;
-    animation: spin 1.2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+    animation: spin 0.6s cubic-bezier(0.4, 0, 0.2, 1) infinite;
   }
 
   &::after {
@@ -58,7 +58,7 @@ $background: #0F172A; // Dark navy background
       rgba($accent, 0.2) 30%, 
       transparent 70%);
     filter: blur(12px);
-    animation: pulse 2s ease-in-out infinite;
+    animation: pulse 0.6s ease-in-out infinite;
   }
 }
 
@@ -91,7 +91,7 @@ $background: #0F172A; // Dark navy background
     height: 2px;
     background: $secondary;
     margin: 8px auto;
-    animation: lineGrow 1.5s ease-in-out infinite;
+    animation: lineGrow 0.6s ease-in-out infinite;
   }
 }
 

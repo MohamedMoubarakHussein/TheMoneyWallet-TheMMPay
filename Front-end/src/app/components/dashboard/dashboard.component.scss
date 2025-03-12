@@ -260,3 +260,137 @@ $danger: #e91e63;
     grid-template-columns: 1fr !important;
   }
 }
+
+
+// Add to existing SCSS
+.notification-wrapper {
+  position: relative;
+  
+  .notification-badge {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    background: $danger;
+    color: white;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    font-size: 0.7rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .notification-dropdown {
+    position: absolute;
+    right: 0;
+    top: 30px;
+    width: 350px;
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+    z-index: 1000;
+
+    .notification-header {
+      padding: 1rem;
+      border-bottom: 1px solid #eee;
+    }
+
+    .notification-list {
+      max-height: 400px;
+      overflow-y: auto;
+      
+      .notification-item {
+        display: flex;
+        align-items: center;
+        padding: 1rem;
+        border-bottom: 1px solid #f5f5f5;
+
+        .notification-indicator {
+          width: 8px;
+          height: 8px;
+          border-radius: 50%;
+          background: #ddd;
+          margin-right: 1rem;
+
+          &.unread {
+            background: $secondary;
+          }
+        }
+
+        .notification-content {
+          flex: 1;
+
+          p {
+            margin: 0 0 0.25rem;
+            font-size: 0.9rem;
+          }
+
+          small {
+            color: #666;
+            font-size: 0.8rem;
+          }
+        }
+      }
+    }
+
+    .notification-footer {
+      padding: 1rem;
+      text-align: center;
+      border-top: 1px solid #eee;
+
+      .view-all {
+        color: $secondary;
+        text-decoration: none;
+        font-weight: 500;
+        font-size: 0.9rem;
+      }
+    }
+  }
+}
+
+.user-avatar {
+  position: relative;
+  cursor: pointer;
+  
+  .user-menu-dropdown {
+    position: absolute;
+    right: 0;
+    top: 50px;
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+    width: 200px;
+    z-index: 1200;
+
+    .menu-item {
+      padding: 0.75rem 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      color: $primary;
+      text-decoration: none;
+      background: none;
+      border: none;
+      width: 100%;
+      text-align: left;
+      cursor: pointer;
+
+      &:hover {
+        background: $background;
+      }
+
+      i {
+        width: 20px;
+      }
+    }
+  }
+}
+
+// Add media query for mobile
+@media (max-width: 768px) {
+  .notification-dropdown {
+    width: 280px !important;
+    right: -20px !important;
+  }
+}

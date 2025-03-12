@@ -1,5 +1,6 @@
 <div class="dashboard-container">
-    <!-- Header -->
+ 
+  <!-- Header 
     <div class="dashboard-header">
       <h2>Welcome back, Alex</h2>
       <div class="header-actions">
@@ -12,6 +13,50 @@
         </a>
         </div>
       </div>
+    </div>-->
+    <div class="dashboard-header">
+      <!-- In dashboard-header div -->
+<h2>Welcome back, {{ userName }}</h2>
+<div class="header-actions">
+  <div class="notification-wrapper">
+    <button class="notification-btn" (click)="toggleNotifications()">
+      <i class="fas fa-bell"></i>
+<!-- Change the notification badge to use the getter -->
+<span class="notification-badge" *ngIf="unreadCount > 0">{{ unreadCount }}</span>    </button>
+    <div class="notification-dropdown" *ngIf="showNotifications">
+      <div class="notification-header">
+        <h4>Notifications</h4>
+      </div>
+      <div class="notification-list">
+        <div class="notification-item" *ngFor="let notif of notifications | slice:0:3">
+          <a [href]="'#' + notif.id" style="text-decoration: none; width: 100%;height: 100%; display: flex;">
+          <div class="notification-indicator" [class.unread]="!notif.read"></div>
+          <div class="notification-content">
+            <p>{{ notif.text }}</p>
+            <small>{{ notif.date }}</small>
+          </div>
+        </a>
+        </div>
+      </div>
+      <div class="notification-footer">
+        <a href="/notifications" class="view-all">View All Notifications</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="user-avatar" (click)="toggleUserMenu()">
+    <img src="assets/avatar.png" alt="User Avatar">
+    <div class="user-menu-dropdown" *ngIf="showUserMenu">
+      <a href="/profile" class="menu-item">
+        <i class="fas fa-user-edit"></i> Edit Profile
+      </a>
+      <button class="menu-item" (click)="logout()">
+        <i class="fas fa-sign-out-alt"></i> Log Out
+      </button>
+    </div>
+  </div>
+</div>
+
     </div>
   
     <!-- Stats Cards -->

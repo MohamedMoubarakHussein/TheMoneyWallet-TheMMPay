@@ -26,7 +26,7 @@ export class AppComponent implements OnInit {
         this.isLoading = true;
       } else if (event instanceof NavigationEnd) {
         // Ensure loader shows for at least 2 seconds
-        timer(2000).subscribe(() => {
+        timer(1000).subscribe(() => {
           this.loadingService.hide();
           this.isLoading = false;
         });
