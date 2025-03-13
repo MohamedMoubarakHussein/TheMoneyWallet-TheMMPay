@@ -5,7 +5,6 @@ import { RouterModule } from '@angular/router';
 import { FormBuilder, Validators, AbstractControl ,  ReactiveFormsModule } from '@angular/forms';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Subject, debounceTime, takeUntil } from 'rxjs';
-import { provideHttpClient } from '@angular/common/http';
 
 import { AuthService } from '../../services/signUp/sign-up.service'; 
 import { AuthValidators } from '../../utilities/validation.utils'; 
@@ -24,8 +23,6 @@ export class SignupComponent  implements OnDestroy  {
   showComingSoon = false;
   isSubmitting = false;
   serverErrorMessage = '';
-  
-
   signupForm!: FormGroup;
   
  
@@ -39,13 +36,10 @@ export class SignupComponent  implements OnDestroy  {
     this.setupDebouncedValidation();
   }
 
-  /**
-   * Initialize reactive form with validations
-   * @doc This method sets up the form structure and validation rules
-   */
+  
   private initializeForm(): void {
     const formOptions: AbstractControlOptions = {
-      validators: AuthValidators.passwordMatch // Using static validator
+      validators: AuthValidators.passwordMatch 
     };
 
     this.signupForm = this.fb.group({
@@ -81,10 +75,7 @@ export class SignupComponent  implements OnDestroy  {
     }, formOptions);
   }
 
-  /**
-   * Setup debounced validation for form controls
-   * @doc Adds 500ms debounce to validation triggers
-   */
+
   private setupDebouncedValidation(): void {
     const controls = ['username', 'firstName', 'lastName', 'email', 'password', 'confirmPassword'];
     
@@ -100,10 +91,7 @@ export class SignupComponent  implements OnDestroy  {
     });
   }
 
-  /**
-   * Handle form submission
-   * @doc Manages form submission flow with loading state and error handling
-   */
+  
   onSubmit(): void {
     if (this.signupForm.invalid) return;
 
@@ -117,19 +105,13 @@ export class SignupComponent  implements OnDestroy  {
       });
   }
 
-  /**
-   * Handle successful registration
-   * @doc Manages post-success logic (redirects, notifications, etc.)
-   */
+  
   private handleSuccess(): void {
     this.isSubmitting = false;
     // Add success handling logic
   }
 
-  /**
-   * Handle API errors
-   * @doc Processes server errors and updates form validation
-   */
+  
   private handleError(error: HttpErrorResponse): void {
     this.isSubmitting = false;
     
@@ -140,10 +122,7 @@ export class SignupComponent  implements OnDestroy  {
     }
   }
 
-  /**
-   * Process validation errors from server
-   * @doc Applies server-side validation errors to form controls
-   */
+  
   private handleValidationErrors(errors: Record<string, string[]>): void {
     Object.keys(errors).forEach(field => {
       const control = this.signupForm.get(field);
@@ -156,18 +135,12 @@ export class SignupComponent  implements OnDestroy  {
     this.destroy$.complete();
   }
 
-  /**
- * Checks if a form control should show validation errors
- * @param controlName - Name of the form control to check
- * @returns Boolean indicating whether to show errors
- * @doc This helper method determines when to display validation messages
- *      based on control state (dirty/touched) and validity
- */
+  
 showError(controlName: string): boolean {
   const control = this.signupForm.get(controlName);
   return !!control && control.invalid && (control.dirty || control.touched);
 }
-  // UI Handlers
+
   btnGoogle = () => this.toggleComingSoon();
   btnApple = () => this.toggleComingSoon();
   toggleComingSoon = () => this.showComingSoon = !this.showComingSoon;

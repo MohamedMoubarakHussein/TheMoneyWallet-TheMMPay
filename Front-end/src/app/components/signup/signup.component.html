@@ -7,12 +7,12 @@
       <p class="subtitle">Join our secure payment platform</p>
 
       <form class="signup-form" [formGroup]="signupForm" (ngSubmit)="onSubmit()">
-        <!-- Server Error Message -->
+        
         <div class="server-error" *ngIf="serverErrorMessage">
           {{ serverErrorMessage }}
         </div>
 
-        <!-- Username -->
+
         <div class="form-group">
           <label>Username</label>
           <input type="text" placeholder="Enter your username" formControlName="username">
@@ -26,7 +26,6 @@
           </div>
         </div>
 
-        <!-- First Name -->
         <div class="form-group">
           <label>First Name</label>
           <input type="text" placeholder="Enter first name" formControlName="firstName">
@@ -40,7 +39,7 @@
           </div>
         </div>
 
-        <!-- Last Name -->
+   
         <div class="form-group">
           <label>Last Name</label>
           <input type="text" placeholder="Enter last name" formControlName="lastName">
@@ -54,7 +53,7 @@
           </div>
         </div>
 
-        <!-- Email -->
+ 
         <div class="form-group">
           <label>Email</label>
           <input type="email" placeholder="Enter email" formControlName="email">
@@ -67,28 +66,29 @@
           </div>
         </div>
 
-        <!-- Password -->
+      
         <div class="form-group">
           <label>Password</label>
           <input type="password" placeholder="••••••••" formControlName="password">
           <div class="error-message" *ngIf="showError('password')">
-            <!-- Existing password errors -->
+            <div *ngIf="signupForm.get('password')?.errors?.['required']">password is required</div>
+            <div *ngIf="signupForm.get('password')?.errors?.['minlength']">Minimum 8 characters</div>
+            <div *ngIf="signupForm.get('password')?.errors?.['maxlength']">Maximum 16 characters</div>
             <div *ngIf="signupForm.get('password')?.errors?.['serverError']">
               {{ signupForm.get('password')?.errors?.['serverError'] }}
             </div>
           </div>
         </div>
 
-        <!-- Confirm Password -->
+       
         <div class="form-group">
           <label>Confirm Password</label>
           <input type="password" placeholder="••••••••" formControlName="confirmPassword">
           <div class="error-message" *ngIf="showError('confirmPassword')">
-            <!-- Password match errors -->
+            <div *ngIf="signupForm.get('confirmPassword')?.errors">Password doesn't match</div>
           </div>
         </div>
 
-        <!-- Terms Checkbox -->
         <div class="terms">
           <label class="terms-checkbox">
             <input type="checkbox" formControlName="terms">
@@ -104,7 +104,7 @@
           <span *ngIf="isSubmitting" class="spinner"></span>
         </button>
 
-        <!-- Rest of your template -->
+ 
         <div class="separator">
           <span>or sign up with</span>
         </div>
