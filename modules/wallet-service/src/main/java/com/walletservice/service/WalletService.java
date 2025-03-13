@@ -85,7 +85,7 @@ public class WalletService {
         }
 
         // reciver cheek
-        List<Wallet> allReciverWallet = this.walletRepository.finaAllByUserId(reciverUserId);
+        List<Wallet> allReciverWallet = this.walletRepository.findAllByUserId(reciverUserId);
         Wallet reciverWallet = null;
         int found = 0;
         for(Wallet w : allReciverWallet){

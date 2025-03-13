@@ -224,3 +224,41 @@ $background: #f8f9fa;
     font-size: 0.9rem;
   }
 }
+
+.error-message {
+  color: #dc3545;
+  font-size: 0.875rem;
+  margin-top: 0.25rem;
+}
+
+// Update button disabled state
+.signup-button:disabled {
+  background: #cccccc;
+  cursor: not-allowed;
+  
+  &:hover {
+    background: #cccccc;
+  }
+}
+
+.server-error {
+  color: #dc3545;
+  background: #f8d7da;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  border-radius: 4px;
+}
+
+.spinner {
+  display: inline-block;
+  width: 1.5rem;
+  height: 1.5rem;
+  border: 3px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  border-top-color: #fff;
+  animation: spin 1s ease-in-out infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}

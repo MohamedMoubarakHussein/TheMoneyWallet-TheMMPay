@@ -1,0 +1,1388 @@
+<!doctype html>
+<html class="no-js" lang="">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <title>front-end documentation</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <link rel="icon" type="image/x-icon" href="../images/favicon.ico">
+	   <link rel="stylesheet" href="../styles/style.css">
+        <link rel="stylesheet" href="../styles/dark.css">
+    </head>
+    <body>
+          <script>
+               // Blocking script to avoid flickering dark mode
+               // Dark mode toggle button
+               var useDark = window.matchMedia('(prefers-color-scheme: dark)');
+               var darkModeState = useDark.matches;
+               var $darkModeToggleSwitchers = document.querySelectorAll('.dark-mode-switch input');
+               var $darkModeToggles = document.querySelectorAll('.dark-mode-switch');
+               var darkModeStateLocal = localStorage.getItem('compodoc_darkmode-state');
+
+               function checkToggle(check) {
+                    for (var i = 0; i < $darkModeToggleSwitchers.length; i++) {
+                         $darkModeToggleSwitchers[i].checked = check;
+                    }
+               }
+
+               function toggleDarkMode(state) {
+                    if (window.localStorage) {
+                         localStorage.setItem('compodoc_darkmode-state', state);
+                    }
+
+                    checkToggle(state);
+
+                    const hasClass = document.body.classList.contains('dark');
+
+                    if (state) {
+                         for (var i = 0; i < $darkModeToggles.length; i++) {
+                              $darkModeToggles[i].classList.add('dark');
+                         }
+                         if (!hasClass) {
+                              document.body.classList.add('dark');
+                         }
+                    } else {
+                         for (var i = 0; i < $darkModeToggles.length; i++) {
+                              $darkModeToggles[i].classList.remove('dark');
+                         }
+                         if (hasClass) {
+                              document.body.classList.remove('dark');
+                         }
+                    }
+               }
+
+               useDark.addEventListener('change', function (evt) {
+                    toggleDarkMode(evt.matches);
+               });
+               if (darkModeStateLocal) {
+                    darkModeState = darkModeStateLocal === 'true';
+               }
+               toggleDarkMode(darkModeState);
+          </script>
+
+        <div class="navbar navbar-default navbar-fixed-top d-md-none p-0">
+               <div class="d-flex">
+                    <a href="../" class="navbar-brand">front-end documentation</a>
+                    <button type="button" class="btn btn-default btn-menu ion-ios-menu" id="btn-menu"></button>
+               </div>
+        </div>
+
+        <div class="xs-menu menu" id="mobile-menu">
+                <div id="book-search-input" role="search"><input type="text" placeholder="Type to search"></div>            <compodoc-menu></compodoc-menu>
+        </div>
+
+        <div class="container-fluid main">
+           <div class="row main">
+               <div class="d-none d-md-block menu">
+                   <compodoc-menu mode="normal"></compodoc-menu>
+               </div>
+               <!-- START CONTENT -->
+               <div class="content component">
+                   <div class="content-data">
+
+
+
+
+<ol class="breadcrumb">
+  <li class="breadcrumb-item">Components</li>
+  <li class="breadcrumb-item"
+  >
+  SendMoneyComponent</li>
+</ol>
+
+<ul class="nav nav-tabs" role="tablist">
+        <li class="nav-item">
+            <a href="#info" class="nav-link active"
+                role="tab" id="info-tab" data-bs-toggle="tab" data-link="info">Info</a>
+        </li>
+        <li class="nav-item">
+            <a href="#source" class="nav-link"
+                role="tab" id="source-tab" data-bs-toggle="tab" data-link="source">Source</a>
+        </li>
+        <li class="nav-item">
+            <a href="#templateData" class="nav-link"
+                role="tab" id="templateData-tab" data-bs-toggle="tab" data-link="template">Template</a>
+        </li>
+        <li class="nav-item">
+            <a href="#styleData" class="nav-link"
+                role="tab" id="styleData-tab" data-bs-toggle="tab" data-link="style">Styles</a>
+        </li>
+        <li class="nav-item">
+            <a href="#tree" class="nav-link"
+                role="tab" id="tree-tab" data-bs-toggle="tab" data-link="dom-tree">DOM Tree</a>
+        </li>
+</ul>
+
+<div class="tab-content">
+    <div class="tab-pane fade active in" id="info"><p class="comment">
+    <h3>File</h3>
+</p>
+<p class="comment">
+    <code>src/app/components/send-money/send-money.component.ts</code>
+</p>
+
+
+
+
+
+
+<section data-compodoc="block-metadata">
+    <h3>Metadata</h3>
+    <table class="table table-sm table-hover metadata">
+        <tbody>
+
+
+
+
+
+
+
+
+
+
+
+
+            <tr>
+                <td class="col-md-3">selector</td>
+                <td class="col-md-9"><code>app-send-money</code></td>
+            </tr>
+
+            <tr>
+                <td class="col-md-3">standalone</td>
+                <td class="col-md-9"><code>true</code></td>
+            </tr>
+
+            <tr>
+                <td class="col-md-3">imports</td>
+                <td class="col-md-9">
+                            <code>CommonModule</code>
+                            <code>FormsModule</code>
+                            <code>RouterModule</code>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="col-md-3">styleUrls</td>
+                <td class="col-md-9"><code>./send-money.component.scss</code></td>
+            </tr>
+
+
+
+            <tr>
+                <td class="col-md-3">templateUrl</td>
+                <td class="col-md-9"><code>./send-money.component.html</code></td>
+            </tr>
+
+
+
+
+
+
+
+
+        </tbody>
+    </table>
+</section>
+
+    <section data-compodoc="block-index">
+    <h3 id="index">Index</h3>
+    <table class="table table-sm table-bordered index-table">
+        <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <h6><b>Properties</b></h6>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <ul class="index-list">
+                            <li>
+                                <a href="#currencies" >currencies</a>
+                            </li>
+                            <li>
+                                <a href="#currentStep" >currentStep</a>
+                            </li>
+                            <li>
+                                <a href="#fee" >fee</a>
+                            </li>
+                            <li>
+                                <a href="#newAccountNumber" >newAccountNumber</a>
+                            </li>
+                            <li>
+                                <a href="#processing" >processing</a>
+                            </li>
+                            <li>
+                                <a href="#recentRecipients" >recentRecipients</a>
+                            </li>
+                            <li>
+                                <a href="#selectedCurrency" >selectedCurrency</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Optional</span>
+                                <a href="#selectedRecipient" >selectedRecipient</a>
+                            </li>
+                            <li>
+                                <a href="#transactionComplete" >transactionComplete</a>
+                            </li>
+                            <li>
+                                <a href="#transactionData" >transactionData</a>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                        <h6><b>Methods</b></h6>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <ul class="index-list">
+                            <li>
+                                <a href="#confirmTransaction" >confirmTransaction</a>
+                            </li>
+                            <li>
+                                <a href="#nextStep" >nextStep</a>
+                            </li>
+                            <li>
+                                <a href="#previousStep" >previousStep</a>
+                            </li>
+                            <li>
+                                <a href="#selectRecipient" >selectRecipient</a>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
+
+
+
+
+
+        </tbody>
+    </table>
+</section>
+
+
+
+
+
+
+    <section data-compodoc="block-methods">
+    
+    <h3 id="methods">
+        Methods
+    </h3>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="confirmTransaction"></a>
+                    <span class="name">
+                        <span ><b>confirmTransaction</b></span>
+                        <a href="#confirmTransaction"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>confirmTransaction()</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="66"
+                                    class="link-to-prism">src/app/components/send-money/send-money.component.ts:66</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                        </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="nextStep"></a>
+                    <span class="name">
+                        <span ><b>nextStep</b></span>
+                        <a href="#nextStep"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>nextStep()</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="53"
+                                    class="link-to-prism">src/app/components/send-money/send-money.component.ts:53</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                        </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="previousStep"></a>
+                    <span class="name">
+                        <span ><b>previousStep</b></span>
+                        <a href="#previousStep"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>previousStep()</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="57"
+                                    class="link-to-prism">src/app/components/send-money/send-money.component.ts:57</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                        </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="selectRecipient"></a>
+                    <span class="name">
+                        <span ><b>selectRecipient</b></span>
+                        <a href="#selectRecipient"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>selectRecipient(recipient: <a href="../interfaces/Recipient.html" target="_self">Recipient</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="61"
+                                    class="link-to-prism">src/app/components/send-money/send-money.component.ts:61</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>recipient</td>
+                                            <td>
+                                                            <code><a href="../interfaces/Recipient.html" target="_self" >Recipient</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>
+    <section data-compodoc="block-properties">
+    
+    <h3 id="inputs">
+        Properties
+    </h3>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="currencies"></a>
+                    <span class="name">
+                        <span ><b>currencies</b></span>
+                        <a href="#currencies"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>    <code>Currency[]</code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>[
+    { code: &#x27;USD&#x27;, name: &#x27;US Dollar&#x27;, symbol: &#x27;$&#x27; },
+    { code: &#x27;EUR&#x27;, name: &#x27;Euro&#x27;, symbol: &#x27;€&#x27; },
+    { code: &#x27;GBP&#x27;, name: &#x27;British Pound&#x27;, symbol: &#x27;£&#x27; }
+  ]</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="38" class="link-to-prism">src/app/components/send-money/send-money.component.ts:38</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="currentStep"></a>
+                    <span class="name">
+                        <span ><b>currentStep</b></span>
+                        <a href="#currentStep"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>1</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="27" class="link-to-prism">src/app/components/send-money/send-money.component.ts:27</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="fee"></a>
+                    <span class="name">
+                        <span ><b>fee</b></span>
+                        <a href="#fee"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>2.5</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="30" class="link-to-prism">src/app/components/send-money/send-money.component.ts:30</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="newAccountNumber"></a>
+                    <span class="name">
+                        <span ><b>newAccountNumber</b></span>
+                        <a href="#newAccountNumber"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>&#x27;&#x27;</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="46" class="link-to-prism">src/app/components/send-money/send-money.component.ts:46</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="processing"></a>
+                    <span class="name">
+                        <span ><b>processing</b></span>
+                        <a href="#processing"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>false</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="29" class="link-to-prism">src/app/components/send-money/send-money.component.ts:29</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="recentRecipients"></a>
+                    <span class="name">
+                        <span ><b>recentRecipients</b></span>
+                        <a href="#recentRecipients"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="../interfaces/Recipient.html" target="_self" >Recipient[]</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>[
+    { id: &#x27;1&#x27;, name: &#x27;John Doe&#x27;, accountNumber: &#x27;**** 1234&#x27;, avatar: &#x27;assets/avatar1.png&#x27; },
+    { id: &#x27;2&#x27;, name: &#x27;Jane Smith&#x27;, accountNumber: &#x27;**** 5678&#x27;, avatar: &#x27;assets/avatar2.png&#x27; },
+    { id: &#x27;3&#x27;, name: &#x27;Acme Corp&#x27;, accountNumber: &#x27;**** 9012&#x27;, avatar: &#x27;assets/avatar3.png&#x27; }
+  ]</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="32" class="link-to-prism">src/app/components/send-money/send-money.component.ts:32</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="selectedCurrency"></a>
+                    <span class="name">
+                        <span ><b>selectedCurrency</b></span>
+                        <a href="#selectedCurrency"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>&#x27;USD&#x27;</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="44" class="link-to-prism">src/app/components/send-money/send-money.component.ts:44</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="selectedRecipient"></a>
+                    <span class="name">
+                            <span class="modifier">Optional</span>
+                        <span ><b>selectedRecipient</b></span>
+                        <a href="#selectedRecipient"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="../interfaces/Recipient.html" target="_self" >Recipient</a></code>
+
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="45" class="link-to-prism">src/app/components/send-money/send-money.component.ts:45</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="transactionComplete"></a>
+                    <span class="name">
+                        <span ><b>transactionComplete</b></span>
+                        <a href="#transactionComplete"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>false</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="28" class="link-to-prism">src/app/components/send-money/send-money.component.ts:28</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="transactionData"></a>
+                    <span class="name">
+                        <span ><b>transactionData</b></span>
+                        <a href="#transactionData"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/object" target="_blank" >object</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>{
+    amount: 0,
+    note: &#x27;&#x27;
+  }</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="48" class="link-to-prism">src/app/components/send-money/send-money.component.ts:48</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+</section>
+
+</div>
+
+
+    <div class="tab-pane fade  tab-source-code" id="source">
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Component } from &#x27;@angular/core&#x27;;
+import { CommonModule } from &#x27;@angular/common&#x27;;
+import { FormsModule } from &#x27;@angular/forms&#x27;;
+import { RouterModule } from &#x27;@angular/router&#x27;;
+
+interface Recipient {
+  id: string;
+  name: string;
+  accountNumber: string;
+  avatar: string;
+}
+
+interface Currency {
+  code: string;
+  name: string;
+  symbol: string;
+}
+
+@Component({
+  selector: &#x27;app-send-money&#x27;,
+  standalone: true,
+  imports: [CommonModule, FormsModule, RouterModule],
+  templateUrl: &#x27;./send-money.component.html&#x27;,
+  styleUrls: [&#x27;./send-money.component.scss&#x27;]
+})
+export class SendMoneyComponent {
+  currentStep &#x3D; 1;
+  transactionComplete &#x3D; false;
+  processing &#x3D; false;
+  fee &#x3D; 2.5;
+  
+  recentRecipients: Recipient[] &#x3D; [
+    { id: &#x27;1&#x27;, name: &#x27;John Doe&#x27;, accountNumber: &#x27;**** 1234&#x27;, avatar: &#x27;assets/avatar1.png&#x27; },
+    { id: &#x27;2&#x27;, name: &#x27;Jane Smith&#x27;, accountNumber: &#x27;**** 5678&#x27;, avatar: &#x27;assets/avatar2.png&#x27; },
+    { id: &#x27;3&#x27;, name: &#x27;Acme Corp&#x27;, accountNumber: &#x27;**** 9012&#x27;, avatar: &#x27;assets/avatar3.png&#x27; }
+  ];
+
+  currencies: Currency[] &#x3D; [
+    { code: &#x27;USD&#x27;, name: &#x27;US Dollar&#x27;, symbol: &#x27;$&#x27; },
+    { code: &#x27;EUR&#x27;, name: &#x27;Euro&#x27;, symbol: &#x27;€&#x27; },
+    { code: &#x27;GBP&#x27;, name: &#x27;British Pound&#x27;, symbol: &#x27;£&#x27; }
+  ];
+
+  selectedCurrency &#x3D; &#x27;USD&#x27;;
+  selectedRecipient?: Recipient;
+  newAccountNumber &#x3D; &#x27;&#x27;;
+  
+  transactionData &#x3D; {
+    amount: 0,
+    note: &#x27;&#x27;
+  };
+
+  nextStep() {
+    this.currentStep &#x3D; Math.min(this.currentStep + 1, 3);
+  }
+
+  previousStep() {
+    this.currentStep &#x3D; Math.max(this.currentStep - 1, 1);
+  }
+
+  selectRecipient(recipient: Recipient) {
+    this.selectedRecipient &#x3D; recipient;
+    this.newAccountNumber &#x3D; &#x27;&#x27;;
+  }
+
+  confirmTransaction() {
+    this.processing &#x3D; true;
+    // Simulate API call
+    setTimeout(() &#x3D;&gt; {
+      this.processing &#x3D; false;
+      this.transactionComplete &#x3D; true;
+    }, 2000);
+  }
+}</code></pre>
+    </div>
+
+    <div class="tab-pane fade " id="templateData">
+        <pre class="line-numbers"><code class="language-html">&lt;div class&#x3D;&quot;send-money-container&quot;&gt;
+    &lt;div class&#x3D;&quot;header&quot;&gt;
+      &lt;h2&gt;Send Money&lt;/h2&gt;
+      &lt;button class&#x3D;&quot;back-button&quot; routerLink&#x3D;&quot;/dashboard&quot;&gt;
+        &lt;i class&#x3D;&quot;fas fa-arrow-left&quot;&gt;&lt;/i&gt;
+        Back to Dashboard
+      &lt;/button&gt;
+    &lt;/div&gt;
+  
+    &lt;div class&#x3D;&quot;send-money-card&quot;&gt;
+      &lt;div class&#x3D;&quot;progress-steps&quot;&gt;
+        &lt;div class&#x3D;&quot;step&quot; [class.active]&#x3D;&quot;currentStep &#x3D;&#x3D;&#x3D; 1&quot;&gt;1. Recipient&lt;/div&gt;
+        &lt;div class&#x3D;&quot;step&quot; [class.active]&#x3D;&quot;currentStep &#x3D;&#x3D;&#x3D; 2&quot;&gt;2. Amount&lt;/div&gt;
+        &lt;div class&#x3D;&quot;step&quot; [class.active]&#x3D;&quot;currentStep &#x3D;&#x3D;&#x3D; 3&quot;&gt;3. Confirm&lt;/div&gt;
+      &lt;/div&gt;
+  
+      &lt;form *ngIf&#x3D;&quot;currentStep &#x3D;&#x3D;&#x3D; 1&quot; (ngSubmit)&#x3D;&quot;nextStep()&quot; class&#x3D;&quot;send-form&quot;&gt;
+        &lt;div class&#x3D;&quot;form-group&quot;&gt;
+          &lt;label&gt;Select Recipient&lt;/label&gt;
+          &lt;div class&#x3D;&quot;recipient-list&quot;&gt;
+            &lt;div class&#x3D;&quot;recipient-item&quot; *ngFor&#x3D;&quot;let recipient of recentRecipients&quot; 
+                 (click)&#x3D;&quot;selectRecipient(recipient)&quot;
+                 [class.selected]&#x3D;&quot;selectedRecipient?.id &#x3D;&#x3D;&#x3D; recipient.id&quot;&gt;
+              &lt;img [src]&#x3D;&quot;recipient.avatar&quot; alt&#x3D;&quot;avatar&quot; class&#x3D;&quot;avatar&quot;&gt;
+              &lt;div class&#x3D;&quot;recipient-details&quot;&gt;
+                &lt;h4&gt;{{ recipient.name }}&lt;/h4&gt;
+                &lt;p&gt;{{ recipient.accountNumber }}&lt;/p&gt;
+              &lt;/div&gt;
+            &lt;/div&gt;
+          &lt;/div&gt;
+        &lt;/div&gt;
+  
+        &lt;div class&#x3D;&quot;form-group&quot;&gt;
+          &lt;label&gt;Or enter new account number&lt;/label&gt;
+          &lt;input type&#x3D;&quot;text&quot; [(ngModel)]&#x3D;&quot;newAccountNumber&quot; name&#x3D;&quot;accountNumber&quot; 
+                 placeholder&#x3D;&quot;Enter account number&quot;&gt;
+        &lt;/div&gt;
+  
+        &lt;div class&#x3D;&quot;form-actions&quot;&gt;
+          &lt;button type&#x3D;&quot;submit&quot; class&#x3D;&quot;continue-btn&quot;&gt;Continue&lt;/button&gt;
+        &lt;/div&gt;
+      &lt;/form&gt;
+  
+      &lt;form *ngIf&#x3D;&quot;currentStep &#x3D;&#x3D;&#x3D; 2&quot; (ngSubmit)&#x3D;&quot;nextStep()&quot; class&#x3D;&quot;send-form&quot;&gt;
+        &lt;div class&#x3D;&quot;form-group&quot;&gt;
+          &lt;label&gt;Amount&lt;/label&gt;
+          &lt;div class&#x3D;&quot;amount-input&quot;&gt;
+            &lt;span class&#x3D;&quot;currency-symbol&quot;&gt;{{ selectedCurrency }}&lt;/span&gt;
+            &lt;input type&#x3D;&quot;number&quot; [(ngModel)]&#x3D;&quot;transactionData.amount&quot; 
+                   name&#x3D;&quot;amount&quot; required min&#x3D;&quot;0.01&quot; step&#x3D;&quot;0.01&quot;&gt;
+          &lt;/div&gt;
+        &lt;/div&gt;
+  
+        &lt;div class&#x3D;&quot;form-group&quot;&gt;
+            &lt;label&gt;Currency&lt;/label&gt;
+            &lt;select [(ngModel)]&#x3D;&quot;selectedCurrency&quot; name&#x3D;&quot;currency&quot;&gt;
+              &lt;option *ngFor&#x3D;&quot;let currency of currencies&quot; [value]&#x3D;&quot;currency.code&quot;&gt;
+                {{ currency.name }} ({{ currency.symbol }})
+              &lt;/option&gt;
+            &lt;/select&gt;
+          &lt;/div&gt;
+  
+        &lt;div class&#x3D;&quot;form-group&quot;&gt;
+          &lt;label&gt;Add Note (Optional)&lt;/label&gt;
+          &lt;textarea [(ngModel)]&#x3D;&quot;transactionData.note&quot; 
+                   placeholder&#x3D;&quot;Payment description&quot;&gt;&lt;/textarea&gt;
+        &lt;/div&gt;
+  
+        &lt;div class&#x3D;&quot;form-actions&quot;&gt;
+          &lt;button type&#x3D;&quot;button&quot; class&#x3D;&quot;back-btn&quot; (click)&#x3D;&quot;previousStep()&quot;&gt;Back&lt;/button&gt;
+          &lt;button type&#x3D;&quot;submit&quot; class&#x3D;&quot;continue-btn&quot;&gt;Continue&lt;/button&gt;
+        &lt;/div&gt;
+      &lt;/form&gt;
+  
+      &lt;div *ngIf&#x3D;&quot;currentStep &#x3D;&#x3D;&#x3D; 3&quot; class&#x3D;&quot;confirmation-step&quot;&gt;
+        &lt;div class&#x3D;&quot;confirmation-details&quot;&gt;
+          &lt;h3&gt;Confirm Transaction&lt;/h3&gt;
+          
+          &lt;div class&#x3D;&quot;detail-item&quot;&gt;
+            &lt;span&gt;Recipient:&lt;/span&gt;
+            &lt;div class&#x3D;&quot;recipient-info&quot;&gt;
+              &lt;img [src]&#x3D;&quot;selectedRecipient?.avatar&quot; alt&#x3D;&quot;avatar&quot; class&#x3D;&quot;avatar&quot;&gt;
+              &lt;div&gt;
+                &lt;h4&gt;{{ selectedRecipient?.name || newAccountNumber }}&lt;/h4&gt;
+                &lt;p&gt;{{ selectedRecipient?.accountNumber || newAccountNumber }}&lt;/p&gt;
+              &lt;/div&gt;
+            &lt;/div&gt;
+          &lt;/div&gt;
+  
+          &lt;div class&#x3D;&quot;detail-item&quot;&gt;
+            &lt;span&gt;Amount:&lt;/span&gt;
+            &lt;h4&gt;{{ transactionData.amount | currency:selectedCurrency }}&lt;/h4&gt;
+          &lt;/div&gt;
+  
+          &lt;div class&#x3D;&quot;detail-item&quot; *ngIf&#x3D;&quot;transactionData.note&quot;&gt;
+            &lt;span&gt;Note:&lt;/span&gt;
+            &lt;p&gt;{{ transactionData.note }}&lt;/p&gt;
+          &lt;/div&gt;
+  
+          &lt;div class&#x3D;&quot;fee-warning&quot;&gt;
+            &lt;i class&#x3D;&quot;fas fa-info-circle&quot;&gt;&lt;/i&gt;
+            A transfer fee of {{ fee | currency:selectedCurrency }} will be applied
+          &lt;/div&gt;
+        &lt;/div&gt;
+  
+        &lt;div class&#x3D;&quot;form-actions&quot;&gt;
+          &lt;button type&#x3D;&quot;button&quot; class&#x3D;&quot;back-btn&quot; (click)&#x3D;&quot;previousStep()&quot;&gt;Back&lt;/button&gt;
+          &lt;button type&#x3D;&quot;button&quot; class&#x3D;&quot;confirm-btn&quot; 
+                  (click)&#x3D;&quot;confirmTransaction()&quot;
+                  [disabled]&#x3D;&quot;processing&quot;&gt;
+            &lt;span *ngIf&#x3D;&quot;!processing&quot;&gt;Confirm Payment&lt;/span&gt;
+            &lt;span *ngIf&#x3D;&quot;processing&quot;&gt;Processing...&lt;/span&gt;
+          &lt;/button&gt;
+        &lt;/div&gt;
+      &lt;/div&gt;
+  
+      &lt;div *ngIf&#x3D;&quot;transactionComplete&quot; class&#x3D;&quot;success-message&quot;&gt;
+        &lt;i class&#x3D;&quot;fas fa-check-circle&quot;&gt;&lt;/i&gt;
+        &lt;h3&gt;Payment Successful!&lt;/h3&gt;
+        &lt;p&gt;Your payment of {{ transactionData.amount | currency:selectedCurrency }} 
+           has been sent to {{ selectedRecipient?.name || newAccountNumber }}&lt;/p&gt;
+        &lt;button class&#x3D;&quot;done-btn&quot; routerLink&#x3D;&quot;/dashboard&quot;&gt;Back to Dashboard&lt;/button&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;</code></pre>
+    </div>
+
+    <div class="tab-pane fade " id="styleData">
+                <p class="comment">
+                    <code>./send-money.component.scss</code>
+                </p>
+                <pre class="line-numbers"><code class="language-scss">// Colors
+$primary: #2a2a72;
+$secondary: #009ffd;
+$success: #4CAF50;
+$danger: #e91e63;
+$background: #f8f9fa;
+
+.send-money-container {
+  max-width: 800px;
+  margin: 2rem auto;
+  padding: 2rem;
+
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+
+    h2 {
+      color: $primary;
+    }
+
+    .back-button {
+      background: $background;
+      border: none;
+      padding: 0.8rem 1.5rem;
+      border-radius: 8px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+
+      &amp;:hover {
+        background: darken($background, 5%);
+      }
+    }
+  }
+}
+
+.send-money-card {
+  background: white;
+  padding: 2rem;
+  border-radius: 15px;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+}
+
+.progress-steps {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 2rem;
+  padding: 1rem 0;
+  border-bottom: 2px solid $background;
+
+  .step {
+    color: #666;
+    font-weight: 500;
+    position: relative;
+
+    &amp;.active {
+      color: $primary;
+      font-weight: 600;
+
+      &amp;::after {
+        content: &#x27;&#x27;;
+        position: absolute;
+        bottom: -1.1rem;
+        left: 0;
+        right: 0;
+        height: 2px;
+        background: $primary;
+      }
+    }
+  }
+}
+
+.send-form {
+  .form-group {
+    margin-bottom: 1.5rem;
+
+    label {
+      display: block;
+      margin-bottom: 0.5rem;
+      color: $primary;
+      font-weight: 500;
+    }
+
+    input, select, textarea {
+      width: 100%;
+      padding: 0.8rem;
+      border: 2px solid #eee;
+      border-radius: 8px;
+      font-size: 1rem;
+
+      &amp;:focus {
+        outline: none;
+        border-color: $secondary;
+      }
+    }
+
+    .amount-input {
+      position: relative;
+      
+      .currency-symbol {
+        position: absolute;
+        left: 1rem;
+        top: 50%;
+        transform: translateY(-50%);
+        font-weight: 600;
+        color: $primary;
+      }
+
+      input {
+        padding-left: 3rem;
+      }
+    }
+  }
+}
+
+.recipient-list {
+  .recipient-item {
+    display: flex;
+    align-items: center;
+    padding: 1rem;
+    border: 2px solid #eee;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+
+    &amp;:hover {
+      border-color: $secondary;
+    }
+
+    &amp;.selected {
+      border-color: $primary;
+      background: lighten($primary, 45%);
+    }
+
+    .avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      margin-right: 1rem;
+    }
+
+    .recipient-details {
+      h4 {
+        margin: 0;
+        font-size: 1rem;
+      }
+
+      p {
+        margin: 0;
+        color: #666;
+        font-size: 0.9rem;
+      }
+    }
+  }
+}
+
+.confirmation-step {
+  .detail-item {
+    margin-bottom: 1.5rem;
+    
+    span {
+      color: #666;
+      display: block;
+      margin-bottom: 0.5rem;
+    }
+
+    .recipient-info {
+      display: flex;
+      align-items: center;
+      
+      .avatar {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        margin-right: 1rem;
+      }
+    }
+  }
+
+  .fee-warning {
+    background: lighten($secondary, 45%);
+    color: darken($secondary, 20%);
+    padding: 1rem;
+    border-radius: 8px;
+    margin: 2rem 0;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+}
+
+.success-message {
+  text-align: center;
+  padding: 2rem;
+
+  .fa-check-circle {
+    font-size: 4rem;
+    color: $success;
+    margin-bottom: 1rem;
+  }
+
+  h3 {
+    color: $success;
+    margin-bottom: 0.5rem;
+  }
+
+  p {
+    color: #666;
+    margin-bottom: 2rem;
+  }
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  margin-top: 2rem;
+
+  button {
+    padding: 0.8rem 2rem;
+    border: none;
+    border-radius: 8px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+
+    &amp;.back-btn {
+      background: $background;
+      color: #666;
+
+      &amp;:hover {
+        background: darken($background, 5%);
+      }
+    }
+
+    &amp;.continue-btn, &amp;.confirm-btn {
+      background: $primary;
+      color: white;
+
+      &amp;:hover:not(:disabled) {
+        background: darken($primary, 10%);
+      }
+
+      &amp;:disabled {
+        background: #ccc;
+        cursor: not-allowed;
+      }
+    }
+
+    &amp;.done-btn {
+      background: $success;
+      color: white;
+
+      &amp;:hover {
+        background: darken($success, 10%);
+      }
+    }
+  }
+}
+
+// Responsive Design
+@media (max-width: 768px) {
+  .send-money-container {
+    padding: 1rem;
+  }
+
+  .header {
+    flex-direction: column;
+    gap: 1rem;
+    align-items: flex-start !important;
+  }
+
+  .progress-steps {
+    flex-direction: column;
+    gap: 1rem;
+    
+    .step {
+      &amp;::after {
+        display: none;
+      }
+    }
+  }
+}</code></pre>
+    </div>
+
+    <div class="tab-pane fade " id="tree">
+        <div id="tree-container"></div>
+        <div class="tree-legend">
+            <div class="title">
+                <b>Legend</b>
+            </div>
+            <div>
+                <div class="color htmlelement"></div><span>Html element</span>
+            </div>
+            <div>
+                <div class="color component"></div><span>Component</span>
+            </div>
+            <div>
+                <div class="color directive"></div><span>Html element with directive</span>
+            </div>
+        </div>
+    </div>
+
+    
+</div>
+
+<script src="../js/libs/vis.min.js"></script>
+<script src="../js/libs/htmlparser.js"></script>
+<script src="../js/libs/deep-iterator.js"></script>
+<script>
+        var COMPONENT_TEMPLATE = '<div><div class="send-money-container">    <div class="header">      <h2>Send Money</h2>      <button class="back-button" routerLink="/dashboard">        <i class="fas fa-arrow-left"></i>        Back to Dashboard      </button>    </div>      <div class="send-money-card">      <div class="progress-steps">        <div class="step" [class.active]="currentStep === 1">1. Recipient</div>        <div class="step" [class.active]="currentStep === 2">2. Amount</div>        <div class="step" [class.active]="currentStep === 3">3. Confirm</div>      </div>        <form *ngIf="currentStep === 1" (ngSubmit)="nextStep()" class="send-form">        <div class="form-group">          <label>Select Recipient</label>          <div class="recipient-list">            <div class="recipient-item" *ngFor="let recipient of recentRecipients"                  (click)="selectRecipient(recipient)"                 [class.selected]="selectedRecipient?.id === recipient.id">              <img [src]="recipient.avatar" alt="avatar" class="avatar">              <div class="recipient-details">                <h4>{{ recipient.name }}</h4>                <p>{{ recipient.accountNumber }}</p>              </div>            </div>          </div>        </div>          <div class="form-group">          <label>Or enter new account number</label>          <input type="text" [(ngModel)]="newAccountNumber" name="accountNumber"                  placeholder="Enter account number">        </div>          <div class="form-actions">          <button type="submit" class="continue-btn">Continue</button>        </div>      </form>        <form *ngIf="currentStep === 2" (ngSubmit)="nextStep()" class="send-form">        <div class="form-group">          <label>Amount</label>          <div class="amount-input">            <span class="currency-symbol">{{ selectedCurrency }}</span>            <input type="number" [(ngModel)]="transactionData.amount"                    name="amount" required min="0.01" step="0.01">          </div>        </div>          <div class="form-group">            <label>Currency</label>            <select [(ngModel)]="selectedCurrency" name="currency">              <option *ngFor="let currency of currencies" [value]="currency.code">                {{ currency.name }} ({{ currency.symbol }})              </option>            </select>          </div>          <div class="form-group">          <label>Add Note (Optional)</label>          <textarea [(ngModel)]="transactionData.note"                    placeholder="Payment description"></textarea>        </div>          <div class="form-actions">          <button type="button" class="back-btn" (click)="previousStep()">Back</button>          <button type="submit" class="continue-btn">Continue</button>        </div>      </form>        <div *ngIf="currentStep === 3" class="confirmation-step">        <div class="confirmation-details">          <h3>Confirm Transaction</h3>                    <div class="detail-item">            <span>Recipient:</span>            <div class="recipient-info">              <img [src]="selectedRecipient?.avatar" alt="avatar" class="avatar">              <div>                <h4>{{ selectedRecipient?.name || newAccountNumber }}</h4>                <p>{{ selectedRecipient?.accountNumber || newAccountNumber }}</p>              </div>            </div>          </div>            <div class="detail-item">            <span>Amount:</span>            <h4>{{ transactionData.amount | currency:selectedCurrency }}</h4>          </div>            <div class="detail-item" *ngIf="transactionData.note">            <span>Note:</span>            <p>{{ transactionData.note }}</p>          </div>            <div class="fee-warning">            <i class="fas fa-info-circle"></i>            A transfer fee of {{ fee | currency:selectedCurrency }} will be applied          </div>        </div>          <div class="form-actions">          <button type="button" class="back-btn" (click)="previousStep()">Back</button>          <button type="button" class="confirm-btn"                   (click)="confirmTransaction()"                  [disabled]="processing">            <span *ngIf="!processing">Confirm Payment</span>            <span *ngIf="processing">Processing...</span>          </button>        </div>      </div>        <div *ngIf="transactionComplete" class="success-message">        <i class="fas fa-check-circle"></i>        <h3>Payment Successful!</h3>        <p>Your payment of {{ transactionData.amount | currency:selectedCurrency }}            has been sent to {{ selectedRecipient?.name || newAccountNumber }}</p>        <button class="done-btn" routerLink="/dashboard">Back to Dashboard</button>      </div>    </div>  </div></div>'
+    var COMPONENTS = [{'name': 'AddFundsComponent', 'selector': 'app-add-funds'},{'name': 'AppComponent', 'selector': 'app-root'},{'name': 'ComingSoonComponent', 'selector': 'app-coming-soon'},{'name': 'DashboardComponent', 'selector': 'app-dashboard'},{'name': 'EditProfileComponent', 'selector': 'app-edit-profile'},{'name': 'FooterComponent', 'selector': 'app-footer'},{'name': 'HeaderComponent', 'selector': 'app-header'},{'name': 'HomeComponent', 'selector': 'app-home'},{'name': 'LoadingComponent', 'selector': 'app-loading'},{'name': 'NotificationsComponent', 'selector': 'app-notifications'},{'name': 'PayBillComponent', 'selector': 'app-pay-bill'},{'name': 'RequestMoneyComponent', 'selector': 'app-request-money'},{'name': 'SendMoneyComponent', 'selector': 'app-send-money'},{'name': 'SigninComponent', 'selector': 'app-signin'},{'name': 'SignupComponent', 'selector': 'app-signup'},{'name': 'TransactionHistoryComponent', 'selector': 'app-transaction-history'}];
+    var DIRECTIVES = [];
+    var ACTUAL_COMPONENT = {'name': 'SendMoneyComponent'};
+</script>
+<script src="../js/tree.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                   </div><div class="search-results">
+    <div class="has-results">
+        <h1 class="search-results-title"><span class='search-results-count'></span> results matching "<span class='search-query'></span>"</h1>
+        <ul class="search-results-list"></ul>
+    </div>
+    <div class="no-results">
+        <h1 class="search-results-title">No results matching "<span class='search-query'></span>"</h1>
+    </div>
+</div>
+</div>
+               <!-- END CONTENT -->
+           </div>
+       </div>
+
+          <label class="dark-mode-switch">
+               <input type="checkbox">
+               <span class="slider">
+                    <svg class="slider-icon" viewBox="0 0 24 24" fill="none" height="20" stroke="#000" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" width="20" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"></path>
+                    </svg>
+               </span>
+          </label>
+
+       <script>
+            var COMPODOC_CURRENT_PAGE_DEPTH = 1;
+            var COMPODOC_CURRENT_PAGE_CONTEXT = 'component';
+            var COMPODOC_CURRENT_PAGE_URL = 'SendMoneyComponent.html';
+            var MAX_SEARCH_RESULTS = 15;
+       </script>
+
+       <script>
+               $darkModeToggleSwitchers = document.querySelectorAll('.dark-mode-switch input');
+               checkToggle(darkModeState);
+               if ($darkModeToggleSwitchers.length > 0) {
+                    for (var i = 0; i < $darkModeToggleSwitchers.length; i++) {
+                         $darkModeToggleSwitchers[i].addEventListener('change', function (event) {
+                              darkModeState = !darkModeState;
+                              toggleDarkMode(darkModeState);
+                         });
+                    }
+               }
+          </script>
+
+       <script src="../js/libs/custom-elements.min.js"></script>
+       <script src="../js/libs/lit-html.js"></script>
+
+       <script src="../js/menu-wc.js" defer></script>
+       <script nomodule src="../js/menu-wc_es5.js" defer></script>
+
+       <script src="../js/libs/bootstrap-native.js"></script>
+
+       <script src="../js/libs/es6-shim.min.js"></script>
+       <script src="../js/libs/EventDispatcher.js"></script>
+       <script src="../js/libs/promise.min.js"></script>
+
+       <script src="../js/compodoc.js"></script>
+
+       <script src="../js/tabs.js"></script>
+       <script src="../js/menu.js"></script>
+       <script src="../js/libs/clipboard.min.js"></script>
+       <script src="../js/libs/prism.js"></script>
+       <script src="../js/sourceCode.js"></script>
+          <script src="../js/search/search.js"></script>
+          <script src="../js/search/lunr.min.js"></script>
+          <script src="../js/search/search-lunr.js"></script>
+          <script src="../js/search/search_index.js"></script>
+       <script src="../js/lazy-load-graphs.js"></script>
+
+
+    </body>
+</html>

@@ -1,0 +1,1626 @@
+<!doctype html>
+<html class="no-js" lang="">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <title>front-end documentation</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <link rel="icon" type="image/x-icon" href="../images/favicon.ico">
+	   <link rel="stylesheet" href="../styles/style.css">
+        <link rel="stylesheet" href="../styles/dark.css">
+    </head>
+    <body>
+          <script>
+               // Blocking script to avoid flickering dark mode
+               // Dark mode toggle button
+               var useDark = window.matchMedia('(prefers-color-scheme: dark)');
+               var darkModeState = useDark.matches;
+               var $darkModeToggleSwitchers = document.querySelectorAll('.dark-mode-switch input');
+               var $darkModeToggles = document.querySelectorAll('.dark-mode-switch');
+               var darkModeStateLocal = localStorage.getItem('compodoc_darkmode-state');
+
+               function checkToggle(check) {
+                    for (var i = 0; i < $darkModeToggleSwitchers.length; i++) {
+                         $darkModeToggleSwitchers[i].checked = check;
+                    }
+               }
+
+               function toggleDarkMode(state) {
+                    if (window.localStorage) {
+                         localStorage.setItem('compodoc_darkmode-state', state);
+                    }
+
+                    checkToggle(state);
+
+                    const hasClass = document.body.classList.contains('dark');
+
+                    if (state) {
+                         for (var i = 0; i < $darkModeToggles.length; i++) {
+                              $darkModeToggles[i].classList.add('dark');
+                         }
+                         if (!hasClass) {
+                              document.body.classList.add('dark');
+                         }
+                    } else {
+                         for (var i = 0; i < $darkModeToggles.length; i++) {
+                              $darkModeToggles[i].classList.remove('dark');
+                         }
+                         if (hasClass) {
+                              document.body.classList.remove('dark');
+                         }
+                    }
+               }
+
+               useDark.addEventListener('change', function (evt) {
+                    toggleDarkMode(evt.matches);
+               });
+               if (darkModeStateLocal) {
+                    darkModeState = darkModeStateLocal === 'true';
+               }
+               toggleDarkMode(darkModeState);
+          </script>
+
+        <div class="navbar navbar-default navbar-fixed-top d-md-none p-0">
+               <div class="d-flex">
+                    <a href="../" class="navbar-brand">front-end documentation</a>
+                    <button type="button" class="btn btn-default btn-menu ion-ios-menu" id="btn-menu"></button>
+               </div>
+        </div>
+
+        <div class="xs-menu menu" id="mobile-menu">
+                <div id="book-search-input" role="search"><input type="text" placeholder="Type to search"></div>            <compodoc-menu></compodoc-menu>
+        </div>
+
+        <div class="container-fluid main">
+           <div class="row main">
+               <div class="d-none d-md-block menu">
+                   <compodoc-menu mode="normal"></compodoc-menu>
+               </div>
+               <!-- START CONTENT -->
+               <div class="content component">
+                   <div class="content-data">
+
+
+
+
+<ol class="breadcrumb">
+  <li class="breadcrumb-item">Components</li>
+  <li class="breadcrumb-item"
+  >
+  RequestMoneyComponent</li>
+</ol>
+
+<ul class="nav nav-tabs" role="tablist">
+        <li class="nav-item">
+            <a href="#info" class="nav-link active"
+                role="tab" id="info-tab" data-bs-toggle="tab" data-link="info">Info</a>
+        </li>
+        <li class="nav-item">
+            <a href="#source" class="nav-link"
+                role="tab" id="source-tab" data-bs-toggle="tab" data-link="source">Source</a>
+        </li>
+        <li class="nav-item">
+            <a href="#templateData" class="nav-link"
+                role="tab" id="templateData-tab" data-bs-toggle="tab" data-link="template">Template</a>
+        </li>
+        <li class="nav-item">
+            <a href="#styleData" class="nav-link"
+                role="tab" id="styleData-tab" data-bs-toggle="tab" data-link="style">Styles</a>
+        </li>
+        <li class="nav-item">
+            <a href="#tree" class="nav-link"
+                role="tab" id="tree-tab" data-bs-toggle="tab" data-link="dom-tree">DOM Tree</a>
+        </li>
+</ul>
+
+<div class="tab-content">
+    <div class="tab-pane fade active in" id="info"><p class="comment">
+    <h3>File</h3>
+</p>
+<p class="comment">
+    <code>src/app/components/request-money/request-money.component.ts</code>
+</p>
+
+
+
+
+
+
+<section data-compodoc="block-metadata">
+    <h3>Metadata</h3>
+    <table class="table table-sm table-hover metadata">
+        <tbody>
+
+
+
+
+
+
+
+
+
+
+
+
+            <tr>
+                <td class="col-md-3">selector</td>
+                <td class="col-md-9"><code>app-request-money</code></td>
+            </tr>
+
+            <tr>
+                <td class="col-md-3">standalone</td>
+                <td class="col-md-9"><code>true</code></td>
+            </tr>
+
+            <tr>
+                <td class="col-md-3">imports</td>
+                <td class="col-md-9">
+                            <code>CommonModule</code>
+                            <code>FormsModule</code>
+                            <code>RouterModule</code>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="col-md-3">styleUrls</td>
+                <td class="col-md-9"><code>./request-money.component.scss</code></td>
+            </tr>
+
+
+
+            <tr>
+                <td class="col-md-3">templateUrl</td>
+                <td class="col-md-9"><code>./request-money.component.html</code></td>
+            </tr>
+
+
+
+
+
+
+
+
+        </tbody>
+    </table>
+</section>
+
+    <section data-compodoc="block-index">
+    <h3 id="index">Index</h3>
+    <table class="table table-sm table-bordered index-table">
+        <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <h6><b>Properties</b></h6>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <ul class="index-list">
+                            <li>
+                                <a href="#currencies" >currencies</a>
+                            </li>
+                            <li>
+                                <a href="#currentStep" >currentStep</a>
+                            </li>
+                            <li>
+                                <a href="#newRecipientEmail" >newRecipientEmail</a>
+                            </li>
+                            <li>
+                                <a href="#recentContacts" >recentContacts</a>
+                            </li>
+                            <li>
+                                <a href="#requestAmount" >requestAmount</a>
+                            </li>
+                            <li>
+                                <a href="#requestNote" >requestNote</a>
+                            </li>
+                            <li>
+                                <a href="#requestSent" >requestSent</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Optional</span>
+                                <a href="#selectedContact" >selectedContact</a>
+                            </li>
+                            <li>
+                                <a href="#selectedCurrency" >selectedCurrency</a>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                        <h6><b>Methods</b></h6>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <ul class="index-list">
+                            <li>
+                                <a href="#copyPaymentLink" >copyPaymentLink</a>
+                            </li>
+                            <li>
+                                <a href="#nextStep" >nextStep</a>
+                            </li>
+                            <li>
+                                <a href="#previousStep" >previousStep</a>
+                            </li>
+                            <li>
+                                <a href="#selectContact" >selectContact</a>
+                            </li>
+                            <li>
+                                <a href="#sendRequest" >sendRequest</a>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
+
+
+
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <h6><b>Accessors</b></h6>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-md-4">
+                            <ul class="index-list">
+                                <li>
+                                    <a href="#currencySymbol" >currencySymbol</a>
+                                </li>
+                            </ul>
+                        </td>
+                    </tr>
+        </tbody>
+    </table>
+</section>
+
+
+
+
+
+
+    <section data-compodoc="block-methods">
+    
+    <h3 id="methods">
+        Methods
+    </h3>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="copyPaymentLink"></a>
+                    <span class="name">
+                        <span ><b>copyPaymentLink</b></span>
+                        <a href="#copyPaymentLink"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>copyPaymentLink()</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="57"
+                                    class="link-to-prism">src/app/components/request-money/request-money.component.ts:57</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                        </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="nextStep"></a>
+                    <span class="name">
+                        <span ><b>nextStep</b></span>
+                        <a href="#nextStep"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>nextStep()</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="49"
+                                    class="link-to-prism">src/app/components/request-money/request-money.component.ts:49</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                        </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="previousStep"></a>
+                    <span class="name">
+                        <span ><b>previousStep</b></span>
+                        <a href="#previousStep"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>previousStep()</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="53"
+                                    class="link-to-prism">src/app/components/request-money/request-money.component.ts:53</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                        </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="selectContact"></a>
+                    <span class="name">
+                        <span ><b>selectContact</b></span>
+                        <a href="#selectContact"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>selectContact(contact: <a href="../interfaces/Contact.html" target="_self">Contact</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="44"
+                                    class="link-to-prism">src/app/components/request-money/request-money.component.ts:44</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>contact</td>
+                                            <td>
+                                                            <code><a href="../interfaces/Contact.html" target="_self" >Contact</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="sendRequest"></a>
+                    <span class="name">
+                        <span ><b>sendRequest</b></span>
+                        <a href="#sendRequest"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>sendRequest()</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="62"
+                                    class="link-to-prism">src/app/components/request-money/request-money.component.ts:62</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                        </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>
+    <section data-compodoc="block-properties">
+    
+    <h3 id="inputs">
+        Properties
+    </h3>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="currencies"></a>
+                    <span class="name">
+                        <span ><b>currencies</b></span>
+                        <a href="#currencies"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>    <code>Currency[]</code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>[
+    { code: &#x27;USD&#x27;, name: &#x27;US Dollar&#x27;, symbol: &#x27;$&#x27; },
+    { code: &#x27;EUR&#x27;, name: &#x27;Euro&#x27;, symbol: &#x27;€&#x27; }
+  ]</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="29" class="link-to-prism">src/app/components/request-money/request-money.component.ts:29</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="currentStep"></a>
+                    <span class="name">
+                        <span ><b>currentStep</b></span>
+                        <a href="#currentStep"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>1</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="27" class="link-to-prism">src/app/components/request-money/request-money.component.ts:27</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="newRecipientEmail"></a>
+                    <span class="name">
+                        <span ><b>newRecipientEmail</b></span>
+                        <a href="#newRecipientEmail"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>&#x27;&#x27;</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="36" class="link-to-prism">src/app/components/request-money/request-money.component.ts:36</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="recentContacts"></a>
+                    <span class="name">
+                        <span ><b>recentContacts</b></span>
+                        <a href="#recentContacts"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="../interfaces/Contact.html" target="_self" >Contact[]</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>[
+    { id: &#x27;1&#x27;, name: &#x27;John Doe&#x27;, email: &#x27;john@example.com&#x27;, avatar: &#x27;assets/avatar1.png&#x27; },
+    { id: &#x27;2&#x27;, name: &#x27;Jane Smith&#x27;, email: &#x27;jane@example.com&#x27;, avatar: &#x27;assets/avatar2.png&#x27; }
+  ]</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="38" class="link-to-prism">src/app/components/request-money/request-money.component.ts:38</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="requestAmount"></a>
+                    <span class="name">
+                        <span ><b>requestAmount</b></span>
+                        <a href="#requestAmount"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>0</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="34" class="link-to-prism">src/app/components/request-money/request-money.component.ts:34</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="requestNote"></a>
+                    <span class="name">
+                        <span ><b>requestNote</b></span>
+                        <a href="#requestNote"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>&#x27;&#x27;</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="35" class="link-to-prism">src/app/components/request-money/request-money.component.ts:35</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="requestSent"></a>
+                    <span class="name">
+                        <span ><b>requestSent</b></span>
+                        <a href="#requestSent"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>false</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="28" class="link-to-prism">src/app/components/request-money/request-money.component.ts:28</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="selectedContact"></a>
+                    <span class="name">
+                            <span class="modifier">Optional</span>
+                        <span ><b>selectedContact</b></span>
+                        <a href="#selectedContact"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="../interfaces/Contact.html" target="_self" >Contact</a></code>
+
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="42" class="link-to-prism">src/app/components/request-money/request-money.component.ts:42</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="selectedCurrency"></a>
+                    <span class="name">
+                        <span ><b>selectedCurrency</b></span>
+                        <a href="#selectedCurrency"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>&#x27;USD&#x27;</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="33" class="link-to-prism">src/app/components/request-money/request-money.component.ts:33</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+</section>
+
+    <section data-compodoc="block-accessors">
+    <h3 id="accessors">
+        Accessors
+    </h3>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="currencySymbol"></a>
+                        <span class="name"><b>currencySymbol</b><a href="#currencySymbol"><span class="icon ion-ios-link"></span></a></span>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                        <span class="accessor"><b>get</b><code>currencySymbol()</code></span>
+                    </td>
+                </tr>
+                            <tr>
+                                <td class="col-md-4">
+                                    <div class="io-line">Defined in <a href="" data-line="69" class="link-to-prism">src/app/components/request-money/request-money.component.ts:69</a></div>
+                                </td>
+                            </tr>
+
+            </tbody>
+        </table>
+</section>
+</div>
+
+
+    <div class="tab-pane fade  tab-source-code" id="source">
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Component } from &#x27;@angular/core&#x27;;
+import { CommonModule } from &#x27;@angular/common&#x27;;
+import { FormsModule } from &#x27;@angular/forms&#x27;;
+import { RouterModule } from &#x27;@angular/router&#x27;;
+
+interface Contact {
+  id: string;
+  name: string;
+  email: string;
+  avatar: string;
+}
+
+interface Currency {
+  code: string;
+  name: string;
+  symbol: string;
+}
+
+@Component({
+  selector: &#x27;app-request-money&#x27;,
+  standalone: true,
+  imports: [CommonModule, FormsModule, RouterModule],
+  templateUrl: &#x27;./request-money.component.html&#x27;,
+  styleUrls: [&#x27;./request-money.component.scss&#x27;]
+})
+export class RequestMoneyComponent {
+  currentStep &#x3D; 1;
+  requestSent &#x3D; false;
+  currencies: Currency[] &#x3D; [
+    { code: &#x27;USD&#x27;, name: &#x27;US Dollar&#x27;, symbol: &#x27;$&#x27; },
+    { code: &#x27;EUR&#x27;, name: &#x27;Euro&#x27;, symbol: &#x27;€&#x27; }
+  ];
+  selectedCurrency &#x3D; &#x27;USD&#x27;;
+  requestAmount &#x3D; 0;
+  requestNote &#x3D; &#x27;&#x27;;
+  newRecipientEmail &#x3D; &#x27;&#x27;;
+  
+  recentContacts: Contact[] &#x3D; [
+    { id: &#x27;1&#x27;, name: &#x27;John Doe&#x27;, email: &#x27;john@example.com&#x27;, avatar: &#x27;assets/avatar1.png&#x27; },
+    { id: &#x27;2&#x27;, name: &#x27;Jane Smith&#x27;, email: &#x27;jane@example.com&#x27;, avatar: &#x27;assets/avatar2.png&#x27; }
+  ];
+  selectedContact?: Contact;
+
+  selectContact(contact: Contact) {
+    this.selectedContact &#x3D; contact;
+    this.newRecipientEmail &#x3D; &#x27;&#x27;;
+  }
+
+  nextStep() {
+    if (this.currentStep &lt; 3) this.currentStep++;
+  }
+
+  previousStep() {
+    this.currentStep &#x3D; Math.max(1, this.currentStep - 1);
+  }
+
+  copyPaymentLink() {
+    // Implement copy functionality
+    console.log(&#x27;Payment link copied&#x27;);
+  }
+
+  sendRequest() {
+    // Simulate API call
+    setTimeout(() &#x3D;&gt; {
+      this.requestSent &#x3D; true;
+    }, 1500);
+  }
+
+  get currencySymbol() {
+    return this.currencies.find(c &#x3D;&gt; c.code &#x3D;&#x3D;&#x3D; this.selectedCurrency)?.symbol || &#x27;$&#x27;;
+  }
+}</code></pre>
+    </div>
+
+    <div class="tab-pane fade " id="templateData">
+        <pre class="line-numbers"><code class="language-html">&lt;div class&#x3D;&quot;request-money-container&quot;&gt;
+    &lt;div class&#x3D;&quot;header&quot;&gt;
+      &lt;h2&gt;Request Money&lt;/h2&gt;
+      &lt;button class&#x3D;&quot;back-button&quot; routerLink&#x3D;&quot;/dashboard&quot;&gt;
+        &lt;i class&#x3D;&quot;fas fa-arrow-left&quot;&gt;&lt;/i&gt;
+        Back to Dashboard
+      &lt;/button&gt;
+    &lt;/div&gt;
+  
+    &lt;div class&#x3D;&quot;request-money-card&quot;&gt;
+      &lt;div class&#x3D;&quot;progress-steps&quot;&gt;
+        &lt;div class&#x3D;&quot;step&quot; [class.active]&#x3D;&quot;currentStep &#x3D;&#x3D;&#x3D; 1&quot;&gt;1. Details&lt;/div&gt;
+        &lt;div class&#x3D;&quot;step&quot; [class.active]&#x3D;&quot;currentStep &#x3D;&#x3D;&#x3D; 2&quot;&gt;2. Review&lt;/div&gt;
+        &lt;div class&#x3D;&quot;step&quot; [class.active]&#x3D;&quot;currentStep &#x3D;&#x3D;&#x3D; 3&quot;&gt;3. Send&lt;/div&gt;
+      &lt;/div&gt;
+  
+      &lt;!-- Step 1: Request Details --&gt;
+      &lt;form *ngIf&#x3D;&quot;currentStep &#x3D;&#x3D;&#x3D; 1&quot; (ngSubmit)&#x3D;&quot;nextStep()&quot; class&#x3D;&quot;request-form&quot;&gt;
+        &lt;div class&#x3D;&quot;form-group&quot;&gt;
+          &lt;label&gt;Recipient&lt;/label&gt;
+          &lt;div class&#x3D;&quot;recipient-selector&quot;&gt;
+            &lt;div class&#x3D;&quot;recent-contacts&quot;&gt;
+              &lt;div class&#x3D;&quot;contact-card&quot; 
+                   *ngFor&#x3D;&quot;let contact of recentContacts&quot;
+                   (click)&#x3D;&quot;selectContact(contact)&quot;
+                   [class.selected]&#x3D;&quot;selectedContact?.id &#x3D;&#x3D;&#x3D; contact.id&quot;&gt;
+                &lt;img [src]&#x3D;&quot;contact.avatar&quot; alt&#x3D;&quot;avatar&quot; class&#x3D;&quot;avatar&quot;&gt;
+                &lt;span&gt;{{ contact.name }}&lt;/span&gt;
+              &lt;/div&gt;
+            &lt;/div&gt;
+            &lt;div class&#x3D;&quot;divider&quot;&gt;or&lt;/div&gt;
+            &lt;input type&#x3D;&quot;email&quot; [(ngModel)]&#x3D;&quot;newRecipientEmail&quot; 
+                   name&#x3D;&quot;email&quot; placeholder&#x3D;&quot;Enter email address&quot; required&gt;
+          &lt;/div&gt;
+        &lt;/div&gt;
+  
+        &lt;div class&#x3D;&quot;form-row&quot;&gt;
+          &lt;div class&#x3D;&quot;form-group&quot;&gt;
+            &lt;label&gt;Amount&lt;/label&gt;
+            &lt;div class&#x3D;&quot;amount-input&quot;&gt;
+              &lt;span class&#x3D;&quot;currency-symbol&quot;&gt;{{ currencySymbol }}&lt;/span&gt;
+              &lt;input type&#x3D;&quot;number&quot; [(ngModel)]&#x3D;&quot;requestAmount&quot; 
+                     name&#x3D;&quot;amount&quot; required min&#x3D;&quot;0.01&quot; step&#x3D;&quot;0.01&quot;&gt;
+            &lt;/div&gt;
+          &lt;/div&gt;
+          &lt;div class&#x3D;&quot;form-group&quot;&gt;
+            &lt;label&gt;Currency&lt;/label&gt;
+            &lt;select [(ngModel)]&#x3D;&quot;selectedCurrency&quot; name&#x3D;&quot;currency&quot;&gt;
+              &lt;option *ngFor&#x3D;&quot;let currency of currencies&quot; [value]&#x3D;&quot;currency.code&quot;&gt;
+                {{ currency.name }}
+              &lt;/option&gt;
+            &lt;/select&gt;
+          &lt;/div&gt;
+        &lt;/div&gt;
+  
+        &lt;div class&#x3D;&quot;form-group&quot;&gt;
+          &lt;label&gt;Request Note&lt;/label&gt;
+          &lt;textarea [(ngModel)]&#x3D;&quot;requestNote&quot; 
+                   name&#x3D;&quot;note&quot; 
+                   placeholder&#x3D;&quot;Add a message (optional)&quot;&gt;&lt;/textarea&gt;
+        &lt;/div&gt;
+  
+        &lt;div class&#x3D;&quot;form-actions&quot;&gt;
+          &lt;button type&#x3D;&quot;submit&quot; class&#x3D;&quot;continue-btn&quot;&gt;Continue&lt;/button&gt;
+        &lt;/div&gt;
+      &lt;/form&gt;
+  
+      &lt;!-- Step 2: Review Request --&gt;
+      &lt;div *ngIf&#x3D;&quot;currentStep &#x3D;&#x3D;&#x3D; 2&quot; class&#x3D;&quot;review-step&quot;&gt;
+        &lt;div class&#x3D;&quot;request-summary&quot;&gt;
+          &lt;h3&gt;Review Request&lt;/h3&gt;
+          
+          &lt;div class&#x3D;&quot;summary-item&quot;&gt;
+            &lt;span&gt;Recipient:&lt;/span&gt;
+            &lt;div class&#x3D;&quot;recipient-info&quot;&gt;
+              &lt;img [src]&#x3D;&quot;selectedContact?.avatar || &#x27;assets/default-avatar.png&#x27;&quot; 
+                   alt&#x3D;&quot;avatar&quot; 
+                   class&#x3D;&quot;avatar&quot;&gt;
+              &lt;div&gt;
+                &lt;h4&gt;{{ selectedContact?.name || newRecipientEmail }}&lt;/h4&gt;
+                &lt;p&gt;{{ selectedContact?.email || newRecipientEmail }}&lt;/p&gt;
+              &lt;/div&gt;
+            &lt;/div&gt;
+          &lt;/div&gt;
+  
+          &lt;div class&#x3D;&quot;summary-item&quot;&gt;
+            &lt;span&gt;Amount:&lt;/span&gt;
+            &lt;h4&gt;{{ requestAmount | currency:selectedCurrency }}&lt;/h4&gt;
+          &lt;/div&gt;
+  
+          &lt;div *ngIf&#x3D;&quot;requestNote&quot; class&#x3D;&quot;summary-item&quot;&gt;
+            &lt;span&gt;Note:&lt;/span&gt;
+            &lt;p&gt;{{ requestNote }}&lt;/p&gt;
+          &lt;/div&gt;
+        &lt;/div&gt;
+  
+        &lt;div class&#x3D;&quot;form-actions&quot;&gt;
+          &lt;button type&#x3D;&quot;button&quot; class&#x3D;&quot;back-btn&quot; (click)&#x3D;&quot;previousStep()&quot;&gt;Back&lt;/button&gt;
+          &lt;button type&#x3D;&quot;button&quot; class&#x3D;&quot;continue-btn&quot; (click)&#x3D;&quot;nextStep()&quot;&gt;Continue&lt;/button&gt;
+        &lt;/div&gt;
+      &lt;/div&gt;
+  
+      &lt;!-- Step 3: Confirmation --&gt;
+      &lt;div *ngIf&#x3D;&quot;currentStep &#x3D;&#x3D;&#x3D; 3&quot; class&#x3D;&quot;confirmation-step&quot;&gt;
+        &lt;div class&#x3D;&quot;confirmation-details&quot;&gt;
+          &lt;h3&gt;Send Request&lt;/h3&gt;
+          
+          &lt;div class&#x3D;&quot;detail-item&quot;&gt;
+            &lt;i class&#x3D;&quot;fas fa-envelope&quot;&gt;&lt;/i&gt;
+            &lt;p&gt;We&#x27;ll send a payment request to:&lt;/p&gt;
+            &lt;h4&gt;{{ selectedContact?.email || newRecipientEmail }}&lt;/h4&gt;
+          &lt;/div&gt;
+  
+          &lt;div class&#x3D;&quot;payment-options&quot;&gt;
+            &lt;div class&#x3D;&quot;option-card&quot;&gt;
+              &lt;i class&#x3D;&quot;fas fa-share&quot;&gt;&lt;/i&gt;
+              &lt;h4&gt;Share Payment Link&lt;/h4&gt;
+              &lt;p&gt;Copy and share a direct payment link&lt;/p&gt;
+              &lt;button class&#x3D;&quot;share-btn&quot; (click)&#x3D;&quot;copyPaymentLink()&quot;&gt;
+                Copy Link
+              &lt;/button&gt;
+            &lt;/div&gt;
+            &lt;div class&#x3D;&quot;option-card&quot;&gt;
+              &lt;i class&#x3D;&quot;fas fa-paper-plane&quot;&gt;&lt;/i&gt;
+              &lt;h4&gt;Send Direct Request&lt;/h4&gt;
+              &lt;p&gt;Send request via email&lt;/p&gt;
+              &lt;button class&#x3D;&quot;send-btn&quot; (click)&#x3D;&quot;sendRequest()&quot;&gt;
+                Send Request
+              &lt;/button&gt;
+            &lt;/div&gt;
+          &lt;/div&gt;
+        &lt;/div&gt;
+  
+        &lt;div class&#x3D;&quot;form-actions&quot;&gt;
+          &lt;button type&#x3D;&quot;button&quot; class&#x3D;&quot;back-btn&quot; (click)&#x3D;&quot;previousStep()&quot;&gt;Back&lt;/button&gt;
+        &lt;/div&gt;
+      &lt;/div&gt;
+  
+      &lt;!-- Success Message --&gt;
+      &lt;div *ngIf&#x3D;&quot;requestSent&quot; class&#x3D;&quot;success-message&quot;&gt;
+        &lt;i class&#x3D;&quot;fas fa-check-circle&quot;&gt;&lt;/i&gt;
+        &lt;h3&gt;Request Sent!&lt;/h3&gt;
+        &lt;p&gt;Your payment request has been successfully sent&lt;/p&gt;
+        &lt;button class&#x3D;&quot;done-btn&quot; routerLink&#x3D;&quot;/dashboard&quot;&gt;Back to Dashboard&lt;/button&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;</code></pre>
+    </div>
+
+    <div class="tab-pane fade " id="styleData">
+                <p class="comment">
+                    <code>./request-money.component.scss</code>
+                </p>
+                <pre class="line-numbers"><code class="language-scss">// request-money.component.scss
+// Colors
+$primary: #2a2a72;
+$secondary: #009ffd;
+$success: #4CAF50;
+$background: #f8f9fa;
+$text-muted: #666;
+
+.request-money-container {
+  max-width: 800px;
+  margin: 2rem auto;
+  padding: 2rem;
+
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+
+    h2 {
+      color: $primary;
+      margin: 0;
+      font-size: 1.8rem;
+    }
+
+    .back-button {
+      background: $background;
+      border: none;
+      padding: 0.8rem 1.5rem;
+      border-radius: 8px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      transition: all 0.3s ease;
+
+      &amp;:hover {
+        background: darken($background, 5%);
+      }
+    }
+  }
+}
+
+.request-money-card {
+  background: white;
+  padding: 2rem;
+  border-radius: 15px;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+}
+
+.progress-steps {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 2rem;
+  padding: 1rem 0;
+  border-bottom: 2px solid $background;
+
+  .step {
+    color: $text-muted;
+    font-weight: 500;
+    position: relative;
+    flex: 1;
+    text-align: center;
+
+    &amp;.active {
+      color: $primary;
+      font-weight: 600;
+
+      &amp;::after {
+        content: &#x27;&#x27;;
+        position: absolute;
+        bottom: -1.1rem;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 60%;
+        height: 2px;
+        background: $primary;
+      }
+    }
+  }
+}
+
+.request-form {
+  .form-group {
+    margin-bottom: 1.5rem;
+
+    label {
+      display: block;
+      margin-bottom: 0.5rem;
+      color: $primary;
+      font-weight: 500;
+    }
+
+    input, select, textarea {
+      width: 100%;
+      padding: 0.8rem;
+      border: 2px solid #eee;
+      border-radius: 8px;
+      font-size: 1rem;
+      transition: all 0.3s ease;
+
+      &amp;:focus {
+        outline: none;
+        border-color: $secondary;
+      }
+    }
+
+    textarea {
+      height: 100px;
+      resize: vertical;
+    }
+  }
+
+  .form-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+  }
+}
+
+.recipient-selector {
+  .recent-contacts {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+
+    .contact-card {
+      display: flex;
+      align-items: center;
+      padding: 0.5rem 1rem;
+      border: 2px solid #eee;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+
+      &amp;:hover {
+        border-color: $secondary;
+      }
+
+      &amp;.selected {
+        border-color: $primary;
+        background: lighten($primary, 45%);
+      }
+
+      .avatar {
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        margin-right: 0.5rem;
+        object-fit: cover;
+      }
+    }
+  }
+
+  .divider {
+    text-align: center;
+    margin: 1rem 0;
+    color: $text-muted;
+    position: relative;
+
+    &amp;::before,
+    &amp;::after {
+      content: &#x27;&#x27;;
+      position: absolute;
+      top: 50%;
+      width: 45%;
+      height: 1px;
+      background: #eee;
+    }
+
+    &amp;::before { left: 0; }
+    &amp;::after { right: 0; }
+  }
+
+  input[type&#x3D;&quot;email&quot;] {
+    width: 100%;
+    padding: 0.8rem;
+    border: 2px solid #eee;
+    border-radius: 8px;
+  }
+}
+
+.amount-input {
+  position: relative;
+  
+  .currency-symbol {
+    position: absolute;
+    left: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    font-weight: 600;
+    color: $primary;
+  }
+
+  input {
+    padding-left: 3rem;
+  }
+}
+
+.review-step {
+  .request-summary {
+    h3 {
+      color: $primary;
+      margin-top: 0;
+    }
+
+    .summary-item {
+      margin-bottom: 1.5rem;
+      
+      span {
+        color: $text-muted;
+        display: block;
+        margin-bottom: 0.5rem;
+      }
+
+      .recipient-info {
+        display: flex;
+        align-items: center;
+        
+        .avatar {
+          width: 50px;
+          height: 50px;
+          border-radius: 50%;
+          margin-right: 1rem;
+        }
+
+        h4 {
+          margin: 0;
+          color: $primary;
+        }
+
+        p {
+          margin: 0;
+          color: $text-muted;
+        }
+      }
+
+      h4 {
+        color: $primary;
+        margin: 0;
+      }
+    }
+  }
+}
+
+.confirmation-step {
+  .confirmation-details {
+    h3 {
+      color: $primary;
+      margin-top: 0;
+    }
+
+    .detail-item {
+      text-align: center;
+      margin-bottom: 2rem;
+
+      i {
+        font-size: 2rem;
+        color: $primary;
+        margin-bottom: 1rem;
+      }
+
+      h4 {
+        color: $primary;
+        margin: 0.5rem 0;
+      }
+
+      p {
+        color: $text-muted;
+        margin: 0;
+      }
+    }
+  }
+}
+
+.payment-options {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 2rem;
+  margin-top: 2rem;
+
+  .option-card {
+    text-align: center;
+    padding: 2rem;
+    border: 2px solid #eee;
+    border-radius: 10px;
+    transition: all 0.3s ease;
+
+    &amp;:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
+
+    i {
+      font-size: 2rem;
+      color: $primary;
+      margin-bottom: 1rem;
+    }
+
+    h4 {
+      color: $primary;
+      margin: 0.5rem 0;
+    }
+
+    p {
+      color: $text-muted;
+      margin: 0.5rem 0 1rem;
+    }
+
+    button {
+      padding: 0.5rem 1.5rem;
+      border: none;
+      border-radius: 20px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+
+      &amp;.share-btn {
+        background: lighten($primary, 45%);
+        color: $primary;
+
+        &amp;:hover {
+          background: lighten($primary, 40%);
+        }
+      }
+
+      &amp;.send-btn {
+        background: $primary;
+        color: white;
+
+        &amp;:hover {
+          background: darken($primary, 10%);
+        }
+      }
+    }
+  }
+}
+
+.success-message {
+  text-align: center;
+  padding: 2rem;
+
+  .fa-check-circle {
+    font-size: 4rem;
+    color: $success;
+    margin-bottom: 1rem;
+  }
+
+  h3 {
+    color: $success;
+    margin-bottom: 0.5rem;
+  }
+
+  p {
+    color: $text-muted;
+    margin-bottom: 2rem;
+  }
+
+  .done-btn {
+    background: $success;
+    color: white;
+    border: none;
+    padding: 0.8rem 2rem;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+
+    &amp;:hover {
+      background: darken($success, 10%);
+    }
+  }
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  margin-top: 2rem;
+
+  button {
+    padding: 0.8rem 2rem;
+    border: none;
+    border-radius: 8px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+
+    &amp;.back-btn {
+      background: $background;
+      color: $text-muted;
+
+      &amp;:hover {
+        background: darken($background, 5%);
+      }
+    }
+
+    &amp;.continue-btn {
+      background: $primary;
+      color: white;
+
+      &amp;:hover:not(:disabled) {
+        background: darken($primary, 10%);
+      }
+
+      &amp;:disabled {
+        background: #ccc;
+        cursor: not-allowed;
+      }
+    }
+  }
+}
+
+// Responsive Design
+@media (max-width: 768px) {
+  .request-money-container {
+    padding: 1rem;
+  }
+
+  .header {
+    flex-direction: column;
+    gap: 1rem;
+    align-items: flex-start !important;
+  }
+
+  .progress-steps {
+    flex-direction: column;
+    gap: 1rem;
+    
+    .step {
+      &amp;::after {
+        display: none;
+      }
+    }
+  }
+
+  .form-row {
+    grid-template-columns: 1fr !important;
+  }
+
+  .payment-options {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 480px) {
+  .form-actions {
+    flex-direction: column;
+    
+    button {
+      width: 100%;
+    }
+  }
+
+  .recent-contacts {
+    flex-direction: column;
+  }
+}</code></pre>
+    </div>
+
+    <div class="tab-pane fade " id="tree">
+        <div id="tree-container"></div>
+        <div class="tree-legend">
+            <div class="title">
+                <b>Legend</b>
+            </div>
+            <div>
+                <div class="color htmlelement"></div><span>Html element</span>
+            </div>
+            <div>
+                <div class="color component"></div><span>Component</span>
+            </div>
+            <div>
+                <div class="color directive"></div><span>Html element with directive</span>
+            </div>
+        </div>
+    </div>
+
+    
+</div>
+
+<script src="../js/libs/vis.min.js"></script>
+<script src="../js/libs/htmlparser.js"></script>
+<script src="../js/libs/deep-iterator.js"></script>
+<script>
+        var COMPONENT_TEMPLATE = '<div><div class="request-money-container">    <div class="header">      <h2>Request Money</h2>      <button class="back-button" routerLink="/dashboard">        <i class="fas fa-arrow-left"></i>        Back to Dashboard      </button>    </div>      <div class="request-money-card">      <div class="progress-steps">        <div class="step" [class.active]="currentStep === 1">1. Details</div>        <div class="step" [class.active]="currentStep === 2">2. Review</div>        <div class="step" [class.active]="currentStep === 3">3. Send</div>      </div>        <!-- Step 1: Request Details -->      <form *ngIf="currentStep === 1" (ngSubmit)="nextStep()" class="request-form">        <div class="form-group">          <label>Recipient</label>          <div class="recipient-selector">            <div class="recent-contacts">              <div class="contact-card"                    *ngFor="let contact of recentContacts"                   (click)="selectContact(contact)"                   [class.selected]="selectedContact?.id === contact.id">                <img [src]="contact.avatar" alt="avatar" class="avatar">                <span>{{ contact.name }}</span>              </div>            </div>            <div class="divider">or</div>            <input type="email" [(ngModel)]="newRecipientEmail"                    name="email" placeholder="Enter email address" required>          </div>        </div>          <div class="form-row">          <div class="form-group">            <label>Amount</label>            <div class="amount-input">              <span class="currency-symbol">{{ currencySymbol }}</span>              <input type="number" [(ngModel)]="requestAmount"                      name="amount" required min="0.01" step="0.01">            </div>          </div>          <div class="form-group">            <label>Currency</label>            <select [(ngModel)]="selectedCurrency" name="currency">              <option *ngFor="let currency of currencies" [value]="currency.code">                {{ currency.name }}              </option>            </select>          </div>        </div>          <div class="form-group">          <label>Request Note</label>          <textarea [(ngModel)]="requestNote"                    name="note"                    placeholder="Add a message (optional)"></textarea>        </div>          <div class="form-actions">          <button type="submit" class="continue-btn">Continue</button>        </div>      </form>        <!-- Step 2: Review Request -->      <div *ngIf="currentStep === 2" class="review-step">        <div class="request-summary">          <h3>Review Request</h3>                    <div class="summary-item">            <span>Recipient:</span>            <div class="recipient-info">              <img [src]="selectedContact?.avatar || \'assets/default-avatar.png\'"                    alt="avatar"                    class="avatar">              <div>                <h4>{{ selectedContact?.name || newRecipientEmail }}</h4>                <p>{{ selectedContact?.email || newRecipientEmail }}</p>              </div>            </div>          </div>            <div class="summary-item">            <span>Amount:</span>            <h4>{{ requestAmount | currency:selectedCurrency }}</h4>          </div>            <div *ngIf="requestNote" class="summary-item">            <span>Note:</span>            <p>{{ requestNote }}</p>          </div>        </div>          <div class="form-actions">          <button type="button" class="back-btn" (click)="previousStep()">Back</button>          <button type="button" class="continue-btn" (click)="nextStep()">Continue</button>        </div>      </div>        <!-- Step 3: Confirmation -->      <div *ngIf="currentStep === 3" class="confirmation-step">        <div class="confirmation-details">          <h3>Send Request</h3>                    <div class="detail-item">            <i class="fas fa-envelope"></i>            <p>We\'ll send a payment request to:</p>            <h4>{{ selectedContact?.email || newRecipientEmail }}</h4>          </div>            <div class="payment-options">            <div class="option-card">              <i class="fas fa-share"></i>              <h4>Share Payment Link</h4>              <p>Copy and share a direct payment link</p>              <button class="share-btn" (click)="copyPaymentLink()">                Copy Link              </button>            </div>            <div class="option-card">              <i class="fas fa-paper-plane"></i>              <h4>Send Direct Request</h4>              <p>Send request via email</p>              <button class="send-btn" (click)="sendRequest()">                Send Request              </button>            </div>          </div>        </div>          <div class="form-actions">          <button type="button" class="back-btn" (click)="previousStep()">Back</button>        </div>      </div>        <!-- Success Message -->      <div *ngIf="requestSent" class="success-message">        <i class="fas fa-check-circle"></i>        <h3>Request Sent!</h3>        <p>Your payment request has been successfully sent</p>        <button class="done-btn" routerLink="/dashboard">Back to Dashboard</button>      </div>    </div>  </div></div>'
+    var COMPONENTS = [{'name': 'AddFundsComponent', 'selector': 'app-add-funds'},{'name': 'AppComponent', 'selector': 'app-root'},{'name': 'ComingSoonComponent', 'selector': 'app-coming-soon'},{'name': 'DashboardComponent', 'selector': 'app-dashboard'},{'name': 'EditProfileComponent', 'selector': 'app-edit-profile'},{'name': 'FooterComponent', 'selector': 'app-footer'},{'name': 'HeaderComponent', 'selector': 'app-header'},{'name': 'HomeComponent', 'selector': 'app-home'},{'name': 'LoadingComponent', 'selector': 'app-loading'},{'name': 'NotificationsComponent', 'selector': 'app-notifications'},{'name': 'PayBillComponent', 'selector': 'app-pay-bill'},{'name': 'RequestMoneyComponent', 'selector': 'app-request-money'},{'name': 'SendMoneyComponent', 'selector': 'app-send-money'},{'name': 'SigninComponent', 'selector': 'app-signin'},{'name': 'SignupComponent', 'selector': 'app-signup'},{'name': 'TransactionHistoryComponent', 'selector': 'app-transaction-history'}];
+    var DIRECTIVES = [];
+    var ACTUAL_COMPONENT = {'name': 'RequestMoneyComponent'};
+</script>
+<script src="../js/tree.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                   </div><div class="search-results">
+    <div class="has-results">
+        <h1 class="search-results-title"><span class='search-results-count'></span> results matching "<span class='search-query'></span>"</h1>
+        <ul class="search-results-list"></ul>
+    </div>
+    <div class="no-results">
+        <h1 class="search-results-title">No results matching "<span class='search-query'></span>"</h1>
+    </div>
+</div>
+</div>
+               <!-- END CONTENT -->
+           </div>
+       </div>
+
+          <label class="dark-mode-switch">
+               <input type="checkbox">
+               <span class="slider">
+                    <svg class="slider-icon" viewBox="0 0 24 24" fill="none" height="20" stroke="#000" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" width="20" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"></path>
+                    </svg>
+               </span>
+          </label>
+
+       <script>
+            var COMPODOC_CURRENT_PAGE_DEPTH = 1;
+            var COMPODOC_CURRENT_PAGE_CONTEXT = 'component';
+            var COMPODOC_CURRENT_PAGE_URL = 'RequestMoneyComponent.html';
+            var MAX_SEARCH_RESULTS = 15;
+       </script>
+
+       <script>
+               $darkModeToggleSwitchers = document.querySelectorAll('.dark-mode-switch input');
+               checkToggle(darkModeState);
+               if ($darkModeToggleSwitchers.length > 0) {
+                    for (var i = 0; i < $darkModeToggleSwitchers.length; i++) {
+                         $darkModeToggleSwitchers[i].addEventListener('change', function (event) {
+                              darkModeState = !darkModeState;
+                              toggleDarkMode(darkModeState);
+                         });
+                    }
+               }
+          </script>
+
+       <script src="../js/libs/custom-elements.min.js"></script>
+       <script src="../js/libs/lit-html.js"></script>
+
+       <script src="../js/menu-wc.js" defer></script>
+       <script nomodule src="../js/menu-wc_es5.js" defer></script>
+
+       <script src="../js/libs/bootstrap-native.js"></script>
+
+       <script src="../js/libs/es6-shim.min.js"></script>
+       <script src="../js/libs/EventDispatcher.js"></script>
+       <script src="../js/libs/promise.min.js"></script>
+
+       <script src="../js/compodoc.js"></script>
+
+       <script src="../js/tabs.js"></script>
+       <script src="../js/menu.js"></script>
+       <script src="../js/libs/clipboard.min.js"></script>
+       <script src="../js/libs/prism.js"></script>
+       <script src="../js/sourceCode.js"></script>
+          <script src="../js/search/search.js"></script>
+          <script src="../js/search/lunr.min.js"></script>
+          <script src="../js/search/search-lunr.js"></script>
+          <script src="../js/search/search_index.js"></script>
+       <script src="../js/lazy-load-graphs.js"></script>
+
+
+    </body>
+</html>

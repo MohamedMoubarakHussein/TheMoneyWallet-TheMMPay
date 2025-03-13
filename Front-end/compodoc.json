@@ -1,0 +1,6 @@
+{
+  "includes": "src/app",
+  "output": "docs",
+  "theme": "material",
+  "tsconfig": "tsconfig.json"
+}

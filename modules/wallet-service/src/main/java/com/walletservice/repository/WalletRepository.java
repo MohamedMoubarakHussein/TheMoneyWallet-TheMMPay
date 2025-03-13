@@ -7,5 +7,5 @@ import org.springframework.data.repository.CrudRepository;
 import com.walletservice.entity.Wallet;
 
 public interface WalletRepository  extends CrudRepository<Wallet, Long>{
-     List<Wallet> finaAllByUserId(long userId);
+     List<Wallet> findAllByUserId(long userId);
 }
