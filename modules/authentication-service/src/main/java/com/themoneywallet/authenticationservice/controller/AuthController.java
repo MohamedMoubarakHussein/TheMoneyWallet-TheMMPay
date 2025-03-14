@@ -1,6 +1,10 @@
 package com.themoneywallet.authenticationservice.controller;
 
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -29,13 +33,16 @@ import lombok.extern.slf4j.Slf4j;
 public class AuthController {
     private final AuthService authService;
     private final ValidtionRequestHandler validtionRequestHandlerhandler;
+    private Map<String , Object> responsMap = new HashMap<>();
+    private Map<String, List<String>> errorsMap = new HashMap<>(); 
 
     @PostMapping(value = "/signup")
     public ResponseEntity Register(@Valid @RequestBody SignUpRequest user, BindingResult result){
-        
+        responsMap.clear();
+        errorsMap.clear();
         if(result.hasErrors()){
-            String body =  this.validtionRequestHandlerhandler.handle(result);
-            return new ResponseEntity<>(body , HttpStatus.BAD_REQUEST);
+             responsMap.put("errors", this.validtionRequestHandlerhandler.handle(result,errorsMap));
+            return new ResponseEntity<>(responsMap , HttpStatus.BAD_REQUEST);
         }
         
         return this.authService.signUp(user);
@@ -43,9 +50,12 @@ public class AuthController {
 
 
     @PostMapping("/signin")
-    public ResponseEntity<String> signIn(@Valid @RequestBody AuthRequest user , BindingResult result){
+    public ResponseEntity signIn(@Valid @RequestBody AuthRequest user , BindingResult result){
+        responsMap.clear();
+        errorsMap.clear();
         if(result.hasErrors()){
-            return new ResponseEntity<>(this.validtionRequestHandlerhandler.handle(result) , HttpStatus.BAD_REQUEST);
+            responsMap.put("errors", this.validtionRequestHandlerhandler.handle(result,errorsMap));
+            return new ResponseEntity<>(responsMap , HttpStatus.BAD_REQUEST);
         }
         return this.authService.signIn(user);
     }

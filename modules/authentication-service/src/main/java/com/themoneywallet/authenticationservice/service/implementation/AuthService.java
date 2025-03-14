@@ -1,12 +1,15 @@
 package com.themoneywallet.authenticationservice.service.implementation;
 
 import java.lang.reflect.Field;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -39,7 +42,7 @@ public class AuthService implements AuthServiceDefintion {
     private Map<String, List<String>> errorsMap = new HashMap<>(); 
     @Override
     public ResponseEntity signUp(SignUpRequest request) {
-        
+        responsMap.clear();
         if(databaseHelper.isEmailExist(request.getEmail())){
           
             errorsMap.computeIfAbsent("email", ls -> new ArrayList<>()).add("This Email address is used.");
@@ -78,8 +81,20 @@ public class AuthService implements AuthServiceDefintion {
         // make a call to the user managment service
         //.post()
         String token =  this.jwtService.generateToken(request.getEmail());
-        responsMap.put("token", token);
-        return new ResponseEntity<>(responsMap , HttpStatus.CREATED);
+
+         ResponseCookie cookie = ResponseCookie.from("auth-token", token)
+        .httpOnly(true)
+        //.secure(true) // For HTTPS only
+        .sameSite("Lax")
+        .maxAge(Duration.ofHours(1))
+        .path("/")
+        .build();
+        
+      
+        return ResponseEntity.status(HttpStatus.CREATED)
+        .header(HttpHeaders.SET_COOKIE, cookie.toString())
+        .body(responsMap);
+    
     }
     
 

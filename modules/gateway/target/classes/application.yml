@@ -4,12 +4,16 @@ spring:
       globalcors:
         cors-configurations:
           '[/**]':
-            allowedOrigins: "http://localhost:4200"
-            allowedMethods:
+            allowed-origins: 
+              - "http://localhost:4200" # Array format required
+            allowed-methods: 
               - GET
               - POST
               - PUT
               - DELETE
               - OPTIONS
-            allowedHeaders: "*"
-            allowCredentials: true
+            allowed-headers: "*"
+            allow-credentials: true # Must be lowercase
+            exposed-headers: 
+              - Set-Cookie # Required for cookies
+              - Authorization

@@ -109,13 +109,15 @@ export class SignupComponent  implements OnDestroy  {
   private handleSuccess(): void {
     this.isSubmitting = false;
     // Add success handling logic
+
   }
 
   
   private handleError(error: HttpErrorResponse): void {
     this.isSubmitting = false;
+    console.log("1  "+ error.error);
     const response = JSON.parse(error.error);
-
+   
     if (error.status === 400 ) {
       this.handleValidationErrors(response["errors"]);
     } else {
@@ -126,8 +128,10 @@ export class SignupComponent  implements OnDestroy  {
   
   private handleValidationErrors(errors: Record<string, string[]>): void {
     Object.keys(errors).forEach(field => {
+      if(errors[field].length > 0){
       const control = this.signupForm.get(field);
       control?.setErrors({ serverError: errors[field][0] });
+      }
     });
   }
 

@@ -1,5 +1,9 @@
 package com.themoneywallet.authenticationservice.utilities;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
 import org.springframework.stereotype.Component;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
@@ -7,11 +11,13 @@ import org.springframework.validation.FieldError;
 @Component
 public class ValidtionRequestHandler {
     
-    public String handle(BindingResult result){
+    public Map<String, List<String>> handle(BindingResult result, Map<String , List<String>> errorsMap){
         StringBuilder ans = new StringBuilder("There are  validation errors in your request in the following fields:\n");
         for(FieldError error : result.getFieldErrors()){
-            ans.append(error.getDefaultMessage()).append("\n");
+            errorsMap.computeIfAbsent(error.getField(), ls -> new ArrayList<>())
+                .add(error.getDefaultMessage());
+            
         }
-        return ans.toString();
+        return errorsMap;
     }
 }

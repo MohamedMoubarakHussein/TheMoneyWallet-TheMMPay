@@ -10,6 +10,7 @@ export class AuthService {
   signup(payload: any) {
     return this.http.post(this.apiUrl, payload,
       {
+        withCredentials: true,
         headers: new HttpHeaders({ 'Content-Type': 'application/json' }),
         observe: 'response', // Get the full response
         responseType: 'text' // Treat response as text to avoid JSON parsing errors
