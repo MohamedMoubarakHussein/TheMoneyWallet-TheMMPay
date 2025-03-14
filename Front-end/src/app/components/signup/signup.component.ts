@@ -1,7 +1,7 @@
 import { Component, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { AbstractControlOptions, FormGroup, FormsModule } from '@angular/forms';
-import { RouterModule } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { FormBuilder, Validators, AbstractControl ,  ReactiveFormsModule } from '@angular/forms';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Subject, debounceTime, takeUntil } from 'rxjs';
@@ -10,6 +10,7 @@ import { AuthService } from '../../services/signUp/sign-up.service';
 import { AuthValidators } from '../../utilities/validation.utils'; 
 import { HeaderComponent } from '../header/header.component';
 import { ComingSoonComponent } from '../coming-soon/coming-soon.component';
+import { UserService } from '../../services/userService/user-service.service';
 
 @Component({
   selector: 'app-signup',
@@ -30,7 +31,9 @@ export class SignupComponent  implements OnDestroy  {
 
   constructor(
     private fb: FormBuilder,
-    private authService: AuthService 
+    private authService: AuthService ,
+    private userService: UserService,
+    private router: Router
   ) {
     this.initializeForm();
     this.setupDebouncedValidation();
@@ -108,11 +111,27 @@ export class SignupComponent  implements OnDestroy  {
   
   private handleSuccess(): void {
     this.isSubmitting = false;
-    // Add success handling logic
-
+  
+    this.userService.getCurrentUser().subscribe({
+      next: (user) => {
+        // Store user data in memory (not localStorage)
+        this.userService.setCurrentUser(user);
+       
+        // Navigate to dashboard with state
+        this.router.navigate(['/dashboard'], {
+          state: { 
+            user: user
+          }
+        });
+      },
+      error: (error) => {
+      
+        this.serverErrorMessage ='An unexpected error occurred.';
+      }
+    });
   }
 
-  
+
   private handleError(error: HttpErrorResponse): void {
     this.isSubmitting = false;
     console.log("1  "+ error.error);

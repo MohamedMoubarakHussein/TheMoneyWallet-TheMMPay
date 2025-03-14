@@ -43,6 +43,7 @@ public class AuthService implements AuthServiceDefintion {
     @Override
     public ResponseEntity signUp(SignUpRequest request) {
         responsMap.clear();
+        errorsMap.clear();
         if(databaseHelper.isEmailExist(request.getEmail())){
           
             errorsMap.computeIfAbsent("email", ls -> new ArrayList<>()).add("This Email address is used.");
