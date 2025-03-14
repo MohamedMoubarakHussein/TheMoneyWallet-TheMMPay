@@ -2,6 +2,7 @@ package com.themoneywallet.authenticationservice.controller;
 
 
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -22,19 +23,21 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @RestController
-@RequestMapping("/auth")
+@RequestMapping("/auth" )
 @RequiredArgsConstructor
 @Slf4j
 public class AuthController {
     private final AuthService authService;
     private final ValidtionRequestHandler validtionRequestHandlerhandler;
 
-    @PostMapping("/signup")
-    public ResponseEntity<String> Register(@Valid @RequestBody SignUpRequest user, BindingResult result){
+    @PostMapping(value = "/signup")
+    public ResponseEntity Register(@Valid @RequestBody SignUpRequest user, BindingResult result){
+        
         if(result.hasErrors()){
             String body =  this.validtionRequestHandlerhandler.handle(result);
             return new ResponseEntity<>(body , HttpStatus.BAD_REQUEST);
         }
+        
         return this.authService.signUp(user);
     }
 

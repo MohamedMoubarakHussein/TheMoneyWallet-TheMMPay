@@ -1,5 +1,11 @@
 package com.themoneywallet.authenticationservice.service.implementation;
 
+import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -29,15 +35,21 @@ public class AuthService implements AuthServiceDefintion {
     private final AuthenticationManager authenticationManager;
     private final DatabaseHelper databaseHelper;
     private final WebClient webClient;
-    
+    private Map<String , Object> responsMap = new HashMap<>();
+    private Map<String, List<String>> errorsMap = new HashMap<>(); 
     @Override
-    public ResponseEntity<String> signUp(SignUpRequest request) {
+    public ResponseEntity signUp(SignUpRequest request) {
         
         if(databaseHelper.isEmailExist(request.getEmail())){
-            return new ResponseEntity<>("This Email address is used." , HttpStatus.BAD_REQUEST);
+          
+            errorsMap.computeIfAbsent("email", ls -> new ArrayList<>()).add("This Email address is used.");
+            responsMap.put("errors" , errorsMap);
+            return new ResponseEntity<>(responsMap, HttpStatus.BAD_REQUEST);
         }
         if(databaseHelper.isUserNameExist(request.getUserName())){
-            return new ResponseEntity<>("This userName is used." , HttpStatus.BAD_REQUEST);
+            errorsMap.computeIfAbsent("userName", ls -> new ArrayList<>()).add("This userName is used.");
+            responsMap.put("errors" , errorsMap);
+            return new ResponseEntity<>(responsMap, HttpStatus.BAD_REQUEST);
         }
         // first part save the userCredential 
         UserCredential credential = UserCredential.builder()
@@ -66,13 +78,15 @@ public class AuthService implements AuthServiceDefintion {
         // make a call to the user managment service
         //.post()
         String token =  this.jwtService.generateToken(request.getEmail());
-        return new ResponseEntity<>(token , HttpStatus.CREATED);
+        responsMap.put("token", token);
+        return new ResponseEntity<>(responsMap , HttpStatus.CREATED);
     }
     
 
     @Override
     public ResponseEntity<String> signIn(AuthRequest request) {
         Authentication auth ;
+        
         try{
          auth =  this.authenticationManager
         .authenticate(new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword()));
@@ -99,4 +113,8 @@ public class AuthService implements AuthServiceDefintion {
         }
         
     }
+
+
+
+  
 }

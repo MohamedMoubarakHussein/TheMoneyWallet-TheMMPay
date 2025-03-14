@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
@@ -8,6 +8,16 @@ export class AuthService {
   constructor(private http: HttpClient) {}
 
   signup(payload: any) {
-    return this.http.post(this.apiUrl, payload);
+    return this.http.post(this.apiUrl, payload,
+      {
+        headers: new HttpHeaders({ 'Content-Type': 'application/json' }),
+        observe: 'response', // Get the full response
+        responseType: 'text' // Treat response as text to avoid JSON parsing errors
+      }
+    );
   }
+
+  
+  
+
 }

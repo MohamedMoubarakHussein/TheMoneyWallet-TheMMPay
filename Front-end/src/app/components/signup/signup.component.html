@@ -15,13 +15,13 @@
 
         <div class="form-group">
           <label>Username</label>
-          <input type="text" placeholder="Enter your username" formControlName="username">
-          <div class="error-message" *ngIf="showError('username')">
-            <div *ngIf="signupForm.get('username')?.errors?.['required']">Username is required</div>
-            <div *ngIf="signupForm.get('username')?.errors?.['minlength']">Minimum 4 characters</div>
-            <div *ngIf="signupForm.get('username')?.errors?.['maxlength']">Maximum 16 characters</div>
-            <div *ngIf="signupForm.get('username')?.errors?.['serverError']">
-              {{ signupForm.get('username')?.errors?.['serverError'] }}
+          <input type="text" placeholder="Enter your username" formControlName="userName">
+          <div class="error-message" *ngIf="showError('userName')">
+            <div *ngIf="signupForm.get('userName')?.errors?.['required']">Username is required</div>
+            <div *ngIf="signupForm.get('userName')?.errors?.['minlength']">Minimum 4 characters</div>
+            <div *ngIf="signupForm.get('userName')?.errors?.['maxlength']">Maximum 16 characters</div>
+            <div *ngIf="signupForm.get('userName')?.errors?.['serverError']">
+              {{ signupForm.get('userName')?.errors?.['serverError'] }}
             </div>
           </div>
         </div>

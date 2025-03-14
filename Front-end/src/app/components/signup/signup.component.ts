@@ -45,7 +45,7 @@ export class SignupComponent  implements OnDestroy  {
     this.signupForm = this.fb.group({
     
     
-      username: ['', [
+      userName: ['', [
         Validators.required,
         Validators.minLength(4),
         Validators.maxLength(16)
@@ -77,7 +77,7 @@ export class SignupComponent  implements OnDestroy  {
 
 
   private setupDebouncedValidation(): void {
-    const controls = ['username', 'firstName', 'lastName', 'email', 'password', 'confirmPassword'];
+    const controls = ['userName', 'firstName', 'lastName', 'email', 'password', 'confirmPassword'];
     
     controls.forEach(controlName => {
       this.signupForm.get(controlName)?.valueChanges
@@ -114,9 +114,10 @@ export class SignupComponent  implements OnDestroy  {
   
   private handleError(error: HttpErrorResponse): void {
     this.isSubmitting = false;
-    
-    if (error.status === 400 && error.error?.errors) {
-      this.handleValidationErrors(error.error.errors);
+    const response = JSON.parse(error.error);
+
+    if (error.status === 400 ) {
+      this.handleValidationErrors(response["errors"]);
     } else {
       this.serverErrorMessage = error.error?.message || 'An unexpected error occurred.';
     }
