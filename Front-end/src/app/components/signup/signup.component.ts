@@ -6,7 +6,7 @@ import { FormBuilder, Validators, AbstractControl ,  ReactiveFormsModule } from 
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Subject, debounceTime, takeUntil } from 'rxjs';
 
-import { AuthService } from '../../services/signUp/sign-up.service'; 
+import { AuthService } from '../../services/auth/auth.service'; 
 import { AuthValidators } from '../../utilities/validation.utils'; 
 import { HeaderComponent } from '../header/header.component';
 import { ComingSoonComponent } from '../coming-soon/coming-soon.component';

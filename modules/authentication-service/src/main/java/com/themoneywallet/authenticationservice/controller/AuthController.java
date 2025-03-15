@@ -53,6 +53,7 @@ public class AuthController {
     public ResponseEntity signIn(@Valid @RequestBody AuthRequest user , BindingResult result){
         responsMap.clear();
         errorsMap.clear();
+        log.info("hhhh");
         if(result.hasErrors()){
             responsMap.put("errors", this.validtionRequestHandlerhandler.handle(result,errorsMap));
             return new ResponseEntity<>(responsMap , HttpStatus.BAD_REQUEST);

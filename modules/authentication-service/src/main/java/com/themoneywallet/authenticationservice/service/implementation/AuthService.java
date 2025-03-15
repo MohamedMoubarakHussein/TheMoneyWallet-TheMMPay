@@ -100,21 +100,38 @@ public class AuthService implements AuthServiceDefintion {
     
 
     @Override
-    public ResponseEntity<String> signIn(AuthRequest request) {
+    public ResponseEntity signIn(AuthRequest request) {
         Authentication auth ;
-        
+        responsMap.clear();
+        errorsMap.clear();
         try{
          auth =  this.authenticationManager
         .authenticate(new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword()));
         }catch(Exception ex){
-            return new ResponseEntity<>("invalid access." , HttpStatus.BAD_REQUEST);
+            errorsMap.computeIfAbsent("entry", ls -> new ArrayList<>()).add("invalid access.");
+            responsMap.put("errors" , errorsMap);
+            return new ResponseEntity<>(responsMap, HttpStatus.BAD_REQUEST);
 
         }
         if(auth.isAuthenticated()){
             String token =  this.jwtService.generateToken(request.getEmail());
-            return new ResponseEntity<>(token , HttpStatus.OK);
+           
+            ResponseCookie cookie = ResponseCookie.from("auth-token", token)
+            .httpOnly(true)
+            //.secure(true) // For HTTPS only
+            .sameSite("Lax")
+            .maxAge(Duration.ofHours(1))
+            .path("/")
+            .build();
+
+            return ResponseEntity.status(HttpStatus.OK)
+            .header(HttpHeaders.SET_COOKIE, cookie.toString())
+            .body(responsMap);
+
         }else{
-            return new ResponseEntity<>("invalid access." , HttpStatus.BAD_REQUEST);
+            errorsMap.computeIfAbsent("entry", ls -> new ArrayList<>()).add("invalid access.");
+            responsMap.put("errors" , errorsMap);
+            return new ResponseEntity<>(responsMap, HttpStatus.BAD_REQUEST);
 
         }
     }

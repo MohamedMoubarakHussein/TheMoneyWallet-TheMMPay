@@ -8,7 +8,8 @@ import org.springframework.stereotype.Service;
 @Service
 public class OpenedAndSecuredPathsService {
     private static final List<String> openEndPoints = List.of(
-        "/auth/signup" 
+        "/auth/signup" ,
+        "/auth/signin"
     );
 
     public Boolean isSecuredEndPoint(ServerHttpRequest request){
