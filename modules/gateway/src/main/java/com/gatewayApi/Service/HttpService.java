@@ -9,13 +9,16 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
-
+/**
+ * checking if the token vaild or not from auth service
+ */
 @Component
 public class HttpService {
 
     @SuppressWarnings("null")
     public boolean isTokenValid(String token) {
-
+        if(token == null)
+            return false;
         RestTemplate restTemplate = new RestTemplate();
         HttpHeaders headers = new HttpHeaders();
         final String jsonBody = "{\"token\": \"" + token + "\"}";
@@ -27,7 +30,7 @@ public class HttpService {
 
         try {
             responseEntity = restTemplate.exchange(
-                    "http://localhost:8081/auth/validate",
+                    "lb://authentication-service/auth/validate",
                     HttpMethod.POST,
                     entity,
                     Boolean.class);

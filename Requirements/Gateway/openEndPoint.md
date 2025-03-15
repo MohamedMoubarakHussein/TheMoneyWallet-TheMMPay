@@ -1,0 +1,2 @@
+/auth/signin
+/auth/signup

@@ -83,7 +83,7 @@ public class AuthService implements AuthServiceDefintion {
         //.post()
         String token =  this.jwtService.generateToken(request.getEmail());
 
-         ResponseCookie cookie = ResponseCookie.from("auth-token", token)
+         ResponseCookie cookie = ResponseCookie.from("Authorization", token)
         .httpOnly(true)
         //.secure(true) // For HTTPS only
         .sameSite("Lax")
@@ -116,7 +116,7 @@ public class AuthService implements AuthServiceDefintion {
         if(auth.isAuthenticated()){
             String token =  this.jwtService.generateToken(request.getEmail());
            
-            ResponseCookie cookie = ResponseCookie.from("auth-token", token)
+            ResponseCookie cookie = ResponseCookie.from("Authorization", token)
             .httpOnly(true)
             //.secure(true) // For HTTPS only
             .sameSite("Lax")

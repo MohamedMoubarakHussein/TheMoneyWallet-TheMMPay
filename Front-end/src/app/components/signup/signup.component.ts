@@ -111,7 +111,8 @@ export class SignupComponent  implements OnDestroy  {
   
   private handleSuccess(): void {
     this.isSubmitting = false;
-  
+    this.router.navigate(['/dashboard']);
+  /*
     this.userService.getCurrentUser().subscribe({
       next: (user) => {
         // Store user data in memory (not localStorage)
@@ -128,7 +129,7 @@ export class SignupComponent  implements OnDestroy  {
       
         this.serverErrorMessage ='An unexpected error occurred.';
       }
-    });
+    });*/
   }
 
 
