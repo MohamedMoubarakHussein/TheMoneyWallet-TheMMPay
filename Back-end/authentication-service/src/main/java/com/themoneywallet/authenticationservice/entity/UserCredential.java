@@ -1,6 +1,7 @@
 package com.themoneywallet.authenticationservice.entity;
 
 
+import java.time.Instant;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
@@ -54,6 +55,13 @@ public class UserCredential implements UserDetails {
     private Date vaildUntil;
     private boolean locked;
     private boolean enabled;
+
+
+    @Column(unique = true)
+    private String token;
+    private Date expiryDateOfTokeInstant;
+    private String ipAddress; 
+    private boolean revoked;
 
     @PrePersist
     private void intial(){

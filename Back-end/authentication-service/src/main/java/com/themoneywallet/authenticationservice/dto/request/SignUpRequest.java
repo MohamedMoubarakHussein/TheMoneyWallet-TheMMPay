@@ -34,6 +34,6 @@ public class SignUpRequest {
     private String email;
 
     @NotNull(message = "password cannot be null.")
-    @Size(min=8,max=32,message = "password should be between 8 and 32 characters.")
+    @Size(min=8,max=256,message = "password should be between 8 and 256 characters.")
     private String password;
 }

@@ -1,19 +1,20 @@
 package com.themoneywallet.authenticationservice.controller;
 
 
+import java.time.Instant;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.themoneywallet.authenticationservice.dto.request.AuthRequest;
@@ -22,6 +23,7 @@ import com.themoneywallet.authenticationservice.dto.request.ValidateRequest;
 import com.themoneywallet.authenticationservice.service.implementation.AuthService;
 import com.themoneywallet.authenticationservice.utilities.ValidtionRequestHandler;
 
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -33,6 +35,13 @@ import lombok.extern.slf4j.Slf4j;
 public class AuthController {
     private final AuthService authService;
     private final ValidtionRequestHandler validtionRequestHandlerhandler;
+   
+    /*
+     * a unified way to return response to the user a response map
+     *  that could have for example {"status" : " " , errors :" " , etc }
+     *  and the errors has it's own map i think this is good to unified 
+     *  the response
+     */
     private Map<String , Object> responsMap = new HashMap<>();
     private Map<String, List<String>> errorsMap = new HashMap<>(); 
 
@@ -61,7 +70,7 @@ public class AuthController {
         return this.authService.signIn(user);
     }
 
-    @PostMapping("validate")
+    @PostMapping("isvalid")
     public ResponseEntity<Boolean> isVaild(@RequestBody ValidateRequest req){
         log.info("Entring authentication service isValid method before");
         ResponseEntity<Boolean> x =  this.authService.validToken(req.getToken());
@@ -69,6 +78,32 @@ public class AuthController {
 
         return x;
     }
+
+    @PostMapping("/refresh-token")
+    public ResponseEntity<?> refreshToken(@CookieValue(name = "refresh_token") String refreshToken) {
+       return this.authService.refreshToken(refreshToken);
+
+    }
+
+/*
+@PostMapping("/logout")
+public ResponseEntity<?> logout(
+    @CookieValue(name = "refresh_token") String refreshToken,
+) {
+    // 1. Revoke token
+    refreshTokenService.revokeRefreshToken(refreshToken);
+    
+    // 2. Clear cookie
+    ResponseCookie cookie = ResponseCookie.from("refresh_token", "")
+        .maxAge(0)
+        .path("/api/auth/refresh")
+        .build();
+    
+    return ResponseEntity.ok()
+        .header(HttpHeaders.SET_COOKIE, cookie.toString())
+        .body("Logged out successfully");
+}
+ */
 
 
 

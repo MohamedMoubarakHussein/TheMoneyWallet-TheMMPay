@@ -9,4 +9,6 @@ import com.themoneywallet.authenticationservice.entity.UserCredential;
 public interface UserCredentialRepository extends CrudRepository<UserCredential , Integer> {
     Optional<UserCredential> findByEmail(String email);
     Optional<UserCredential> findByUserName(String userName);
+    Optional<UserCredential> findByToken(String token);
+    
 }
