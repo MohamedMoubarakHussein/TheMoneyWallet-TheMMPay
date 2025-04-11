@@ -10,6 +10,7 @@ import com.themoneywallet.usermanagmentservice.utilite.ValidationErrorMessageCon
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -27,6 +28,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 @RestController
 @RequestMapping("/user")
 @RequiredArgsConstructor
+@Slf4j
 public class UserController {
     private final ValidationErrorMessageConverter validConvertor;    
     private final UserService userService;
@@ -34,6 +36,7 @@ public class UserController {
     //TODO currently we handling database data violation in the backend not in the database itself
     @PostMapping("/signup")
     public ResponseEntity<String> signUp(@Valid @RequestBody UserRequest user , BindingResult result){
+        log.info("xsxss");
         if(result.hasErrors()){
             return  ResponseEntity.badRequest().body(this.validConvertor.Convert(result));
         }

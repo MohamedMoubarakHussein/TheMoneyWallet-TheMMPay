@@ -12,8 +12,7 @@ export class AuthService {
       {
         withCredentials: true,
         headers: new HttpHeaders({ 'Content-Type': 'application/json' }),
-        observe: 'response',
-        responseType : 'text'
+        observe: 'response'
       }
     );
   }
@@ -24,8 +23,7 @@ export class AuthService {
       { 
         withCredentials: true, 
         headers: new HttpHeaders({ 'Content-Type': 'application/json' }),
-         observe: 'response',
-         responseType : 'text'
+         observe: 'response'
       }
     );
   }

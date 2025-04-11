@@ -2,10 +2,10 @@ package com.themoneywallet.authenticationservice.utilities;
 
 import java.util.ArrayList;
 
-
 import org.springframework.stereotype.Component;
-import com.themoneywallet.authenticationservice.dto.response.ErrorsResponse;
+import com.themoneywallet.authenticationservice.dto.response.UnifiedResponse;
 
+import jakarta.inject.Provider;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 
@@ -13,17 +13,28 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @Data
 public class ResponseHandller {
-    private final ErrorsResponse response;
+    private final Provider<UnifiedResponse> response;
     
-    public void clearErrors(){
-        response.getErrorsMap().clear();
-        response.getResponsMap().clear();
+    public void clearResponse(){
+        response.get().getNeastedResponseMap().clear();
+        response.get().getResponsMap().clear();
     }
 
-    public void addingError(String fieldName ,String error ){
-        response.getErrorsMap().computeIfAbsent(fieldName, ls -> new ArrayList<>()).add(error);
-        response.getResponsMap().put("errors", response.getErrorsMap());
+    public   UnifiedResponse getCurrentResponse(){
+        return this.response.get();
+    }
+
+    public void addingResponse(String fieldName ,String value ){
+        response.get().getResponsMap().computeIfAbsent(fieldName, ls -> value);
 
     }
+
+    public void addingErrorResponse(String fieldName ,String error ){
+        response.get().getNeastedResponseMap().computeIfAbsent(fieldName, ls -> new ArrayList<>()).add(error);
+        response.get().getResponsMap().put("errors", response.get().getNeastedResponseMap());
+
+    }
+
+  
 
 }

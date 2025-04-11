@@ -14,9 +14,10 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class ErrorsResponse {
-    
+public class UnifiedResponse {
+    @Builder.Default
     private Map<String , Object> responsMap = new HashMap<>();
-    private Map<String, List<String>> errorsMap = new HashMap<>();
+    @Builder.Default
+    private Map<String, List<String>> neastedResponseMap = new HashMap<>();
 
 }

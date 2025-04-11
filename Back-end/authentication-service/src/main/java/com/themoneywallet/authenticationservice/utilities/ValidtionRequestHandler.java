@@ -1,12 +1,12 @@
 package com.themoneywallet.authenticationservice.utilities;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+
 
 import org.springframework.stereotype.Component;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
+
+import lombok.RequiredArgsConstructor;
 /*
  * This class just showing and building 
  *  the validation errors array with each field has a key in the map
@@ -14,13 +14,15 @@ import org.springframework.validation.FieldError;
  *  
  */
 @Component
+@RequiredArgsConstructor
 public class ValidtionRequestHandler {
-    
-    public Map<String, List<String>> handle(BindingResult result, Map<String , List<String>> errorsMap){
+    private final  ResponseHandller myResponse;
+    public void handle(BindingResult result){
+
         for(FieldError error : result.getFieldErrors()){
-            errorsMap.computeIfAbsent(error.getField(), ls -> new ArrayList<>())
-                .add(error.getDefaultMessage());
+            myResponse.addingErrorResponse(error.getField(), error.getDefaultMessage());
+         
         }
-        return errorsMap;
+
     }
 }

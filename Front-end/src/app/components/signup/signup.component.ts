@@ -135,9 +135,14 @@ export class SignupComponent  implements OnDestroy  {
 
   private handleError(error: HttpErrorResponse): void {
     this.isSubmitting = false;
-    console.log("1  "+ error.error);
+    
+    console.log("1  "+ error.status);
+    console.log(typeof error.message);
+    console.log( error.message);
+    console.log(typeof error.error);
+    console.log( error.message);
     const response = JSON.parse(error.error);
-   
+    console.log("is it a vaild json" );
     if (error.status === 400 ) {
       this.handleValidationErrors(response["errors"]);
     } else {

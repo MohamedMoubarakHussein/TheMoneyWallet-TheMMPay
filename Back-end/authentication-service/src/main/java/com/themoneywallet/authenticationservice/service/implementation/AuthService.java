@@ -1,11 +1,10 @@
 package com.themoneywallet.authenticationservice.service.implementation;
 
 import java.time.Duration;
-import java.util.ArrayList;
+
 import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+
+
 import java.util.Optional;
 
 import org.springframework.http.HttpHeaders;
@@ -15,12 +14,11 @@ import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import com.themoneywallet.authenticationservice.dto.request.AuthRequest;
 import com.themoneywallet.authenticationservice.dto.request.SignUpRequest;
-import com.themoneywallet.authenticationservice.dto.response.ErrorsResponse;
+import com.themoneywallet.authenticationservice.dto.response.UnifiedResponse;
 import com.themoneywallet.authenticationservice.entity.UserCredential;
 import com.themoneywallet.authenticationservice.entity.UserManagmentService;
 import com.themoneywallet.authenticationservice.entity.UserRole;
@@ -46,7 +44,7 @@ public class AuthService implements AuthServiceDefintion {
     private final AuthenticationManager authenticationManager;
     private final DatabaseHelper databaseHelper;
     private final HttpHelper httpHelper;
-    private final ResponseHandller resHandler;
+    private final ResponseHandller eResponse;
   
 
 
@@ -54,28 +52,29 @@ public class AuthService implements AuthServiceDefintion {
     
     
     @Override
-    public ResponseEntity signUp(SignUpRequest request) {
-        resHandler.clearErrors();
+    public ResponseEntity<UnifiedResponse> signUp(SignUpRequest request) {
+       
         
         if(databaseHelper.isEmailExist(request.getEmail())){
-            resHandler.addingError("email", "This Email address is used.");
-            return new ResponseEntity<>(resHandler.getResponse().getResponsMap(), HttpStatus.BAD_REQUEST);
+            eResponse.addingErrorResponse("email", "This Email address is used.");
+            return new ResponseEntity<>(eResponse.getCurrentResponse(), HttpStatus.BAD_REQUEST);
         }
         if(databaseHelper.isUserNameExist(request.getUserName())){
-            resHandler.addingError("userName", "This userName is used.");
-            return new ResponseEntity<>(resHandler.getResponse().getResponsMap(), HttpStatus.BAD_REQUEST);
+            eResponse.addingErrorResponse("userName", "This userName is used.");
+            return new ResponseEntity<>(eResponse.getCurrentResponse(), HttpStatus.BAD_REQUEST);
         }
 
         // first part save the userCredential 
         UserCredential userCredential  =saveUserCredentialInAuthDb(request);
+        
         //  second part save the rest of information in user managment service
-        HttpStatusCode status = saveUserCredentialInUserMangmentService(request, userCredential);
+        ResponseEntity<Void> status = saveUserCredentialInUserMangmentService(request, userCredential);
      
-        if(status.is2xxSuccessful()){
+        if(status.getStatusCode().is2xxSuccessful()){
            return handleSuccessed(request.getEmail());
         }else{
-            resHandler.addingError("Internal", status.value()+"");
-            return new ResponseEntity<>(resHandler.getResponse().getResponsMap(), HttpStatus.BAD_REQUEST);
+            eResponse.addingErrorResponse("Internal", status.getStatusCode().value()+"");
+            return new ResponseEntity<>(eResponse.getCurrentResponse(), HttpStatus.BAD_REQUEST);
         }
        
     
@@ -83,37 +82,37 @@ public class AuthService implements AuthServiceDefintion {
     
 
     @Override
-    public ResponseEntity signIn(AuthRequest request) {
-        Authentication auth ;
-        resHandler.clearErrors();
+    public ResponseEntity<UnifiedResponse> signIn(AuthRequest request) {
+        
         try{
-         auth =  this.authenticationManager
+        this.authenticationManager
         .authenticate(new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword()));
        
         return handleSuccessed(request.getEmail());
     
         }catch(Exception ex){
-            resHandler.addingError("Internal", "invalid access.");
-            return new ResponseEntity<>(resHandler.getResponse().getResponsMap(), HttpStatus.BAD_REQUEST);
+            eResponse.addingErrorResponse("Internal", "invalid access.");
+            return new ResponseEntity<>(eResponse.getCurrentResponse(), HttpStatus.BAD_REQUEST);
+           
 
         }
       
     }
 
     @Override
-    public ResponseEntity validToken(String token ) {
+    public ResponseEntity<UnifiedResponse> validToken(String token ) {
         boolean isValid = this.jwtService.isTokenValid(token) ;
         if(isValid){
-            return new ResponseEntity<>( HttpStatus.OK);
+            return new ResponseEntity<>( eResponse.getCurrentResponse(),HttpStatus.OK);
         }else{
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(eResponse.getCurrentResponse() ,HttpStatus.BAD_REQUEST);
         }
         
     }
 
 
     
-    private ResponseEntity handleSuccessed(String email){
+    private ResponseEntity<UnifiedResponse> handleSuccessed(String email){
         String accToken =  this.jwtService.generateToken(email);
         String refToken =  this.jwtService.generateRefreshToken(email);
         
@@ -124,11 +123,12 @@ public class AuthService implements AuthServiceDefintion {
        .maxAge(Duration.ofHours(7))
        .path("/")
        .build();
-         
-       return ResponseEntity.status(HttpStatus.OK)
+       eResponse.addingResponse("token", accToken);
+       return  ResponseEntity.status(HttpStatus.OK)
        .header(HttpHeaders.SET_COOKIE, cookie.toString())
         .header("Authorization", "Bearer " + accToken)
-       .body(resHandler.getResponse().getResponsMap().put("token", accToken));
+       .body(eResponse.getCurrentResponse());
+    
     }
 
     private UserCredential saveUserCredentialInAuthDb(SignUpRequest request){
@@ -144,7 +144,7 @@ public class AuthService implements AuthServiceDefintion {
        return this.userCredentialRepository.save(credential);
     }
 
-   private HttpStatusCode saveUserCredentialInUserMangmentService(SignUpRequest request, UserCredential credential ){
+   private ResponseEntity<Void> saveUserCredentialInUserMangmentService(SignUpRequest request, UserCredential credential ){
     UserManagmentService info = UserManagmentService.builder()
     .email(request.getEmail())
     .password(credential.getPassword())
@@ -158,7 +158,7 @@ public class AuthService implements AuthServiceDefintion {
     .id(credential.getId())
     .build();
 
-    return httpHelper.sendDataToUserMangmentService(info).getStatusCode();
+    return httpHelper.sendDataToUserMangmentService(info);
 
    }
 
