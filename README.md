@@ -2,7 +2,7 @@
 The Money wallet is an app that lets you pay, send,accept payment and keep track of your payment Using the java and java spring framework :)
 
 
-![flow3](https://github.com/user-attachments/assets/18c48aa3-f87e-4343-8c08-5e58c80da4cb)
+![flow](Requirements/flow4.png)
 
 ---
 # Gateway service
