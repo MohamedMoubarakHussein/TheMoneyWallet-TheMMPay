@@ -9,13 +9,13 @@ import java.util.Optional;
 
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
 import com.themoneywallet.authenticationservice.dto.request.AuthRequest;
 import com.themoneywallet.authenticationservice.dto.request.SignUpRequest;
 import com.themoneywallet.authenticationservice.dto.response.UnifiedResponse;
@@ -100,13 +100,9 @@ public class AuthService implements AuthServiceDefintion {
     }
 
     @Override
-    public ResponseEntity<UnifiedResponse> validToken(String token ) {
+    public boolean validToken(String token ) {
         boolean isValid = this.jwtService.isTokenValid(token) ;
-        if(isValid){
-            return new ResponseEntity<>( eResponse.getCurrentResponse(),HttpStatus.OK);
-        }else{
-            return new ResponseEntity<>(eResponse.getCurrentResponse() ,HttpStatus.BAD_REQUEST);
-        }
+        return isValid;
         
     }
 
@@ -166,7 +162,10 @@ public class AuthService implements AuthServiceDefintion {
 
    public ResponseEntity refreshToken(String refreshToken){
         // make sure token is valid
-       
+        if (!this.validToken(refreshToken)) {
+            // change to the unified
+            return ResponseEntity.status(401).body("Invalid refresh token");
+        }
         Optional<UserCredential> user = this.userCredentialRepository.findByToken(refreshToken);
         UserCredential token;
         if(user.isPresent()){
@@ -183,7 +182,27 @@ public class AuthService implements AuthServiceDefintion {
             return ResponseEntity.badRequest().build();
         }
 
+        // revoke the token 
+        // generate new access , refresh token 
         return handleSuccessed(token.getEmail());
    }
+
+
+   public ResponseEntity forgotPassword(String token) {
+    // get user from the token if exist  send email with rest step
+        return null;
+    }
+
+    public ResponseEntity verifyEmail(String token) {
+    // validate token that send to email  if vaild change user to active
+        return null;
+    }
+
+
+    public ResponseEntity logout( String token) {
+        // 1. Revoke token
+        // 2. Clear cookie
+        return null;
+    }
   
 }

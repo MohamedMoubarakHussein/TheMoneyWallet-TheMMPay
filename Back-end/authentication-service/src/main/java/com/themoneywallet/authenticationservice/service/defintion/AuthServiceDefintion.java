@@ -9,5 +9,5 @@ import com.themoneywallet.authenticationservice.dto.response.UnifiedResponse;
 public interface AuthServiceDefintion {
     ResponseEntity<UnifiedResponse> signUp(SignUpRequest request);
     ResponseEntity<UnifiedResponse> signIn(AuthRequest request);
-    ResponseEntity<UnifiedResponse> validToken(String Token);
+    boolean validToken(String Token);
 }
