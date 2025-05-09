@@ -19,6 +19,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.PrePersist;
+import jakarta.persistence.Table;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -32,6 +33,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
+@Table(name = "credential")
 public class UserCredential implements UserDetails {
     
     @Id
@@ -53,13 +55,22 @@ public class UserCredential implements UserDetails {
     private UserRole userRole;
 
     private Date vaildUntil;
-    private boolean locked;
+    private boolean locked ;
     private boolean enabled;
+
+
+   
+    private String emailVerificationToken;
+    private Instant emailVerificationTokenExpiry;
+
+    private String passwordResetToken;
+    
+    private Instant passwordResetTokenExpiry;
 
 
     @Column(unique = true)
     private String token;
-    private Date expiryDateOfTokeInstant;
+    private Instant expiryDateOfTokeInstant;
     private String ipAddress; 
     private boolean revoked;
 

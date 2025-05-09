@@ -10,7 +10,8 @@ public class OpenedAndSecuredPathsService {
     private static final List<String> openEndPoints = List.of(
         "/auth/signup" ,
         "/auth/signin",
-        "/user/signup"
+        "/user/signup",
+        "/auth/logout"
     );
 
     public Boolean isSecuredEndPoint(ServerHttpRequest request){

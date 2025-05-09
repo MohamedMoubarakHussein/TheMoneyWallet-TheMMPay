@@ -22,9 +22,8 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class JwtService implements JwtServiceDefintion {
     private final long TOKEN_EXPIRATION = 15 * 60 * 1000; // 15 minutes
-    private final long REFRESH_EXPIRATION = 7 * 24 * 60 * 60 * 1000; // 7 days
     private static final String SECRET = "b2phbHpsdU54Z3htb2NSanBCK3ErWkxOeFNmeTdiZk9XNkR2NEt0Mkhraz0=";
-
+    
     private Key getKey() {
         byte[] key = Decoders.BASE64.decode(SECRET);
         return Keys.hmacShaKeyFor(key);
@@ -64,18 +63,6 @@ public class JwtService implements JwtServiceDefintion {
        return fact1;
     }
 
-
-
-     
-     public String generateRefreshToken(String email) {
-        return Jwts.builder()
-                .setClaims(new HashMap<>())
-                .setSubject(email)
-                .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + REFRESH_EXPIRATION)) 
-                .signWith(getKey(), SignatureAlgorithm.HS256)
-                .compact();
-    }
 
 
 
