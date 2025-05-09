@@ -1,0 +1,79 @@
+classDiagram
+    class AuthController {
+        +login(LoginRequest): ResponseEntity
+        +signup(SignupRequest): ResponseEntity
+        +verifyEmail(String token): ResponseEntity
+        +refreshToken(String refreshToken): ResponseEntity
+        +logout(String token): ResponseEntity
+        +resetPassword(ResetRequest): ResponseEntity
+        +requestPasswordReset(String email): ResponseEntity
+    }
+    
+    class AuthService {
+        -UserRepository userRepo
+        -TokenService tokenSvc
+        -EventPublisher eventPub
+        -PasswordEncoder encoder
+        +authenticate(String username, String password): AuthResponse
+        +createUser(SignupRequest): UserCredential
+        +verifyEmailToken(String token): boolean
+        +generateToken(UserCredential): TokenInfo
+        +validateToken(String token): boolean
+        +revokeToken(String token): void
+        +resetPassword(String token, String newPassword): boolean
+    }
+    
+    class UserCredential {
+        -String id
+        -String email
+        -String userName
+        -String password
+        -Instant validUntil
+        -boolean locked
+        -boolean enabled
+        -String emailVerificationToken
+        -Instant emailVerificationTokenExpiry
+        -String passwordResetToken
+        -Instant passwordResetTokenExpiry
+        -String token
+        -Instant expiryDateOfTokenInstant
+        -String ipAddress
+        -boolean revoked
+        +isAccountNonExpired(): boolean
+        +isAccountNonLocked(): boolean
+        +isCredentialsNonExpired(): boolean
+        +isEnabled(): boolean
+    }
+    
+    class TokenService {
+        -RedisTemplate redisTemplate
+        -String secretKey
+        -long tokenValidity
+        +generateToken(UserDetails): String
+        +validateToken(String): boolean
+        +getUsername(String): String
+        +getUserId(String): String
+        +blacklistToken(String): void
+        +isTokenBlacklisted(String): boolean
+    }
+    
+    class KafkaEventPublisher {
+        -KafkaTemplate kafkaTemplate
+        +publishSignupEvent(UserCredential): void
+        +publishLoginEvent(String userId): void
+        +publishLogoutEvent(String userId): void
+    }
+    
+    class EmailVerificationService {
+        -UserRepository userRepo
+        -JavaMailSender mailSender
+        +sendVerificationEmail(UserCredential): void
+        +generateVerificationToken(): String
+        +processEmailVerification(String token): boolean
+    }
+    
+    AuthController --> AuthService
+    AuthService --> UserCredential
+    AuthService --> TokenService
+    AuthService --> KafkaEventPublisher
+    AuthService --> EmailVerificationService

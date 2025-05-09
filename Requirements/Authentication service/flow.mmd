@@ -1,0 +1,48 @@
+---
+config:
+  layout: fixed
+---
+flowchart TD
+    Start(["Client Request"]) --> HasToken{"Has JWT Token?"}
+    HasToken -- Yes --> ValidateToken["Validate Token"]
+    HasToken -- No --> IsAuth{"Authentication Request?"}
+    ValidateToken --> TokenValid{"Token Valid?"}
+    TokenValid -- Yes --> TokenBlacklisted{"Token Blacklisted?"}
+    TokenValid -- No --> Unauthorized(["Return 401 Unauthorized"])
+    TokenBlacklisted -- No --> IsExpired{"Token Expired?"}
+    TokenBlacklisted -- Yes --> Unauthorized
+    IsExpired -- No --> GrantAccess(["Grant Access to Resource"])
+    IsExpired -- Yes --> Unauthorized
+    IsAuth -- Yes --> AuthType{"Auth Type?"}
+    IsAuth -- No --> Unauthorized
+    AuthType -- Login --> ValidateCredentials["Validate Username/Password"]
+    AuthType -- Signup --> CreateUser["Create New User"]
+    AuthType -- Verify Email --> ProcessEmailVerification["Process Email Verification"]
+    AuthType -- Logout --> ProcessLogout["Process Logout"]
+    AuthType -- Refresh Token --> ProcessRefresh["Process Token Refresh"]
+    ValidateCredentials --> CredentialsValid{"Credentials Valid?"}
+    CredentialsValid -- Yes --> UserEnabled{"User Enabled?"}
+    CredentialsValid -- No --> AuthFailed(["Authentication Failed"])
+    UserEnabled -- Yes --> GenerateToken["Generate JWT Token"]
+    UserEnabled -- No --> EmailVerified{"Email Verified?"}
+    EmailVerified -- No --> NeedsVerification(["Needs Email Verification"])
+    EmailVerified -- Yes --> AccountLocked(["Account is Locked"])
+    AccountLocked -- Yes --> AccountLocked
+    AccountLocked -- No --> OtherIssue(["Other Account Issue"])
+    GenerateToken --> ReturnToken(["Return JWT Token"])
+    CreateUser --> PublishEvent["Publish Signup Event to Kafka"]
+    PublishEvent --> SendVerification["Send Verification Email"]
+    SendVerification --> UserCreated(["User Created Successfully"])
+    ProcessEmailVerification --> TokenExists{"Token Exists?"}
+    TokenExists -- Yes --> TokenExpired{"Token Expired?"}
+    TokenExists -- No --> InvalidToken(["Invalid Token"])
+    TokenExpired -- No --> EnableUser["Enable User Account"]
+    TokenExpired -- Yes --> ExpiredVerification(["Expired Verification Token"])
+    EnableUser --> VerificationSuccess(["Verification Successful"])
+    ProcessLogout --> BlacklistToken["Blacklist JWT Token"]
+    BlacklistToken --> LogoutSuccess(["Logout Successful"])
+    ProcessRefresh --> ValidateRefreshToken["Validate Refresh Token"]
+    ValidateRefreshToken --> RefreshValid{"Refresh Valid?"}
+    RefreshValid -- Yes --> IssueNewToken["Issue New Access Token"]
+    RefreshValid -- No --> RefreshFailed(["Refresh Failed"])
+    IssueNewToken --> TokenRefreshed(["Token Refreshed Successfully"])

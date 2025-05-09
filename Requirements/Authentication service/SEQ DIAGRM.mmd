@@ -1,0 +1,52 @@
+sequenceDiagram
+  participant User as User  
+  participant API as API Gateway 
+  participant Auth as Authentication Service
+  participant DB as Database
+  participant Kafka as Kafka Event Bus
+  participant MIC as Other microservices
+
+  User ->> API: Signup Request
+  API ->> Auth: Forward Signup Request
+  Auth ->> Auth: Generate Verification Token
+  Auth ->> DB: Store User with Verification Token
+  Auth ->> Kafka: Produce Signup Event
+  Auth -->> API: User Created Response
+  API -->> User: Signup Success & Verification Needed
+  User ->> API: Login Request (username/password)
+  API ->> Auth: Forward Authentication Request
+  Auth ->> DB: Validate Credentials
+  DB -->> Auth: Credentials Valid (true/false)
+  Auth ->> Auth: Generate JWT Token
+  Auth ->> DB: Update User's Token Info
+  Auth ->> Kafka: Produce Login Event
+  Auth -->> API: Return JWT Token
+  API -->> User: Return JWT Token
+  User ->> API: Request with JWT Token
+  API ->> API: Validate JWT Signature
+  API ->> MIC: Forward Request (if token valid)
+  MIC ->> MIC: Process Request
+  MIC -->> API: Return Response
+  API -->> User: Return Response
+  User ->> API: Logout Request with JWT
+  API ->> Auth: Process Logout
+  Auth ->> DB: Update User's Status (revoke token)
+  Auth ->> Kafka: Produce Logout Event
+  Auth -->> API: Logout Confirmation
+  API -->> User: Logout Success Response
+  User ->> API: Forgot Password Request
+  API ->> Auth: Process Password Reset
+  Auth ->> Auth: Generate Reset Token
+  Auth ->> DB: Store Reset Token
+  Auth ->> Kafka: Produce Password Reset Event
+  Auth -->> API: Reset Initiated Response
+  API -->> User: Check Email Response
+  User ->> API: Password Reset Request (token + new password)
+  API ->> Auth: Process Reset Confirmation
+  Auth ->> DB: Validate Reset Token
+  DB -->> Auth: Token Valid (true/false)
+  Auth ->> DB: Update Password
+  Auth ->> Kafka: Produce Password Changed Event
+  Auth -->> API: Password Reset Confirmation
+  API -->> User: Password Reset Success
+
