@@ -3,7 +3,7 @@ package com.themoneywallet.usermanagmentservice.controller;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.themoneywallet.usermanagmentservice.dto.request.UserRequest;
-import com.themoneywallet.usermanagmentservice.dto.request.UserUpdate;
+import com.themoneywallet.usermanagmentservice.dto.request.UserUpdateRequest;
 import com.themoneywallet.usermanagmentservice.entity.User;
 import com.themoneywallet.usermanagmentservice.service.UserService;
 import com.themoneywallet.usermanagmentservice.utilite.ValidationErrorMessageConverter;
@@ -12,11 +12,15 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+
+
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -45,7 +49,7 @@ public class UserController {
     }
 
     @PutMapping("/updateuser")
-    public ResponseEntity<String> updateUser(@RequestParam("email") String email ,@Valid @RequestBody UserUpdate user ,BindingResult result){
+    public ResponseEntity<String> updateUser(@RequestParam("email") String email ,@Valid @RequestBody UserUpdateRequest user ,BindingResult result){
         if(result.hasErrors()){
             return  ResponseEntity.badRequest().body(this.validConvertor.Convert(result));
         }
@@ -75,11 +79,42 @@ public class UserController {
     }
 
     @PutMapping("/rest")
-    public ResponseEntity<String> restPassword(@RequestParam("email") String email,@Valid @RequestBody UserUpdate user ,BindingResult result){
+    public ResponseEntity<String> restPassword(@RequestParam("email") String email,@Valid @RequestBody UserUpdateRequest user ,BindingResult result){
         if(result.hasErrors()){
             return  ResponseEntity.badRequest().body(this.validConvertor.Convert(result));
         }
         return this.userService.updateUser(email, user);
     }
+
+      @GetMapping("/{userId}")
+    public ResponseEntity<String> getUserProfile(@PathVariable String userId) {
+            
+        return this.userService.getUserById(userId);
+    }
+    
+    @PutMapping("/{userId}")
+    public ResponseEntity<String> updateUserProfile(
+            @PathVariable String userId,
+            @RequestBody @Valid UserUpdateRequest request) {
+            
+        
+        return userService.updateUserProfile(userId, request);
+    }
+    
+ 
+    @PutMapping("/{userId}/roles")
+    public ResponseEntity<String> updateUserRoles(
+            @PathVariable String userId,
+            @RequestBody UserUpdateRequest request) {
+            
+       
+        return userService.updateUserRole(userId, request.getRole());
+    }
+    
+
+
+   
+    
+ 
     
 }

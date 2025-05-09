@@ -1,6 +1,9 @@
 package com.themoneywallet.usermanagmentservice.entity;
 
+import java.time.Instant;
 import java.util.Date;
+
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -8,6 +11,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Index;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
@@ -24,7 +28,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 @Entity
-@Table(name = "user_details",indexes = {@Index(columnList = "userName" , unique = true),
+@Table(name = "user_profile",indexes = {@Index(columnList = "userName" , unique = true),
                                         @Index(columnList = "email" , unique = true)}
                             ,uniqueConstraints = {@UniqueConstraint(name="uk_email" , columnNames = {"email"}),
                                                   @UniqueConstraint(name="uk_userName" , columnNames = {"userName"})})
@@ -57,12 +61,12 @@ public class User {
     private Role role;
     
     private String password;
-    private Date createdAt;
+    private Instant createdAt;
 
-    @PrePersist
-    private void preProcessing(){
-        this.createdAt = new Date();
-    }
+    private Instant updatedAt;
+
+    @OneToOne(cascade = CascadeType.ALL)
+    private UserPreferences preferences;
 
 
 }

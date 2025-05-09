@@ -1,6 +1,5 @@
 package com.themoneywallet.usermanagmentservice.repository;
 
-import java.util.List;
 import java.util.Optional;
 
 
@@ -14,4 +13,6 @@ public interface UserRepository extends CrudRepository<User , Integer> {
     Optional<User> findByUserName(String username);
     Optional<User> findByEmail(String email);
     Iterable<User> findAll();
+    Optional<User> findById(String id);
+    boolean existsByEmail(String email);
 }

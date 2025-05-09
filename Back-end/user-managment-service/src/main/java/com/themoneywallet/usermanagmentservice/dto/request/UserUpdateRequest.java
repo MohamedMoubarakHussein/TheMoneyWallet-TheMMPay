@@ -1,5 +1,7 @@
 package com.themoneywallet.usermanagmentservice.dto.request;
 
+import com.themoneywallet.usermanagmentservice.entity.Role;
+
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -8,7 +10,7 @@ import lombok.Data;
 
 @Builder
 @Data
-public class UserUpdate {
+public class UserUpdateRequest {
   
     @Size(min=4,max=16,message = "user name should be between 4 and 16 characters.")
     private String userName;
@@ -25,4 +27,6 @@ public class UserUpdate {
 
     @Size(min=8,max=32,message = "password should be between 8 and 32 characters.")
     private String password;
+
+    private Role role;
 }
