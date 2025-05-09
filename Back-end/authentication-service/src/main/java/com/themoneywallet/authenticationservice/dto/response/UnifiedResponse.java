@@ -1,5 +1,6 @@
 package com.themoneywallet.authenticationservice.dto.response;
 
+import java.time.Instant;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -15,9 +16,16 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 public class UnifiedResponse {
+
     @Builder.Default
-    private Map<String , Object> responsMap = new HashMap<>();
+    private Map<String , String> data = new HashMap<>();
     @Builder.Default
-    private Map<String, List<String>> neastedResponseMap = new HashMap<>();
+    private Instant timeStamp = Instant.now();
+    
+    private String statusInternalCode;
+    private boolean haveData;
+    private boolean haveError;
+
+    
 
 }

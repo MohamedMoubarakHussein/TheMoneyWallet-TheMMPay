@@ -4,10 +4,9 @@ import org.springframework.http.ResponseEntity;
 
 import com.themoneywallet.authenticationservice.dto.request.AuthRequest;
 import com.themoneywallet.authenticationservice.dto.request.SignUpRequest;
-import com.themoneywallet.authenticationservice.dto.response.UnifiedResponse;
 
 public interface AuthServiceDefintion {
-    ResponseEntity<UnifiedResponse> signUp(SignUpRequest request);
-    ResponseEntity<UnifiedResponse> signIn(AuthRequest request);
-    boolean validToken(String Token);
+    ResponseEntity<String> signUp(SignUpRequest request);
+    ResponseEntity<String> signIn(AuthRequest request);
+    boolean validToken(String Token  );
 }

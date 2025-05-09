@@ -2,9 +2,14 @@ package com.themoneywallet.authenticationservice.utilities;
 
 
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.springframework.stereotype.Component;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
+
+import com.themoneywallet.authenticationservice.dto.response.UnifiedResponse;
 
 import lombok.RequiredArgsConstructor;
 /*
@@ -16,13 +21,17 @@ import lombok.RequiredArgsConstructor;
 @Component
 @RequiredArgsConstructor
 public class ValidtionRequestHandler {
-    private final  ResponseHandller myResponse;
-    public void handle(BindingResult result){
-
+    
+    public UnifiedResponse handle(BindingResult result , UnifiedResponse unifiedResponse){
+        Map<String,String> data = new HashMap<>();
         for(FieldError error : result.getFieldErrors()){
-            myResponse.addingErrorResponse(error.getField(), error.getDefaultMessage());
-         
+            data.put( error.getField(), error.getDefaultMessage());
         }
 
+        unifiedResponse.setHaveData(true);
+        unifiedResponse.setHaveError(true);
+        unifiedResponse.setData(data);
+        unifiedResponse.setStatusInternalCode("Val001");
+        return unifiedResponse;
     }
 }

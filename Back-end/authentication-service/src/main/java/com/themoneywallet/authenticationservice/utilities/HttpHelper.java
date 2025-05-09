@@ -6,7 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
-import com.themoneywallet.authenticationservice.entity.UserManagmentService;
+import com.themoneywallet.authenticationservice.event.UserCreationEvent;
 
 import reactor.core.publisher.Mono;
 
@@ -15,7 +15,7 @@ public class HttpHelper {
     @Autowired
     private WebClient webClient;
 
-    public ResponseEntity<Void> sendDataToUserMangmentService(UserManagmentService info) {
+    public ResponseEntity<String> sendDataToUserMangmentService(UserCreationEvent info) {
         String url = "http://localhost:8080/user/signup";
  
         // Send the request and handle response asynchronously
@@ -24,7 +24,9 @@ public class HttpHelper {
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(info)
                 .retrieve()
-                .toBodilessEntity().block();
+
+                .toEntity(String.class)
+                .block();
                
     }
 }
