@@ -20,4 +20,18 @@ Implemented authentication in Spring Boot microservices using [Spring Security](
 
 ![Auth flow](Requirements/Authentication%20service/sys%20arch%20diagram.png)
 
+# User Managment service 
+Developed a User Management microservice in Spring Boot with REST endpoints for complete user lifecycle operations (/signup, /updateuser, /getbyemail, etc.). Implemented event-driven architecture using Kafka for consuming UserSignUpEvent and producing events to other services. Built with a layered architecture (Controller, Service, Repository) following microservices best practices for scalability and maintainability.
+![Flow of user magagment ](Requirements/User%20Management%20service/arch%20diagram.png)
+
+
+# Wallet service 
+
+
+# Transaction service 
+
+
+# History service
+
+# Notification service
 
