@@ -22,7 +22,7 @@ public class UserSignUpListener {
     
  
     
-    @KafkaListener(topics = "user-signup-events")
+    @KafkaListener(topics = "auth-signup-events", groupId = "user-service")
     public void handleSignupEvent(UserSingUpEvent event) {
         // Check if profile already exists (idempotency)
         if (profileRepository.existsById(event.getId())) {

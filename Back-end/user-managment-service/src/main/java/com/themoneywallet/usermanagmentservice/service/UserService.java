@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
-import org.apache.kafka.common.errors.ResourceNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
@@ -18,8 +17,6 @@ import com.themoneywallet.usermanagmentservice.dto.response.UnifiedResponse;
 import com.themoneywallet.usermanagmentservice.dto.response.UserInformation;
 import com.themoneywallet.usermanagmentservice.entity.Role;
 import com.themoneywallet.usermanagmentservice.entity.User;
-import com.themoneywallet.usermanagmentservice.event.UserSingUpEvent;
-import com.themoneywallet.usermanagmentservice.repository.UserPreferncesRepository;
 import com.themoneywallet.usermanagmentservice.repository.UserRepository;
 import com.themoneywallet.usermanagmentservice.utilite.DatabaseVaildation;
 import com.themoneywallet.usermanagmentservice.utilite.ObjectMapper;
@@ -34,12 +31,11 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class UserService {
 
-    private final UserSingUpEvent consumerFactory;
+
     private final UserRepository userRepository;
-    private final UserPreferncesRepository uPreferncesRepository;
     private final ObjectMapper objectMapper;
     private final DatabaseVaildation dataVaildation;
-    private final UnifiedResponse unifiedResponse;
+   
 
 
 
@@ -119,7 +115,7 @@ public class UserService {
     public ResponseEntity<String> getUserById(String userId) {
        
         
-         Optional<User> opUser = userRepository.findById(userId);
+         Optional<User> opUser = userRepository.findById(Integer.parseInt(userId));
          Map<String , String> data = new HashMap<>();
          if(opUser.isPresent()){
             data.put("User", opUser.get().toString());
@@ -144,6 +140,7 @@ public class UserService {
     
 
     public ResponseEntity<String> handleResponse(Map<String,String> data , boolean hData,boolean error , String statusInternal , HttpStatus status ){
+         UnifiedResponse unifiedResponse = new UnifiedResponse();
         unifiedResponse.setData(data);
         unifiedResponse.setHaveError(error);
         unifiedResponse.setHaveData(hData);
@@ -152,7 +149,7 @@ public class UserService {
     }
 
     public ResponseEntity<String> updateUserProfile(String userId, UserUpdateRequest request) {
-        Optional<User> opUser = userRepository.findById(userId);
+        Optional<User> opUser = userRepository.findById(Integer.parseInt(userId));
         Map<String , String> data = new HashMap<>();
         if(opUser.isPresent()){
                 User profile = opUser.get();
@@ -194,7 +191,7 @@ public class UserService {
     
 
     public ResponseEntity<String> updateUserRole(String userId, Role role) {
-        Optional<User> opUser = userRepository.findById(userId);
+        Optional<User> opUser = userRepository.findById(Integer.parseInt(userId));
         Map<String , String> data = new HashMap<>();
         if(opUser.isPresent()){
                 User profile = opUser.get();

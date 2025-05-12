@@ -73,7 +73,7 @@ public class UserController {
        return this.userService.deleteUser(email);
     }
 
-    @GetMapping("/get")
+    @GetMapping("/getAll")
     public Iterable<User> returnAll(){
         return this.userService.returnAll();
     }
@@ -102,7 +102,7 @@ public class UserController {
     }
     
  
-    @PutMapping("/{userId}/roles")
+    @PutMapping("/{userId}/role")
     public ResponseEntity<String> updateUserRoles(
             @PathVariable String userId,
             @RequestBody UserUpdateRequest request) {
