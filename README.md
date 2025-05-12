@@ -26,12 +26,13 @@ Developed a User Management microservice in Spring Boot with REST endpoints for 
 
 
 # Wallet service 
-
+Implemented Wallet microservice in Spring Boot providing financial account management with secure transaction endpoints (/deposit, /withdraw, /balance, /transfer). Integrated event consumption from Kafka for real-time balance updates. Built with transactional integrity guarantees, optimistic locking, and idempotency controls to prevent duplicate transactions and ensure data consistency.
 
 # Transaction service 
-
+Created Transaction microservice in Spring Boot handling complex financial operations with atomicity guarantees through endpoints (/process, /verify, /reverse). Implemented event-driven architecture using Kafka for transaction event propagation across services. Built with distributed transaction patterns, compensating actions for rollbacks, and comprehensive audit logging for financial compliance.
 
 # History service
+Developed History microservice in Spring Boot with comprehensive endpoints (/getactivity, /getbydate, /filter) for tracking user activities and system events. Leveraged Kafka consumers to capture cross-service events for centralized history recording. Implemented efficient querying patterns with pagination and filtering support for optimized performance on large historical datasets.
 
 # Notification service
-
+Built Notification microservice in Spring Boot with multi-channel delivery support (email, SMS, push) through unified REST endpoints (/send, /schedule, /cancel). Implemented Kafka event consumption for triggering notifications based on system events. Designed with template-based message generation, delivery status tracking, and retry mechanisms for reliable notification delivery.
