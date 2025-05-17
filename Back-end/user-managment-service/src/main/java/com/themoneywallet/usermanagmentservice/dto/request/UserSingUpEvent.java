@@ -1,4 +1,4 @@
-package com.themoneywallet.usermanagmentservice.event;
+package com.themoneywallet.usermanagmentservice.dto.request;
 
 import java.time.Instant;
 import java.util.HashMap;
@@ -13,13 +13,26 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 public class UserSingUpEvent {
+     
     private int id;
+ 
+   
     private String userName;
+    
+ 
     private String firstName;
+
+    
     private String lastName;
+
+  
     private String email;
+
     private String password;
+
+   
     private String userRole;
+
     private Instant vaildUntil;
     private boolean locked;
     private boolean enabled;

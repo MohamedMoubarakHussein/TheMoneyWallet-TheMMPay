@@ -8,6 +8,7 @@ import com.themoneywallet.usermanagmentservice.entity.User;
 import com.themoneywallet.usermanagmentservice.service.UserService;
 import com.themoneywallet.usermanagmentservice.utilite.ValidationErrorMessageConverter;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -15,18 +16,16 @@ import lombok.extern.slf4j.Slf4j;
 
 
 
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseStatus;
 
 
 @RestController
@@ -38,8 +37,7 @@ public class UserController {
     private final UserService userService;
 
     //TODO currently we handling database data violation in the backend not in the database itself
-    @PostMapping("/signup")
-    public ResponseEntity<String> signUp(@Valid @RequestBody UserRequest user , BindingResult result){
+    private ResponseEntity<String> signUp(@Valid @RequestBody UserRequest user , BindingResult result){
         log.info("xsxss");
         if(result.hasErrors()){
             return  ResponseEntity.badRequest().body(this.validConvertor.Convert(result));
@@ -48,23 +46,25 @@ public class UserController {
         return this.userService.signUp(user);
     }
 
-    @PutMapping("/updateuser")
-    public ResponseEntity<String> updateUser(@RequestParam("email") String email ,@Valid @RequestBody UserUpdateRequest user ,BindingResult result){
+
+
+    @PatchMapping("/updateuser")
+    public ResponseEntity<String> updateUser(HttpServletRequest request  ,@Valid @RequestBody UserUpdateRequest user ,BindingResult result){
         if(result.hasErrors()){
             return  ResponseEntity.badRequest().body(this.validConvertor.Convert(result));
         }
-        return this.userService.updateUser(email,user);
+        return this.userService.updateUser(request,user);
     }
 
+
+
     @GetMapping("/getbyemail")
-    @ResponseStatus(HttpStatus.ACCEPTED)
     public String getUserByEmail(@RequestParam("email") String email){
        return this.userService.getUserByEmail(email);
     }
     
     @GetMapping("/getbyusername")
-    @ResponseStatus(HttpStatus.ACCEPTED)
-    public String getUserByUserName(@RequestParam("usr") String userName){
+    public String getUserByUserName(@RequestParam("user") String userName){
        return this.userService.getUserByUserName(userName);
     }
 
@@ -78,13 +78,13 @@ public class UserController {
         return this.userService.returnAll();
     }
 
-    @PutMapping("/rest")
+  /*   @PutMapping("/rest")
     public ResponseEntity<String> restPassword(@RequestParam("email") String email,@Valid @RequestBody UserUpdateRequest user ,BindingResult result){
         if(result.hasErrors()){
             return  ResponseEntity.badRequest().body(this.validConvertor.Convert(result));
         }
         return this.userService.updateUser(email, user);
-    }
+    }*/
 
       @GetMapping("/{userId}")
     public ResponseEntity<String> getUserProfile(@PathVariable String userId) {
@@ -101,7 +101,7 @@ public class UserController {
         return userService.updateUserProfile(userId, request);
     }
     
- 
+ /* 
     @PutMapping("/{userId}/role")
     public ResponseEntity<String> updateUserRoles(
             @PathVariable String userId,
@@ -110,7 +110,7 @@ public class UserController {
        
         return userService.updateUserRole(userId, request.getRole());
     }
-    
+    */
 
 
    

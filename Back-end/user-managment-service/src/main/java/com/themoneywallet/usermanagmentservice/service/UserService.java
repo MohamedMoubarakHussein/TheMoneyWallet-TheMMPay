@@ -10,7 +10,7 @@ import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
-
+import com.themoneywallet.usermanagmentservice.config.CustomBeans;
 import com.themoneywallet.usermanagmentservice.dto.request.UserRequest;
 import com.themoneywallet.usermanagmentservice.dto.request.UserUpdateRequest;
 import com.themoneywallet.usermanagmentservice.dto.response.UnifiedResponse;
@@ -20,7 +20,9 @@ import com.themoneywallet.usermanagmentservice.entity.User;
 import com.themoneywallet.usermanagmentservice.repository.UserRepository;
 import com.themoneywallet.usermanagmentservice.utilite.DatabaseVaildation;
 import com.themoneywallet.usermanagmentservice.utilite.ObjectMapper;
+import com.themoneywallet.usermanagmentservice.utilite.shared.JwtValidator;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -35,6 +37,10 @@ public class UserService {
     private final UserRepository userRepository;
     private final ObjectMapper objectMapper;
     private final DatabaseVaildation dataVaildation;
+    private final JwtValidator jwtValidator;
+
+
+ 
    
 
 
@@ -44,7 +50,7 @@ public class UserService {
         User user = new User();
         this.objectMapper.map(userRequest,user);
         user.setRole(Role.USER);
-        if(dataVaildation.isEmailNameExist(user.getEmail())){
+        if(dataVaildation.isEmailExist(user.getEmail())){
             return ResponseEntity.badRequest().body("Email already exists");
  
         }
@@ -90,18 +96,37 @@ public class UserService {
 
     }
 
+    @SuppressWarnings("unchecked")
     @Transactional
-    public ResponseEntity<String> updateUser(String email,UserUpdateRequest user) {
-       if(!this.dataVaildation.isEmailNameExist(email)){
-              return ResponseEntity.status(HttpStatusCode.valueOf(400)).body("This email does not exsist");
-       }
-       Optional<User> usr = this.userRepository.findByEmail(email);
-      // this.deleteUser(email);
-       this.objectMapper.map2(user, usr.get());
+    public ResponseEntity<String> updateUser(HttpServletRequest request,UserUpdateRequest user) {
+        String token = request.getHeader("x-Authorization");
+        String email = null;
+        if(this.jwtValidator.isTokenValid(token)){
+            email =  this.jwtValidator.extractUserName(token);
+             if(!this.dataVaildation.isEmailExist(email)){
+                   return ResponseEntity.status(HttpStatusCode.valueOf(400)).body( UnifiedResponse.builder().haveError(true)
+                              .timeStamp(Instant.now())
+                              .haveData(true).data((Map<String, String>) new HashMap<>().put("error", "This email does not exsist")).build().toString() );
+             }
+
+             Optional<User> usr = this.userRepository.findByEmail(email);
+            this.objectMapper.map2(user, usr.get());
+      
   
-       User usser = this.userRepository.save(usr.get());
-       return ResponseEntity.status(HttpStatusCode.valueOf(201)).body(usser.toString());
-   }   
+            this.userRepository.save(usr.get());
+            return ResponseEntity.status(HttpStatusCode.valueOf(200)).body( UnifiedResponse.builder().haveError(false)
+                             .timeStamp(Instant.now())
+                            .haveData(false).build().toString() );
+        }else{
+            return ResponseEntity.status(HttpStatusCode.valueOf(400)).body( UnifiedResponse.builder().haveError(true)
+                              .timeStamp(Instant.now())
+                              .haveData(true).data((Map<String, String>) new HashMap<>().put("error", "Unauthorized")).build().toString() );
+        }
+        
+      
+         
+      
+    }
 
     
     public Iterable<User> returnAll(){

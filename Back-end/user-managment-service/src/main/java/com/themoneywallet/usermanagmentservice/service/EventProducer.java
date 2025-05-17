@@ -3,7 +3,8 @@ package com.themoneywallet.usermanagmentservice.service;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
-import com.themoneywallet.usermanagmentservice.event.UserSingUpEvent;
+import com.themoneywallet.usermanagmentservice.dto.request.UserSingUpEvent;
+import com.themoneywallet.usermanagmentservice.entity.User;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -12,10 +13,10 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 @Slf4j
 public class EventProducer {
-    private final KafkaTemplate<String, UserSingUpEvent> kafkaTemplate;
+    private final KafkaTemplate<String, User> kafkaTemplate;
     
-    public void publishSignUpEvent(UserSingUpEvent event) {
-        kafkaTemplate.send("user-signup-events", event);
+    public void publishSignUpEvent(User event) {
+        kafkaTemplate.send("user-signup-event", event);
         log.info("Published user event: {}", event);
     }
     

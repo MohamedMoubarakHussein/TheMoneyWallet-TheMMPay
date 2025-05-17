@@ -19,7 +19,7 @@ public class DatabaseVaildation {
         return user.isPresent();
     }
 
-    public boolean isEmailNameExist(String email){
+    public boolean isEmailExist(String email){
         Optional<User> user = this.userRepository.findByEmail(email);
         return user.isPresent();
     }

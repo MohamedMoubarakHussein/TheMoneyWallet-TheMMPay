@@ -43,9 +43,6 @@ public class UserPreferences {
     private String language ;
     private String timezone ;
     
-    @ElementCollection
-    @Builder.Default
-    private Map<String, String> additionalPreferences = new HashMap<>();
 
 
 }
