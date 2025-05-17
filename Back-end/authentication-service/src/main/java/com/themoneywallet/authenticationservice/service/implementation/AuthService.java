@@ -31,9 +31,9 @@ import com.themoneywallet.authenticationservice.dto.request.SignUpRequest;
 import com.themoneywallet.authenticationservice.dto.response.UnifiedResponse;
 import com.themoneywallet.authenticationservice.entity.UserCredential;
 import com.themoneywallet.authenticationservice.entity.UserRole;
-import com.themoneywallet.authenticationservice.event.AuthEvent;
+import com.themoneywallet.authenticationservice.event.Event;
 import com.themoneywallet.authenticationservice.event.UserCreationEvent;
-import com.themoneywallet.authenticationservice.event.AuthEvent.AuthEventType;
+import com.themoneywallet.authenticationservice.event.Event.AuthEventType;
 import com.themoneywallet.authenticationservice.repository.UserCredentialRepository;
 import com.themoneywallet.authenticationservice.service.defintion.AuthServiceDefintion;
 import com.themoneywallet.authenticationservice.utilities.DatabaseHelper;
@@ -64,6 +64,9 @@ public class AuthService implements AuthServiceDefintion {
     private final HttpHelper httpHelper;
     private final UnifiedResponse unifiedResponse;
     private final EventProducer eventProducer;
+    private final Integer COOKIE_MAX_AGE_H = 7 ;
+    private final String COOKIE_PATH = "/auth/refreshtoken" ;
+    private final boolean IS_COOKIE_SECURE = false;
 
 
   
@@ -87,7 +90,7 @@ public class AuthService implements AuthServiceDefintion {
             unifiedResponse.setData(data);
             unifiedResponse.setHaveError(true);
             unifiedResponse.setHaveData(true);
-            unifiedResponse.setStatusInternalCode("Auth004");
+            unifiedResponse.setStatusInternalCode(null);
             return new ResponseEntity<>(unifiedResponse.toString(), HttpStatus.BAD_REQUEST);
         }
 
@@ -97,7 +100,7 @@ public class AuthService implements AuthServiceDefintion {
              userCredential  =saveUserCredentialInAuthDb(request);
             
         } catch (Exception e) {
-            data.put("internal", "local db error has occured");
+            data.put("internal", "Contact website support Auth006 happend.");
             unifiedResponse.setData(data);
             unifiedResponse.setHaveError(true);
 
@@ -113,9 +116,9 @@ public class AuthService implements AuthServiceDefintion {
         }catch(Exception e){
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             unifiedResponse.setHaveError(true);
-            data.put("internal", "userMangment service  error has occured");
+            data.put("internal", "Contact website support Auth007 happend.");
             unifiedResponse.setData(data);
-            unifiedResponse.setStatusInternalCode("Auth006");
+            unifiedResponse.setStatusInternalCode("Auth007");
             return new ResponseEntity<>(unifiedResponse.toString(), HttpStatus.BAD_REQUEST);
         }
 
@@ -163,18 +166,18 @@ public class AuthService implements AuthServiceDefintion {
         String accToken =  this.jwtService.generateToken(email);
         String refToken =  this.jwtRefService.generateToken(email);
         
-        ResponseCookie cookie = ResponseCookie.from("refresh_token", refToken)
+        ResponseCookie cookie = ResponseCookie.from("refreshToken", refToken)
        .httpOnly(true)
-       //.secure(true) // For HTTPS only
+       .secure(IS_COOKIE_SECURE) // For HTTPS only
        .sameSite("Lax")
-       .maxAge(Duration.ofHours(7))
-       .path("/")
+       .maxAge(Duration.ofHours(COOKIE_MAX_AGE_H))
+       .path(COOKIE_PATH)
        .build();
 
        
         this.userCredentialRepository.findByEmail(email).get().setToken(refToken);
        unifiedResponse.setHaveData(false);
-       unifiedResponse.setStatusInternalCode("Auth006");
+       unifiedResponse.setStatusInternalCode(null);
 
        return  ResponseEntity.status(HttpStatus.OK)
        .header(HttpHeaders.SET_COOKIE, cookie.toString())
@@ -206,7 +209,7 @@ public class AuthService implements AuthServiceDefintion {
     .lastName(request.getLastName())
     .id(credential.getId())
     .build();
-    AuthEvent authEvent = AuthEvent.builder()
+    Event authEvent = Event.builder()
             .eventId(UUID.randomUUID().toString())
             .timestamp(LocalDateTime.now())
             .userId(String.valueOf(info.getId()))
@@ -223,44 +226,32 @@ public class AuthService implements AuthServiceDefintion {
 
    public ResponseEntity<UnifiedResponse> refreshToken(String refreshToken){
         
-        if (!this.validToken(refreshToken )) {
-           
-           return ResponseEntity.status(401).body(UnifiedResponse.builder().data(Map.of("internal","Invalid refresh token"))
-                       .haveError(true)    
-                            .statusInternalCode("Auth001").build());
-        }
+
 
         Optional<UserCredential> user = this.userCredentialRepository.findByToken(refreshToken);
-        UserCredential token;
+        UserCredential userr;
         if(user.isPresent()){
-            token = user.get();
+            userr = user.get();
         }else{
             return ResponseEntity.status(401).body(UnifiedResponse.builder().data(Map.of("internal","Invalid  Token"))
             .haveError(true)  
                             .statusInternalCode("Auth002").build());
         }
 
-        if(token.getExpiryDateOfTokeInstant().isBefore(Instant.now())){
-            return ResponseEntity.status(401).body(UnifiedResponse.builder().data(Map.of("internal","Invalid  Token"))
-             .haveError(true)
-            .statusInternalCode("Auth003").build());
-        }
-
-        if(token.isRevoked()){
+        if(userr.isRevoked()){
             return ResponseEntity.status(401).body(UnifiedResponse.builder().data(Map.of("internal","Invalid  Token"))
             .haveError(true)
             .statusInternalCode("Auth004").build());
         }
 
         // revoke the token 
-        token.setRevoked(true);
-        this.userCredentialRepository.save(token);
+
 
         // generate new access , refresh token 
-        String accToken =  this.jwtService.generateToken(token.getEmail());
-        String refToken =  this.jwtRefService.generateToken(token.getEmail());
+        String accToken =  this.jwtService.generateToken(userr.getEmail());
+        String refToken =  this.jwtRefService.generateToken(userr.getEmail());
         
-        ResponseCookie cookie = ResponseCookie.from("refresh_token", refToken)
+        ResponseCookie cookie = ResponseCookie.from("refreshToken", refToken)
        .httpOnly(true)
        //.secure(true) // For HTTPS only
        .sameSite("Lax")
@@ -291,7 +282,7 @@ public class AuthService implements AuthServiceDefintion {
 
     public ResponseEntity<UnifiedResponse> logout( HttpServletRequest request) {
      
-        String cookieName = "refresh_token";
+        String cookieName = "refreshToken";
         String token = Arrays.stream(request.getCookies())
         .filter(cookie -> cookieName.equals(cookie.getName()))
         .findFirst().get().getValue();
@@ -308,7 +299,7 @@ public class AuthService implements AuthServiceDefintion {
             });
         }
         log.info("******************");
-        ResponseCookie cookie = ResponseCookie.from("refresh_token", null)
+        ResponseCookie cookie = ResponseCookie.from("refreshToken", null)
         .httpOnly(true)
         //.secure(true) // For HTTPS only
         .sameSite("Lax")
