@@ -37,8 +37,7 @@ Developed History microservice in Spring Boot with comprehensive endpoints (/get
 
 # Notification service
 Built Notification microservice in Spring Boot with multi-channel delivery support (email, SMS, push) through unified REST endpoints (/send, /schedule, /cancel). Implemented Kafka event consumption for triggering notifications based on system events. Designed with template-based message generation, delivery status tracking, and retry mechanisms for reliable notification delivery.
-=======
->>>>>>> c027a6ed5b5f93daa9a7c5bb7f1bfcc533c057d1
+
 
 
 # Wallet service 
