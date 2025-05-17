@@ -1,6 +1,7 @@
 package com.themoneywallet.authenticationservice.config.Security;
 
 import java.io.IOException;
+import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -11,6 +12,7 @@ import org.springframework.security.web.authentication.WebAuthenticationDetailsS
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
+import com.themoneywallet.authenticationservice.service.implementation.JwtRefService;
 import com.themoneywallet.authenticationservice.service.implementation.JwtService;
 import com.themoneywallet.authenticationservice.service.implementation.MyUserDetailsService;
 
@@ -24,6 +26,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final JwtService jwtService;
+    private final JwtRefService jwtRefService;
     private final MyUserDetailsService userDetailsService;
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
@@ -36,9 +39,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 }
 
                 String token = header.substring(7);
-                if(SecurityContextHolder.getContext().getAuthentication() == null){
+                try {
+                     if(SecurityContextHolder.getContext().getAuthentication() == null){
                     UserDetails user = this.userDetailsService.loadUserByUsername(this.jwtService.extractUserName(token));
-                    if(this.jwtService.isTokenValid(token)){
+                    
+                    if(this.jwtService.isTokenValid(token) ){
                         SecurityContext context = SecurityContextHolder.createEmptyContext();
                         UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(user, null , user.getAuthorities());
                         auth.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
@@ -46,7 +51,37 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                         SecurityContextHolder.setContext(context);
 
                     }
+                       
+                    
+                
+                    
                 }
+
+                } catch (Exception e) {
+                Optional<String> refreshTokenOpt =this.jwtRefService.extractRefreshTokenFromCookies(request);
+                
+                if (refreshTokenOpt.isPresent()) {
+                    String refreshToken = refreshTokenOpt.get();
+                    if (this.jwtRefService.isTokenValid(refreshToken)) {
+                        String refreshUsername = this.jwtRefService.extractUserName(refreshToken);
+                        
+                        String newAccessToken = this.jwtService.generateToken(refreshUsername);
+                        
+                        // Add the new token to the response
+                       this.jwtRefService.addNewAccessTokenCookie(response, newAccessToken);
+                        SecurityContext context = SecurityContextHolder.createEmptyContext();
+                        UserDetails user = this.userDetailsService.loadUserByUsername(refreshUsername);
+
+                        UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(user, null , user.getAuthorities());
+                        auth.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                        context.setAuthentication(auth);
+                        SecurityContextHolder.setContext(context);
+
+                        response.setHeader("Authorization", "Bearer " + newAccessToken);
+                    }
+                }
+            }
+               
                 filterChain.doFilter(request, response);
         }
 
