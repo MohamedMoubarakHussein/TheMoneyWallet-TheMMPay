@@ -1,0 +1,3 @@
+local db error has occured in saveUserCredentialInAuthDb  -> Auth006 ;
+saveUserCredentialInUserMangmentService  -> Auth007;
+

@@ -1,0 +1,36 @@
+graph TD
+    A[Authentication Service] -->|Uses| A_DB[(PostgreSQL)]
+    B[User Management Service] -->|Uses| B_DB[(PostgreSQL)]
+    C[Wallet Service] -->|Uses| C_DB[(PostgreSQL)]
+    D[Transaction Service] -->|Uses| D_DB[(PostgreSQL)]
+    E[History Service] -->|Uses| E_DB[(MongoDB)]
+    F[Notification Service] -->|Uses| F_DB[(MongoDB)]
+    G[Payment Gateway Service] -->|Uses| G_DB[(PostgreSQL)]
+    H[Compliance Service] -->|Uses| H_DB[(PostgreSQL + Redis)]
+    I[Analytics Service] -->|Uses| I_DB[(ClickHouse)]
+    
+    subgraph Relational DBs
+        A_DB
+        B_DB
+        C_DB
+        D_DB
+        G_DB
+        H_DB
+    end
+    
+    subgraph Document DBs
+        E_DB
+        F_DB
+    end
+    
+    subgraph Analytics DBs
+        I_DB
+    end
+    
+    subgraph Cache
+        REDIS[(Redis)]
+    end
+    
+    A -->|Caching| REDIS
+    C -->|Caching| REDIS
+    D -->|Caching| REDIS
