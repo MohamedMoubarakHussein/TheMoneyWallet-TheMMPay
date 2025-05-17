@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class AuthEvent {
+public class Event {
     private String eventId;
     private String userId;
     private AuthEventType eventType;
