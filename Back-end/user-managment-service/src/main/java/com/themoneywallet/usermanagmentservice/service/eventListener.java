@@ -1,9 +1,11 @@
 package com.themoneywallet.usermanagmentservice.service;
 
 import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
@@ -14,7 +16,8 @@ import com.themoneywallet.usermanagmentservice.dto.request.UserSingUpEvent;
 import com.themoneywallet.usermanagmentservice.entity.Role;
 import com.themoneywallet.usermanagmentservice.entity.User;
 import com.themoneywallet.usermanagmentservice.entity.UserPreferences;
-import com.themoneywallet.usermanagmentservice.event.AuthEvent;
+import com.themoneywallet.usermanagmentservice.event.Event;
+import com.themoneywallet.usermanagmentservice.event.EventType;
 import com.themoneywallet.usermanagmentservice.repository.UserRepository;
 
 import lombok.Data;
@@ -31,7 +34,7 @@ public class eventListener {
  
     
     @KafkaListener(topics = "auth-signup-event", groupId = "user-service")
-    public void handleSignupEvent(AuthEvent eventz) {
+    public void handleSignupEvent(Event eventz) {
        // switch event based on the eventz type
         log.info(eventz.toString());
         Object event =  eventz.getAdditionalData().get("userData");
@@ -59,6 +62,17 @@ public class eventListener {
         profile.setUpdatedAt(Instant.now());
         
         this.profileRepository.save(profile);
-        this.eventProducer.publishSignUpEvent(profile);
+        try {
+            Event event2 = new Event();
+            event2.setEventId(UUID.randomUUID().toString());
+            event2.setEventType(EventType.USER_PROFILE_CREATED);
+            event2.setUserId(String.valueOf(profile.getId()));
+            event2.setTimestamp(LocalDateTime.now() );
+            event2.setAdditionalData(Map.of("data", profile));
+            this.eventProducer.publishSignUpEvent(event2);
+        } catch (Exception e) {
+           log.info(e.getMessage());
+        }
+        
     }
 }
