@@ -1,15 +1,28 @@
 package com.walletservice.service;
 
+import java.math.BigDecimal;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.UUID;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import com.walletservice.dto.request.WalletRequest;
+import com.walletservice.dto.response.UnifiedResponse;
+import com.walletservice.entity.CurrencyType;
 import com.walletservice.entity.Transaction;
 import com.walletservice.entity.Wallet;
+import com.walletservice.entity.WalletLimits;
+import com.walletservice.entity.WalletStatus;
+import com.walletservice.entity.WalletTypes;
+import com.walletservice.event.Event;
+import com.walletservice.event.EventType;
 import com.walletservice.repository.WalletRepository;
 
 import jakarta.transaction.Transactional;
@@ -18,23 +31,58 @@ import lombok.RequiredArgsConstructor;
 @Service
 @RequiredArgsConstructor
 public class WalletService {
+
+    private final EventProducer eventProducer;
+
     private final WalletRepository walletRepository;
+    private final BigDecimal DALIY_TRANSCATION_LIMIT = new BigDecimal(0);
+    private final BigDecimal LOW_BALANCE_THRESHOLD = new BigDecimal(0);
+    private final BigDecimal MAX_BALANCE = new BigDecimal(0);
+    private final BigDecimal MAX_TRANSCATION_AMOUNT = new BigDecimal(0);
+    private final BigDecimal TEMP = new BigDecimal(0);
 
+    
     public ResponseEntity<String> createWallet(WalletRequest wallet, long userId) {
-        Wallet userWallet = Wallet.builder().CurrencyType(wallet.getCurrencyType())
-                .balance(0)
-                .userId(userId).build();
+        HashMap<String , String> data = new HashMap<>();
+      
+        UnifiedResponse unifiedResponse = new UnifiedResponse();
+        Wallet userWallet =  new Wallet();
+           userWallet.setUserId(userId);
+           userWallet.setWalletType(wallet.getWalletType());
+           userWallet.setStatus(WalletStatus.INACTIVE);
+           userWallet.setCreationDate(Instant.now());
+           userWallet.setUpdatedAt(Instant.now());
+           userWallet.setCurrencyType(wallet.getCurrencyType());
+           userWallet.setTransactionCount(0);
+           userWallet.setLimits(WalletLimits.builder().dailyTransactionLimit(DALIY_TRANSCATION_LIMIT).lowBalanceThreshold(LOW_BALANCE_THRESHOLD).maxBalance(MAX_BALANCE).maxTransactionAmount(MAX_TRANSCATION_AMOUNT).build());
+           userWallet.setBalance(BigDecimal.valueOf(0));
 
-        ResponseEntity<String> response;
         try {
             userWallet = this.walletRepository.save(userWallet);
-            response = new ResponseEntity<>(userWallet.toString(), HttpStatus.CREATED);
+            unifiedResponse.setHaveData(false);
+            unifiedResponse.setHaveError(false);
+            unifiedResponse.setTimeStamp(Instant.now());
+            Event event = new Event();
+            event.setEventId(UUID.randomUUID().toString());
+            event.setEventType(EventType.CREATED_DEFAULT_WALLET);
+            event.setTimestamp(LocalDateTime.now());
+            event.setUserId(String.valueOf(userId));
+            event.setAdditionalData(Map.of("data" , userWallet));
+            this.eventProducer.publishWalletCreationEvent(event);
+          return ResponseEntity.ok().body(unifiedResponse.toString());
         } catch (Exception e) {
-            String error = e.getMessage();
-            response = new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+            
+            unifiedResponse.setHaveData(true);
+            unifiedResponse.setHaveError(true);
+            unifiedResponse.setTimeStamp(Instant.now());
+            data.put("error", e.getMessage());
+            unifiedResponse.setData(data);
+          return ResponseEntity.badRequest().body(unifiedResponse.toString());
+            
         }
-        return response;
     }
+
+/*
 
     public ResponseEntity<String> getBalanceExternal(long userId, long wallet_Id) {
         Optional<Wallet> wallet = this.walletRepository.findById(wallet_Id);
@@ -110,6 +158,6 @@ public class WalletService {
         return new ResponseEntity<>(" Transaction has been completed.", HttpStatus.OK);
 
 
-    }
+    }  */
 
 }

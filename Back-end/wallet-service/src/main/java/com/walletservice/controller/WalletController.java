@@ -5,6 +5,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -36,6 +37,35 @@ public class WalletController {
         
         return this.walletService.createWallet(wallet , getUserId(token));
     }
+/*
+     @GetMapping("/get/{id}")
+    public ResponseEntity<String> getWallet(@Valid @RequestBody WalletRequest wallet, BindingResult result , @RequestHeader("Authorization") String token) {
+
+        if (result.hasErrors()) {
+            return ResponseEntity.badRequest().body(this.VErrorConverter.Convert(result));
+        }
+        
+        return this.walletService.createWallet(wallet , getUserId(token));
+    }
+
+    @GetMapping("/get")
+    public ResponseEntity<String> getAllWallets(@Valid @RequestBody WalletRequest wallet, BindingResult result , @RequestHeader("Authorization") String token) {
+
+        if (result.hasErrors()) {
+            return ResponseEntity.badRequest().body(this.VErrorConverter.Convert(result));
+        }
+        
+        return this.walletService.createWallet(wallet , getUserId(token));
+    }
+     @PostMapping("/status")
+    public ResponseEntity<String> walletStatus(@Valid @RequestBody WalletRequest wallet, BindingResult result , @RequestHeader("Authorization") String token) {
+
+        if (result.hasErrors()) {
+            return ResponseEntity.badRequest().body(this.VErrorConverter.Convert(result));
+        }
+        
+        return this.walletService.createWallet(wallet , getUserId(token));
+    }
 
     @GetMapping("/balance")
     public ResponseEntity<String> getBalanceExternal( @RequestHeader("Authorization") String token, @RequestHeader("walletId") long wallet_Id) {
@@ -44,6 +74,44 @@ public class WalletController {
         return this.walletService.getBalanceExternal(userId , WalletId);
     }
 
+     @GetMapping("/limits")
+    public ResponseEntity<String> getWalletLimit( @RequestHeader("Authorization") String token, @RequestHeader("walletId") long wallet_Id) {
+        long userId = getUserId(token);
+        long WalletId = wallet_Id;
+        return this.walletService.getBalanceExternal(userId , WalletId);
+    }
+
+     @PatchMapping("/updatelimit")
+    public ResponseEntity<String> updateLimit(@Valid @RequestBody WalletRequest wallet, BindingResult result , @RequestHeader("Authorization") String token) {
+
+        if (result.hasErrors()) {
+            return ResponseEntity.badRequest().body(this.VErrorConverter.Convert(result));
+        }
+        
+        return this.walletService.createWallet(wallet , getUserId(token));
+    }
+
+
+     @PatchMapping("/addfunds")
+    public ResponseEntity<String> addFunds(@Valid @RequestBody WalletRequest wallet, BindingResult result , @RequestHeader("Authorization") String token) {
+
+        if (result.hasErrors()) {
+            return ResponseEntity.badRequest().body(this.VErrorConverter.Convert(result));
+        }
+        
+        return this.walletService.createWallet(wallet , getUserId(token));
+    }
+
+
+     @PatchMapping("/rmfunds")
+    public ResponseEntity<String> rmFunds(@Valid @RequestBody WalletRequest wallet, BindingResult result , @RequestHeader("Authorization") String token) {
+
+        if (result.hasErrors()) {
+            return ResponseEntity.badRequest().body(this.VErrorConverter.Convert(result));
+        }
+        
+        return this.walletService.createWallet(wallet , getUserId(token));
+    }
     public double getBalanceInternal(long user_Id, long wallet_Id) {
 
         return this.walletService.getBalanceInternal(user_Id , wallet_Id);
@@ -83,7 +151,7 @@ public class WalletController {
         return 1;
     }
 
-   
+    */
     private long getUserId(String token) {
         return 1;
     }

@@ -11,10 +11,10 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class AuthEvent {
+public class Event {
     private String eventId;
     private String userId;
-    private AuthEventType eventType;
+    private EventType eventType;
     private LocalDateTime timestamp;
     private Map<String, Object> additionalData;
     

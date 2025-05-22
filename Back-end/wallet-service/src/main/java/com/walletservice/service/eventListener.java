@@ -1,15 +1,23 @@
 package com.walletservice.service;
 
+import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.walletservice.entity.CurrencyType;
+import com.walletservice.entity.Wallet;
+import com.walletservice.entity.WalletLimits;
+import com.walletservice.entity.WalletStatus;
+import com.walletservice.entity.WalletTypes;
+import com.walletservice.event.Event;
+
+import com.walletservice.repository.WalletRepository;
 
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
@@ -19,11 +27,27 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class eventListener {
     
-  
+    private final WalletService walletService;
+    private final WalletRepository walletRepository;
  
-    /* 
-    @KafkaListener(topics = "auth-signup-event", groupId = "user-service")
-    public void handleSignupEvent(AuthEvent eventz) {
+    
+    @KafkaListener(topics = "user-signup-event", groupId = "wallet-service")
+    public void handleEvents(Event event) {
        
-    }*/
+           Wallet wallet = new Wallet();
+           wallet.setUserId(Long.valueOf(event.getUserId()));
+           wallet.setWalletType(WalletTypes.PRIMARY);
+           wallet.setStatus(WalletStatus.INACTIVE);
+           wallet.setCreationDate(Instant.now());
+           wallet.setUpdatedAt(Instant.now());
+           wallet.setCurrencyType(CurrencyType.POUND);
+           wallet.setTransactionCount(0);
+           wallet.setLimits(WalletLimits.builder().dailyTransactionLimit(BigDecimal.valueOf(1000)).lowBalanceThreshold(BigDecimal.valueOf(1000)).maxBalance(BigDecimal.valueOf(2000)).maxTransactionAmount(BigDecimal.valueOf(200)).build());
+           wallet.setBalance(BigDecimal.valueOf(0));
+
+        this.walletRepository.save(wallet);
+        
+        
+    }
+     
 }

@@ -3,6 +3,7 @@ package com.walletservice.service;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
+import com.walletservice.event.Event;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -11,12 +12,12 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 @Slf4j
 public class EventProducer {
-    /*
-    private final KafkaTemplate<String, User> kafkaTemplate;
     
-    public void publishSignUpEvent(User event) {
-        kafkaTemplate.send("user-signup-event", event);
-        log.info("Published user event: {}", event);
+    private final KafkaTemplate<String, Event> kafkaTemplate;
+    
+    public void publishWalletCreationEvent(Event event) {
+        kafkaTemplate.send("wallet-creation-event", event);
+        log.info("Published wallet event: {}", event);
     }
-     */
+     
 }
