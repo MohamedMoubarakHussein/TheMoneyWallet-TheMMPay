@@ -1,6 +1,9 @@
 package com.walletservice.controller;
 
 
+import java.util.Map;
+
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -10,53 +13,77 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.walletservice.dto.request.MakeTransactionUsingEmail;
-import com.walletservice.dto.request.WalletRequest;
+import com.walletservice.dto.request.WalletCreationRequest;
 import com.walletservice.entity.Transaction;
 import com.walletservice.service.WalletService;
+import com.walletservice.utilites.HttpHelper;
+import com.walletservice.utilites.UnifidResponseHandler;
 import com.walletservice.utilites.ValidationErrorMessageConverter;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @RestController
 @RequestMapping("/wallet")
 @RequiredArgsConstructor
+@Slf4j
 public class WalletController {
     private final WalletService walletService;
     private final ValidationErrorMessageConverter VErrorConverter;
+    private final HttpHelper httpHelper;
+    private final UnifidResponseHandler uResponseHandler;
 
     @PostMapping("/create")
-    public ResponseEntity<String> createWallet(@Valid @RequestBody WalletRequest wallet, BindingResult result , @RequestHeader("Authorization") String token) {
+    public ResponseEntity<String> createWallet(@Valid @RequestBody(required = false) WalletCreationRequest wallet, BindingResult result , @RequestHeader("Authorization") String token) {
+       
+        if(wallet == null){
+
+            return ResponseEntity.badRequest()
+            .body(this.uResponseHandler.makResponse(true, Map.of("error" , "Required request body is missing"),true, "WA001").toString());
+       }
 
         if (result.hasErrors()) {
             return ResponseEntity.badRequest().body(this.VErrorConverter.Convert(result));
         }
+           Long id;
+        try {
+             id  = getUserId(token);
+        } catch (Exception e) {
+            id = -1l;
+        }
         
-        return this.walletService.createWallet(wallet , getUserId(token));
+        if(id == -1){
+               return ResponseEntity.badRequest()
+            .body(this.uResponseHandler.makResponse(true, Map.of("error" , "Internal error"),true, "WA003").toString());
+
+        }
+        
+        return this.walletService.createWallet(wallet , id);
+    }
+
+
+     @GetMapping("/wallets")
+    public ResponseEntity<String> getAllWallets(@RequestHeader("Authorization") String token) {
+
+        
+        return this.walletService.getAllWallets(getUserId(token));
+    }
+
+      @GetMapping("/get/{id}")
+    public ResponseEntity<String> getWallet(@RequestHeader("Authorization") String token , @RequestParam("id") Long id) {
+
+        
+        return this.walletService.getWallet(getUserId(token) , id);
     }
 /*
-     @GetMapping("/get/{id}")
-    public ResponseEntity<String> getWallet(@Valid @RequestBody WalletRequest wallet, BindingResult result , @RequestHeader("Authorization") String token) {
+   
 
-        if (result.hasErrors()) {
-            return ResponseEntity.badRequest().body(this.VErrorConverter.Convert(result));
-        }
-        
-        return this.walletService.createWallet(wallet , getUserId(token));
-    }
-
-    @GetMapping("/get")
-    public ResponseEntity<String> getAllWallets(@Valid @RequestBody WalletRequest wallet, BindingResult result , @RequestHeader("Authorization") String token) {
-
-        if (result.hasErrors()) {
-            return ResponseEntity.badRequest().body(this.VErrorConverter.Convert(result));
-        }
-        
-        return this.walletService.createWallet(wallet , getUserId(token));
-    }
+   
      @PostMapping("/status")
     public ResponseEntity<String> walletStatus(@Valid @RequestBody WalletRequest wallet, BindingResult result , @RequestHeader("Authorization") String token) {
 
@@ -153,7 +180,19 @@ public class WalletController {
 
     */
     private long getUserId(String token) {
-        return 1;
+        ResponseEntity<String> req ; 
+           try {
+                req = this.httpHelper.sendDataToUserMangmentService(token);
+
+           } catch (Exception e) {
+                req = null;
+                log.info(e.getMessage());
+           }
+            log.info(req.getStatusCode().toString());
+        if(!req.getStatusCode().equals(HttpStatusCode.valueOf(200))){
+            return -1;
+        }
+        return Long.valueOf(req.getBody());
     }
 
     

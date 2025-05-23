@@ -15,6 +15,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @Entity
+@NoArgsConstructor
 public class WalletLimits {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)

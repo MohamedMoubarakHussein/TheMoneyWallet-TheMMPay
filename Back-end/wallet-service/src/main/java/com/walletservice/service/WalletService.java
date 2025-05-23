@@ -8,12 +8,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.StreamSupport;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import com.walletservice.dto.request.WalletRequest;
+import com.walletservice.dto.request.WalletCreationRequest;
 import com.walletservice.dto.response.UnifiedResponse;
 import com.walletservice.entity.CurrencyType;
 import com.walletservice.entity.Transaction;
@@ -24,15 +25,19 @@ import com.walletservice.entity.WalletTypes;
 import com.walletservice.event.Event;
 import com.walletservice.event.EventType;
 import com.walletservice.repository.WalletRepository;
+import com.walletservice.utilites.UnifidResponseHandler;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class WalletService {
 
     private final EventProducer eventProducer;
+    private final UnifidResponseHandler uResponseHandler;
 
     private final WalletRepository walletRepository;
     private final BigDecimal DALIY_TRANSCATION_LIMIT = new BigDecimal(0);
@@ -42,8 +47,8 @@ public class WalletService {
     private final BigDecimal TEMP = new BigDecimal(0);
 
     
-    public ResponseEntity<String> createWallet(WalletRequest wallet, long userId) {
-        HashMap<String , String> data = new HashMap<>();
+    public ResponseEntity<String> createWallet(WalletCreationRequest wallet, long userId) {
+        
       
         UnifiedResponse unifiedResponse = new UnifiedResponse();
         Wallet userWallet =  new Wallet();
@@ -56,30 +61,47 @@ public class WalletService {
            userWallet.setTransactionCount(0);
            userWallet.setLimits(WalletLimits.builder().dailyTransactionLimit(DALIY_TRANSCATION_LIMIT).lowBalanceThreshold(LOW_BALANCE_THRESHOLD).maxBalance(MAX_BALANCE).maxTransactionAmount(MAX_TRANSCATION_AMOUNT).build());
            userWallet.setBalance(BigDecimal.valueOf(0));
+        
 
         try {
             userWallet = this.walletRepository.save(userWallet);
-            unifiedResponse.setHaveData(false);
-            unifiedResponse.setHaveError(false);
-            unifiedResponse.setTimeStamp(Instant.now());
+
+            
             Event event = new Event();
             event.setEventId(UUID.randomUUID().toString());
-            event.setEventType(EventType.CREATED_DEFAULT_WALLET);
+            event.setEventType(EventType.CREATED_WALLET);
             event.setTimestamp(LocalDateTime.now());
             event.setUserId(String.valueOf(userId));
             event.setAdditionalData(Map.of("data" , userWallet));
             this.eventProducer.publishWalletCreationEvent(event);
-          return ResponseEntity.ok().body(unifiedResponse.toString());
+          return ResponseEntity.ok().body(this.uResponseHandler.makResponse(false, null, false, null).toString());
         } catch (Exception e) {
-            
-            unifiedResponse.setHaveData(true);
-            unifiedResponse.setHaveError(true);
-            unifiedResponse.setTimeStamp(Instant.now());
-            data.put("error", e.getMessage());
-            unifiedResponse.setData(data);
-          return ResponseEntity.badRequest().body(unifiedResponse.toString());
+          
+
+          return ResponseEntity.badRequest().body(  this.uResponseHandler.makResponse(true, Map.of("error", e.getMessage()), true, "WA004").toString());
             
         }
+    }
+
+
+    public ResponseEntity<String> getAllWallets(long userId) {
+        StringBuilder sb = new StringBuilder();
+        log.info(userId+"");
+        for(Wallet we :this.walletRepository.findAllByUserId(userId)){
+            sb.append(we.toString()+" \n");
+            log.info(we.toString());
+        }
+
+        String allWallets = sb.toString();
+     
+        return ResponseEntity.ok().body(  this.uResponseHandler.makResponse(true, Map.of("data",allWallets), false, null).toString());
+        
+        
+    }
+
+
+    public ResponseEntity<String> getWallet(long userId, Long id) {
+      return ResponseEntity.ok().body(  this.uResponseHandler.makResponse(true, Map.of("data",this.walletRepository.findById(id).get().toString()), false, null).toString());
     }
 
 /*

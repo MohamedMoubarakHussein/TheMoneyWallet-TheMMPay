@@ -16,8 +16,10 @@ public class EventProducer {
     private final KafkaTemplate<String, Event> kafkaTemplate;
     
     public void publishWalletCreationEvent(Event event) {
+     
         kafkaTemplate.send("wallet-creation-event", event);
         log.info("Published wallet event: {}", event);
+  
     }
      
 }
