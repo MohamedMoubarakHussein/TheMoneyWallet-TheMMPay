@@ -96,6 +96,15 @@ public class UserService {
 
     }
 
+     public String getIdByToken(String token) {
+        String email = this.jwtValidator.extractUserName(token);
+        Optional<User> usr = this.userRepository.findByEmail(email);
+        if(usr.isPresent())
+            return String.valueOf(usr.get().getId());
+        throw new ResponseStatusException(HttpStatus.NOT_FOUND,"User Not Found");
+
+    }
+
     @SuppressWarnings("unchecked")
     @Transactional
     public ResponseEntity<String> updateUser(HttpServletRequest request,UserUpdateRequest user) {
