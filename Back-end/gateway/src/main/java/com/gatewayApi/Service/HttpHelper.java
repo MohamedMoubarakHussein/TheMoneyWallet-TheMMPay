@@ -9,35 +9,39 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
+
+import lombok.extern.slf4j.Slf4j;
 /**
  * checking if the token vaild or not from auth service
  */
 @Component
-public class HttpService {
+@Slf4j
+public class HttpHelper {
 
-    @SuppressWarnings("null")
-    public boolean isTokenValid(String token) {
-        if(token == null)
-            return false;
+    public ResponseEntity<String> getRefToken(String token) {
+  
         RestTemplate restTemplate = new RestTemplate();
         HttpHeaders headers = new HttpHeaders();
-        final String jsonBody = "{\"token\": \"" + token + "\"}";
-        ResponseEntity<Boolean> responseEntity;
+   
+        ResponseEntity<String> responseEntity;
 
-        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.add("Authorization", token);
 
-        HttpEntity<String> entity = new HttpEntity<String>(jsonBody, headers);
+        HttpEntity<String> entity = new HttpEntity<String>(headers);
 
         try {
             responseEntity = restTemplate.exchange(
-                    "lb://authentication-service/auth/validate",
+                    "http://192.168.1.9:8080/auth/refreshtoken2",
                     HttpMethod.POST,
                     entity,
-                    Boolean.class);
+                    String.class);
         } catch (RestClientException e) {
-            responseEntity = new ResponseEntity<>(false, HttpStatus.BAD_REQUEST);
+            responseEntity = new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }catch (Exception e){
+            log.info(e.getMessage());
+            return null;
         }
-
-        return responseEntity.getBody();
+        log.info("xxx " + responseEntity.getBody() + " xxx "+ responseEntity.getStatusCode());
+        return responseEntity;
     }
 }

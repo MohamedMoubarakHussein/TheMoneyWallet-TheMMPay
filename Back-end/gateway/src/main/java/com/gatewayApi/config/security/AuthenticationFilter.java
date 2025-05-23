@@ -10,7 +10,7 @@ import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.http.server.reactive.ServerHttpResponse;
 import org.springframework.stereotype.Component;
 import org.springframework.web.server.ServerWebExchange;
-import com.gatewayApi.Service.HttpService;
+
 import com.gatewayApi.Service.OpenedAndSecuredPathsService;
 import com.gatewayApi.Service.shared.JwtValidator;
 
@@ -34,7 +34,6 @@ public class AuthenticationFilter implements GatewayFilter {
 
 
     private final OpenedAndSecuredPathsService openedAndSecuredPathsService;
-    private final HttpService httpService;
     private final JwtValidator jwtValidator;
 
 
@@ -61,7 +60,7 @@ public class AuthenticationFilter implements GatewayFilter {
 
            // boolean isValid = this.httpService.isTokenValid(token);
             boolean isValid = this.jwtValidator.isTokenValid(token);
-            
+            log.info(String.valueOf(isValid));
             if (!isValid) {
                 ServerHttpResponse re = exchange.getResponse();
                 re.setStatusCode(HttpStatus.UNAUTHORIZED);

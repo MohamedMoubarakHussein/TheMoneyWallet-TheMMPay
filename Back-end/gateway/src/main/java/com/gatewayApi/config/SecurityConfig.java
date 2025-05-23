@@ -36,8 +36,8 @@ public class SecurityConfig {
             r -> r.path("/auth/**").filters(f -> f.filter(this.filter)).uri("lb://authentication-service"))
         .route("user-managment-service",
             r -> r.path("/user/**").filters(f -> f.filter(this.filter)).uri("lb://USER-MANAGMENT-SERVICE"))
-       //     .route("wallet-service",
-      //      r -> r.path("/wallet/**").filters(f -> f.filter(this.filter)).uri("lb://USER-MANAGMENT-SERVICE"))
+            .route("wallet-service",
+            r -> r.path("/wallet/**").filters(f -> f.filter(this.filter)).uri("lb://WALLET-SERVICE"))
        //     .route("history-service",
        //     r -> r.path("/history/**").filters(f -> f.filter(this.filter)).uri("lb://USER-MANAGMENT-SERVICE"))
        //     .route("notification-service",
