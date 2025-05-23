@@ -28,7 +28,7 @@ public class Notification {
     private String title;
     private String content;
     private Priority priority;
-    private Map<String, Object> templateData;
+    private String templateData;
     private NotificationStatus status;
     private LocalDateTime createdAt;
     private LocalDateTime sentAt;

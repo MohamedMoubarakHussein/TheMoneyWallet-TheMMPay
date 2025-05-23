@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -61,6 +62,11 @@ public class UserController {
     @GetMapping("/getbyemail")
     public String getUserByEmail(@RequestParam("email") String email){
        return this.userService.getUserByEmail(email);
+    }
+
+     @GetMapping("/getidbytoken")
+    public String getIdByToken(@RequestHeader("Authorization") String token){
+       return this.userService.getIdByToken(token.substring(7));
     }
     
     @GetMapping("/getbyusername")
