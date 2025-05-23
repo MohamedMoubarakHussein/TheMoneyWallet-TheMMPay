@@ -19,7 +19,7 @@ public class EventProducer {
         log.info("Published auth event: {}", event);
     }
     
-    public void publishLoginEvent(Event event) {
+    public void publishSigninEvent(Event event) {
         kafkaTemplate.send("auth-login-events", event.getUserId(), event);
         log.info("Published login event: {}", event);
     }

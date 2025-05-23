@@ -10,7 +10,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
-
+import org.springframework.boot.autoconfigure.security.SecurityProperties.User;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
@@ -32,8 +32,9 @@ import com.themoneywallet.authenticationservice.dto.response.UnifiedResponse;
 import com.themoneywallet.authenticationservice.entity.UserCredential;
 import com.themoneywallet.authenticationservice.entity.UserRole;
 import com.themoneywallet.authenticationservice.event.Event;
+import com.themoneywallet.authenticationservice.event.EventType;
 import com.themoneywallet.authenticationservice.event.UserCreationEvent;
-import com.themoneywallet.authenticationservice.event.Event.AuthEventType;
+import com.themoneywallet.authenticationservice.event.UserLogInEvent;
 import com.themoneywallet.authenticationservice.repository.UserCredentialRepository;
 import com.themoneywallet.authenticationservice.service.defintion.AuthServiceDefintion;
 import com.themoneywallet.authenticationservice.utilities.DatabaseHelper;
@@ -65,7 +66,7 @@ public class AuthService implements AuthServiceDefintion {
     private final UnifiedResponse unifiedResponse;
     private final EventProducer eventProducer;
     private final Integer COOKIE_MAX_AGE_H = 7 ;
-    private final String COOKIE_PATH = "/auth/refreshtoken" ;
+    private final String COOKIE_PATH = "/" ;
     private final boolean IS_COOKIE_SECURE = false;
 
 
@@ -137,7 +138,10 @@ public class AuthService implements AuthServiceDefintion {
         this.authenticationManager
         .authenticate(new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword()));
        
-        return handleSuccessed(request.getEmail());
+
+        return handleSuccessedLogIn(this.userCredentialRepository.findByEmail(request.getEmail()).get());
+
+         
     
         }catch(Exception ex){
             data.put("Internal", "Wrong userName or password.");
@@ -145,6 +149,8 @@ public class AuthService implements AuthServiceDefintion {
             unifiedResponse.setData(data);
             unifiedResponse.setHaveError(true);
             unifiedResponse.setStatusInternalCode("RAuth005");
+            
+            
             return new ResponseEntity<>(unifiedResponse.toString(), HttpStatus.BAD_REQUEST);
 
            
@@ -175,9 +181,61 @@ public class AuthService implements AuthServiceDefintion {
        .build();
 
        
-        this.userCredentialRepository.findByEmail(email).get().setToken(refToken);
-       unifiedResponse.setHaveData(false);
-       unifiedResponse.setStatusInternalCode(null);
+      UserCredential user = this.userCredentialRepository.findByEmail(email).get();
+      user.setToken(refToken);
+      user.setLastLogin(Instant.now());
+      user.setIpAddress("192.168.1.1");
+      user.setRevoked(false);
+      this.userCredentialRepository.save(user);
+      unifiedResponse.setHaveData(false);
+      unifiedResponse.setStatusInternalCode(null);
+
+       return  ResponseEntity.status(HttpStatus.OK)
+       .header(HttpHeaders.SET_COOKIE, cookie.toString())
+        .header("Authorization", "Bearer " + accToken)
+       .body(unifiedResponse.toString());
+    
+    }
+
+
+      private ResponseEntity<String> handleSuccessedLogIn(UserCredential user){
+        String email = user.getEmail();
+        String accToken =  this.jwtService.generateToken(email);
+        String refToken =  this.jwtRefService.generateToken(email);
+        user.setToken(refToken);
+        this.userCredentialRepository.save(user);
+        ResponseCookie cookie = ResponseCookie.from("refreshToken", refToken)
+       .httpOnly(true)
+       .secure(IS_COOKIE_SECURE) // For HTTPS only
+       .sameSite("Lax")
+       .maxAge(Duration.ofHours(COOKIE_MAX_AGE_H))
+       .path(COOKIE_PATH)
+       .build();
+
+       
+   
+      user.setToken(refToken);
+      user.setLastLogin(Instant.now());
+      user.setIpAddress("192.168.1.1");
+      user.setRevoked(false);
+      this.userCredentialRepository.save(user);
+      unifiedResponse.setHaveData(false);
+      unifiedResponse.setStatusInternalCode(null);
+
+        UserLogInEvent info = UserLogInEvent.builder()
+            .email(user.getEmail())
+            .userRole(user.getUserRole().toString())
+            .id(user.getId())
+            .build();
+
+       Event event = Event.builder()
+            .eventId(UUID.randomUUID().toString())
+            .timestamp(LocalDateTime.now())
+            .userId(String.valueOf(user.getId()))
+            .eventType(EventType.LOGIN_SUCCESS)
+            .additionalData(Map.of("userData" , info))
+            .build();
+        this.eventProducer.publishSigninEvent(event);
 
        return  ResponseEntity.status(HttpStatus.OK)
        .header(HttpHeaders.SET_COOKIE, cookie.toString())
@@ -213,7 +271,7 @@ public class AuthService implements AuthServiceDefintion {
             .eventId(UUID.randomUUID().toString())
             .timestamp(LocalDateTime.now())
             .userId(String.valueOf(info.getId()))
-            .eventType(AuthEventType.SIGN_UP)
+            .eventType(EventType.SIGN_UP)
             .additionalData(Map.of("userData" , info))
             .build();
 
@@ -225,7 +283,7 @@ public class AuthService implements AuthServiceDefintion {
 
 
    public ResponseEntity<UnifiedResponse> refreshToken(String refreshToken){
-        
+        log.info("cdcd ");
 
 
         Optional<UserCredential> user = this.userCredentialRepository.findByToken(refreshToken);
@@ -238,11 +296,13 @@ public class AuthService implements AuthServiceDefintion {
                             .statusInternalCode("Auth002").build());
         }
 
+        /* 
         if(userr.isRevoked()){
             return ResponseEntity.status(401).body(UnifiedResponse.builder().data(Map.of("internal","Invalid  Token"))
             .haveError(true)
             .statusInternalCode("Auth004").build());
         }
+            */
 
         // revoke the token 
 
@@ -258,7 +318,8 @@ public class AuthService implements AuthServiceDefintion {
        .maxAge(Duration.ofHours(7))
        .path("/")
        .build();
-
+         user.get().setToken(refreshToken);
+       this.userCredentialRepository.save(user.get());
 
        Map<String , String> data = new HashMap<>();
        data.put("token", accToken);
@@ -294,20 +355,29 @@ public class AuthService implements AuthServiceDefintion {
             
             user.ifPresent(t -> {
                 
-                user.get().setExpiryDateOfTokeInstant(Instant.now());
+                user.get().setToken("");
+               
+                Event event = Event.builder()
+            .eventId(UUID.randomUUID().toString())
+            .timestamp(LocalDateTime.now())
+            .userId(String.valueOf( user.get().getId()))
+            .eventType(EventType.LOGOUT)
+            .additionalData(Map.of("userData" , user.get()))
+            .build();
+        this.eventProducer.publishSigninEvent(event);
                 userCredentialRepository.save(user.get());
             });
         }
         log.info("******************");
         ResponseCookie cookie = ResponseCookie.from("refreshToken", null)
         .httpOnly(true)
-        //.secure(true) // For HTTPS only
+        .secure(IS_COOKIE_SECURE)
         .sameSite("Lax")
         .maxAge(0)
-        .path("/")
+        .path(COOKIE_PATH)
         .build();
 
-        // Clear security context
+        
         SecurityContextHolder.clearContext();
 
         return  ResponseEntity.status(HttpStatus.OK)

@@ -58,19 +58,17 @@ public class UserCredential implements UserDetails {
     private boolean locked ;
     private boolean enabled;
 
-
+   private Instant lastLogin;
    
     private String emailVerificationToken;
-    private Instant emailVerificationTokenExpiry;
 
     private String passwordResetToken;
     
-    private Instant passwordResetTokenExpiry;
+  
 
 
     @Column(unique = true)
     private String token;
-    private Instant expiryDateOfTokeInstant;
     private String ipAddress; 
     private boolean revoked;
 
