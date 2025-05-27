@@ -1,6 +1,4 @@
 
-
-
 eureka:
   client:
     service-url:
@@ -8,7 +6,7 @@ eureka:
 
 
 server:
-  port: 8098
+  port: 8109
 
 spring:
   application:
@@ -17,6 +15,6 @@ spring:
     config:
       server:
         native:
-          search-locations: file:///opt/spring-config/
+          search-locations: classpath:/spring-config/
   profiles:
     active: native

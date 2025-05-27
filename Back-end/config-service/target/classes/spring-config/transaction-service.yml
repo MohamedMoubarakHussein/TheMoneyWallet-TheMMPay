@@ -1,0 +1,49 @@
+server:
+    port: 8096
+spring:
+    application:
+        name: transcation-service
+    datasource:
+        driver-class-name: com.mysql.cj.jdbc.Driver
+        password: 123456789
+        url: jdbc:mysql://localhost:3306/transcation_service
+        username: root
+    jpa:
+        database-platform: org.hibernate.dialect.MySQLDialect
+        hibernate:
+            ddl-auto: update
+        show-sql: true
+    kafka:
+        bootstrap-servers: localhost:9092
+        consumer:
+            auto-offset-reset: earliest
+            group-id: transcation-service
+            key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+            properties:
+                spring:
+                    json:
+                        trusted:
+                            packages: '*'
+            value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+        producer:
+            key-serializer: org.apache.kafka.common.serialization.StringSerializer
+            properties:
+                spring:
+                    json:
+                        add:
+                            type:
+                                headers: false
+            value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+    web:
+        resources:
+
+
+
+
+# Discovery service
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8888/eureka
+      
+
