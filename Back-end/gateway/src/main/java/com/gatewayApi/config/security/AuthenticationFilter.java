@@ -1,5 +1,7 @@
 package com.gatewayApi.config.security;
 
+import java.util.Map;
+
 import org.springframework.cloud.gateway.filter.GatewayFilter;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.core.io.buffer.DataBuffer;
@@ -35,6 +37,7 @@ public class AuthenticationFilter implements GatewayFilter {
 
     private final OpenedAndSecuredPathsService openedAndSecuredPathsService;
     private final JwtValidator jwtValidator;
+    private int statusOfValidation = 0;
 
 
     @Override
@@ -43,25 +46,20 @@ public class AuthenticationFilter implements GatewayFilter {
         if (openedAndSecuredPathsService.isSecuredEndPoint(request)) {
             
             String token = null;
+            String oldTok = null;
             if (request.getHeaders().containsKey("Authorization") && request.getHeaders().get("Authorization").get(0).startsWith("Bearer ")) {
-
+                oldTok = token;
                 token = request.getHeaders().get("Authorization").get(0).substring(7);
-            }else{
-                HttpCookie authCookie = exchange.getRequest().getCookies().getFirst("Authorization");
-                if (authCookie != null && !authCookie.getValue().isEmpty()) {
-                    String cookieValue = authCookie.getValue();
-                  
-                    token = cookieValue.startsWith("Bearer ") ? 
-                            cookieValue.substring(7) : cookieValue;
-                }
+                
             }
 
             
-
-           // boolean isValid = this.httpService.isTokenValid(token);
-            boolean isValid = this.jwtValidator.isTokenValid(token);
-            log.info(String.valueOf(isValid));
-            if (!isValid) {
+            HttpCookie refCookie = exchange.getRequest().getCookies().getFirst("refreshToken");
+         
+            log.info("Trying to validate the token ");
+            Map<Integer, Object> isValid = this.jwtValidator.isTokenValid(token , refCookie.getValue());
+            log.info("Token is " + Boolean.valueOf((String)isValid.get(1)));
+            if (!Boolean.valueOf((String)isValid.get(1))) {
                 ServerHttpResponse re = exchange.getResponse();
                 re.setStatusCode(HttpStatus.UNAUTHORIZED);
                 re.getHeaders().setContentType(MediaType.APPLICATION_JSON);
@@ -76,7 +74,9 @@ public class AuthenticationFilter implements GatewayFilter {
             
                 ServerHttpRequest mutatedRequest = request.mutate()
                          .header("x-Authorization", token)
+                         .header("Authorization", (String)isValid.getOrDefault(3,oldTok))
                          .build();
+                
 
        
                  ServerWebExchange mutatedExchange = exchange.mutate()

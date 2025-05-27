@@ -14,10 +14,11 @@ public class GetNewAccToken {
         private final HttpHelper httpHelper;
 
       public String getNewAccToken(String token){
-        log.info("xasxs");
+       
        ResponseEntity<String> res = this.httpHelper.getRefToken(token);
         if(!res.getStatusCode().equals(HttpStatusCode.valueOf(200)))
             return "";
-       return  res.getBody().substring(7);
+      log.info("Done getting New acc token using ref token");
+       return  res.getBody();
     }
 }

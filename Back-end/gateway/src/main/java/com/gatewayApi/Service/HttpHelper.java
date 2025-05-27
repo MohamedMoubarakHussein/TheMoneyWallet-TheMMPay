@@ -31,7 +31,7 @@ public class HttpHelper {
 
         try {
             responseEntity = restTemplate.exchange(
-                    "http://192.168.1.9:8080/auth/refreshtoken2",
+                    "http://192.168.1.9:8099/auth/refreshtoken2",
                     HttpMethod.POST,
                     entity,
                     String.class);

@@ -7,9 +7,10 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 @RestControllerAdvice
 public class HandleException {
-    
+   /* 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<String> handleException(Exception ex){
         return new ResponseEntity<>("Error has occured :\n"+ex.getMessage() , HttpStatus.BAD_REQUEST);
     }
+         */
 }

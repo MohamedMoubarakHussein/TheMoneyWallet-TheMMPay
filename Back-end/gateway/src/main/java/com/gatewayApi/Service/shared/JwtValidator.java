@@ -2,6 +2,7 @@ package com.gatewayApi.Service.shared;
 
 import java.security.Key;
 import java.util.Date;
+import java.util.Map;
 
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
@@ -27,6 +28,8 @@ public class JwtValidator   {
     private final GetNewAccToken accToken;
     private static final String SECRET = "b2phbHpsdU54Z3htb2NSanBCK3ErWkxOeFNmeTdiZk9XNkR2NEt0Mkhraz0=";
     public String msg ;
+    private Integer status ;
+    private String newToken;
 
   
     private Key getKey() {
@@ -35,15 +38,11 @@ public class JwtValidator   {
     }
 
 
-    public boolean isTokenValid(String token) {
+    public Map<Integer, Object> isTokenValid(String token , String refCookie) {
    
-           try {
-            
-             return handleClamis(token);
-           }catch (Exception e) {
-            msg = e.getMessage();
-            return false;
-           }
+
+             return handleClamis(token , refCookie);
+           
            
    
         }
@@ -55,38 +54,42 @@ public class JwtValidator   {
 
 
 
-    public Claims extractInfoFromToken(String token) {
+    public Claims extractInfoFromToken(String token  , String refCookie , int second) {
+        
         try {
              return Jwts.parserBuilder().setSigningKey(getKey())
                 .build()
                 .parseClaimsJws(token).getBody();
         } catch (ExpiredJwtException e) {
+            if(second == 0){
+             log.info("Token is exipred trying to get New ref token");
+            String newToken = this.accToken.getNewAccToken(refCookie);
+            log.info("2Token is exipred trying to get New ref token");
+
+            status = 2;
+            this.newToken = newToken;
+            return extractInfoFromToken(newToken , refCookie,1);
+            }else{
+                 return Jwts.parserBuilder().setSigningKey(getKey())
+                .build()
+                .parseClaimsJws(token).getBody();
+            }
             
-            String newToken = this.accToken.getNewAccToken(token);
-            return extractInfoFromToken(newToken);
         }
        
     }
 
-    public boolean handleClamis(String token) throws JwtExpiredTokenException {
-        log.info(token.trim());
-         Claims claim;
-            try {
-                claim = this.extractInfoFromToken(token);
-            } catch (Exception e) {
-                claim = null;
-                log.info(e.getMessage());
-                return false;    
-            }
+    public Map<Integer, Object> handleClamis(String token , String refCookie)  {
+ 
+        Claims claim = this.extractInfoFromToken(token , refCookie,0);
        
-       log.info(token);
-       log.info(claim.toString());
+       
+       
        
        boolean fact1 =  claim.getExpiration().after(new Date());
       
-       log.info(fact1+" ");
-       // add more than one fact if you want
-       return fact1;
+     
+      return Map.of(1, String.valueOf(fact1) , 2, status,3 , this.newToken);
     }
 
     
