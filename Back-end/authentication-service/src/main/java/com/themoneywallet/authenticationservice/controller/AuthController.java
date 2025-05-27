@@ -5,6 +5,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.CookieValue;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -56,14 +57,9 @@ public class AuthController {
         return this.authService.signIn(user);
     }
 
-    @PostMapping("/refreshtoken")
-    public ResponseEntity<UnifiedResponse> refresh(@CookieValue("refreshToken") String token) {
-        return this.authService.refreshToken(token);
-
-    }
 
     @PostMapping("/refreshtoken2")
-    public ResponseEntity<UnifiedResponse> refresh2(@RequestHeader("Authorization") String token) {
+    public ResponseEntity<String> refresh2(@RequestHeader("Authorization") String token) {
         log.info(token);
         return this.authService.refreshToken(token);
 
@@ -71,7 +67,6 @@ public class AuthController {
     
 
    
-
 
 
    @PostMapping("/verify-email")

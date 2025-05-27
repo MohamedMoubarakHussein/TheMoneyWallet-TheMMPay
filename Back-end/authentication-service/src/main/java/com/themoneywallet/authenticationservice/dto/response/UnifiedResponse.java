@@ -1,6 +1,7 @@
 package com.themoneywallet.authenticationservice.dto.response;
 
 import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -24,7 +25,7 @@ public class UnifiedResponse {
     @Builder.Default
     private Map<String , String> data = new HashMap<>();
     @Builder.Default
-    private Instant timeStamp = Instant.now();
+    private LocalDateTime timeStamp = LocalDateTime.now();
     
     private String statusInternalCode;
     private boolean haveData;
