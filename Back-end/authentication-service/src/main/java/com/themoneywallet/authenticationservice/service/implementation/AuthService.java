@@ -183,7 +183,7 @@ public class AuthService implements AuthServiceDefintion {
        
       UserCredential user = this.userCredentialRepository.findByEmail(email).get();
       user.setToken(refToken);
-      user.setLastLogin(Instant.now());
+      user.setLastLogin(LocalDateTime.now());
       user.setIpAddress("192.168.1.1");
       user.setRevoked(false);
       this.userCredentialRepository.save(user);
@@ -215,7 +215,7 @@ public class AuthService implements AuthServiceDefintion {
        
    
       user.setToken(refToken);
-      user.setLastLogin(Instant.now());
+      user.setLastLogin(LocalDateTime.now());
       user.setIpAddress("192.168.1.1");
       user.setRevoked(false);
       this.userCredentialRepository.save(user);
@@ -282,7 +282,7 @@ public class AuthService implements AuthServiceDefintion {
 
 
 
-   public ResponseEntity<UnifiedResponse> refreshToken(String refreshToken){
+   public ResponseEntity<String> refreshToken(String refreshToken){
         log.info("cdcd ");
 
 
@@ -291,9 +291,7 @@ public class AuthService implements AuthServiceDefintion {
         if(user.isPresent()){
             userr = user.get();
         }else{
-            return ResponseEntity.status(401).body(UnifiedResponse.builder().data(Map.of("internal","Invalid  Token"))
-            .haveError(true)  
-                            .statusInternalCode("Auth002").build());
+            return ResponseEntity.status(401).body("Invalid  Token" );
         }
 
         /* 
@@ -327,8 +325,7 @@ public class AuthService implements AuthServiceDefintion {
        return  ResponseEntity.status(HttpStatus.OK)
        .header(HttpHeaders.SET_COOKIE, cookie.toString())
         .header("Authorization", "Bearer " + accToken)
-       .body(UnifiedResponse.builder().data(data).haveData(true)
-                           .build());
+       .body(accToken);
       
    }
 
@@ -387,6 +384,10 @@ public class AuthService implements AuthServiceDefintion {
                             .build());
     
     }
+
+
+
+   
     
     
    

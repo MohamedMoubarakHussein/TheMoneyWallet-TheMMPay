@@ -2,6 +2,7 @@ package com.themoneywallet.authenticationservice.entity;
 
 
 import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
@@ -58,7 +59,7 @@ public class UserCredential implements UserDetails {
     private boolean locked ;
     private boolean enabled;
 
-   private Instant lastLogin;
+   private LocalDateTime lastLogin;
    
     private String emailVerificationToken;
 

@@ -1,7 +1,6 @@
 package com.themoneywallet.usermanagmentservice.entity;
 
-import java.time.Instant;
-import java.util.Date;
+import java.time.LocalDateTime;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
@@ -12,7 +11,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Index;
 import jakarta.persistence.OneToOne;
-import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
 import jakarta.validation.constraints.Email;
@@ -61,9 +59,9 @@ public class User {
     private Role role;
     
     private String password;
-    private Instant createdAt;
+    private LocalDateTime createdAt;
 
-    private Instant updatedAt;
+    private LocalDateTime updatedAt;
 
     @OneToOne(cascade = CascadeType.ALL)
     private UserPreferences preferences;

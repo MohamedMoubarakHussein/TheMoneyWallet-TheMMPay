@@ -2,6 +2,7 @@ package com.walletservice.entity;
 
 import java.math.BigDecimal;
 import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 import jakarta.persistence.CascadeType;
@@ -46,8 +47,8 @@ public class Wallet {
     @Enumerated(EnumType.STRING)
     private CurrencyType CurrencyType;
   
-    private Instant creationDate;
-    private Instant updatedAt;
+    private LocalDateTime creationDate;
+    private LocalDateTime updatedAt;
     private Integer transactionCount;
 
     @Enumerated(EnumType.STRING)
