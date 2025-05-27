@@ -58,8 +58,8 @@ public class eventListener {
         profile.setPassword(userSingUpDetails.getPassword());
         profile.setRole(Role.USER);
         profile.setPreferences(userPreferences);
-        profile.setCreatedAt(Instant.now());
-        profile.setUpdatedAt(Instant.now());
+        profile.setCreatedAt(LocalDateTime.now());
+        profile.setUpdatedAt(LocalDateTime.now());
         
         this.profileRepository.save(profile);
         try {

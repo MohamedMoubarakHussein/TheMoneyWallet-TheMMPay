@@ -2,13 +2,11 @@ package com.themoneywallet.usermanagmentservice.controller;
 
 import org.springframework.web.bind.annotation.RestController;
 
-import com.themoneywallet.usermanagmentservice.dto.request.UserRequest;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.themoneywallet.usermanagmentservice.dto.request.UserUpdateRequest;
-import com.themoneywallet.usermanagmentservice.entity.User;
 import com.themoneywallet.usermanagmentservice.service.UserService;
 import com.themoneywallet.usermanagmentservice.utilite.ValidationErrorMessageConverter;
 
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,11 +16,10 @@ import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -37,90 +34,86 @@ public class UserController {
     private final ValidationErrorMessageConverter validConvertor;    
     private final UserService userService;
 
-    //TODO currently we handling database data violation in the backend not in the database itself
-    private ResponseEntity<String> signUp(@Valid @RequestBody UserRequest user , BindingResult result){
-        log.info("xsxss");
-        if(result.hasErrors()){
-            return  ResponseEntity.badRequest().body(this.validConvertor.Convert(result));
-        }
-         
-        return this.userService.signUp(user);
-    }
-
-
-
-    @PatchMapping("/updateuser")
-    public ResponseEntity<String> updateUser(HttpServletRequest request  ,@Valid @RequestBody UserUpdateRequest user ,BindingResult result){
-        if(result.hasErrors()){
-            return  ResponseEntity.badRequest().body(this.validConvertor.Convert(result));
-        }
-        return this.userService.updateUser(request,user);
-    }
-
-
-
     @GetMapping("/getbyemail")
-    public String getUserByEmail(@RequestParam("email") String email){
+   // @PreAuthorize("@mySecurity.checkCustomAccess()")
+    public ResponseEntity<String> getUserByEmail(@RequestParam("email") String email , @RequestHeader("Authorization") String token ) throws JsonProcessingException{
        return this.userService.getUserByEmail(email);
     }
 
-     @GetMapping("/getidbytoken")
-    public String getIdByToken(@RequestHeader("Authorization") String token){
-       return this.userService.getIdByToken(token.substring(7));
+    @GetMapping("/getidbytoken")
+    public ResponseEntity<String> getIdByToken(@RequestHeader("Authorization") String token  ,@CookieValue("refreshToken") String refToken) throws JsonProcessingException{
+        log.info("Inside the userman service"+ token);
+       return this.userService.getIdByToken(token, refToken);
+    }
+
+    @GetMapping("/userprefernce")
+    public ResponseEntity<String> getUserPrefernce(@RequestHeader("Authorization") String token){
+        
+       return this.userService.getUserPrefernce(token);
     }
     
     @GetMapping("/getbyusername")
-    public String getUserByUserName(@RequestParam("user") String userName){
+    public ResponseEntity<String> getUserByUserName(@RequestParam("user") String userName){
        return this.userService.getUserByUserName(userName);
     }
 
-    @DeleteMapping("/deletebyemail")
-    public ResponseEntity<String> deleteUser(@RequestParam("email") String email){
-       return this.userService.deleteUser(email);
-    }
-
     @GetMapping("/getAll")
-    public Iterable<User> returnAll(){
+    // @PreAuthorize("@mySecurity.checkCustomAccess()") must be admin
+    public ResponseEntity<String> returnAll(){
         return this.userService.returnAll();
     }
 
-  /*   @PutMapping("/rest")
-    public ResponseEntity<String> restPassword(@RequestParam("email") String email,@Valid @RequestBody UserUpdateRequest user ,BindingResult result){
+    @GetMapping("/profile")
+    public ResponseEntity<String> getUserProfile(@RequestHeader("Authorization") String token) {
+            
+        return this.userService.getUserProfile(token);
+    }
+
+    @GetMapping("role")
+    public ResponseEntity<String> getUserRoles(@RequestHeader("Authorization") String token) {
+            
+        return userService.getUserRole(token);
+    }
+
+    @PatchMapping("/updateuser")
+    public ResponseEntity<String> updateUserProfile(@RequestHeader("Authorization") String token  ,@Valid @RequestBody UserUpdateRequest user ,BindingResult result){
         if(result.hasErrors()){
             return  ResponseEntity.badRequest().body(this.validConvertor.Convert(result));
         }
-        return this.userService.updateUser(email, user);
-    }*/
+        return this.userService.updateUser(token,user);
+    }
 
-      @GetMapping("/{userId}")
-    public ResponseEntity<String> getUserProfile(@PathVariable String userId) {
-            
-        return this.userService.getUserById(userId);
+
+    @PatchMapping("/updateuserpref")
+    public ResponseEntity<String> updateUserPrfernce(@RequestHeader("Authorization") String token  ,@Valid @RequestBody UserUpdateRequest user ,BindingResult result){
+        if(result.hasErrors()){
+            return  ResponseEntity.badRequest().body(this.validConvertor.Convert(result));
+        }
+        return this.userService.updateUserPrfernce(token,user);
     }
-    
-    @PutMapping("/{userId}")
-    public ResponseEntity<String> updateUserProfile(
-            @PathVariable String userId,
-            @RequestBody @Valid UserUpdateRequest request) {
-            
-        
-        return userService.updateUserProfile(userId, request);
+
+
+
+    @PatchMapping("/role")
+    public ResponseEntity<String> updateUserRoles(@RequestHeader("Authorization") String token  ,@Valid @RequestBody UserUpdateRequest user ,BindingResult result){
+        if(result.hasErrors()){
+            return  ResponseEntity.badRequest().body(this.validConvertor.Convert(result));
+        }
+        return this.userService.updateUserRole(token,user);
     }
-    
- /* 
-    @PutMapping("/{userId}/role")
-    public ResponseEntity<String> updateUserRoles(
-            @PathVariable String userId,
-            @RequestBody UserUpdateRequest request) {
-            
-       
-        return userService.updateUserRole(userId, request.getRole());
-    }
-    */
+  
 
 
    
-    
+  
+
+    @DeleteMapping("/delete")
+    public ResponseEntity<String> deleteUser(String token){
+       return this.userService.deleteUser(token);
+    }
+
+   
+
  
     
 }

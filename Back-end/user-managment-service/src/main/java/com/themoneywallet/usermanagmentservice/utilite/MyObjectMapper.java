@@ -10,7 +10,7 @@ import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 @Component
-public class ObjectMapper {
+public class MyObjectMapper {
     private final ModelMapper modelMapper;
     public <T, U> U map(T source , U distantion){
         this.modelMapper.map(source, distantion);
