@@ -17,7 +17,7 @@ import lombok.NoArgsConstructor;
 public class UnifiedResponse {
 
     @Builder.Default
-    private Map<String , String> data = new HashMap<>();
+    private Map<String , Object> data = new HashMap<>();
     @Builder.Default
     private Instant timeStamp = Instant.now();
     

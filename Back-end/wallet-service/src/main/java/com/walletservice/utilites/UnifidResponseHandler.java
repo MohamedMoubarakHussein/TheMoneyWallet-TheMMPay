@@ -17,7 +17,7 @@ public class UnifidResponseHandler {
     
     public UnifiedResponse makResponse(
         boolean haveData ,
-        Map<String , String> data,
+        Map<String , Object> data,
         boolean haveError , 
         String statusInternalCode
     ){

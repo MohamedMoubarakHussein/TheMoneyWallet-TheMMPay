@@ -1,7 +1,8 @@
-package com.walletservice.service;
+package com.walletservice.service.shared;
 
 import java.math.BigDecimal;
 import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -18,6 +19,7 @@ import com.walletservice.entity.WalletTypes;
 import com.walletservice.event.Event;
 
 import com.walletservice.repository.WalletRepository;
+import com.walletservice.service.WalletService;
 
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
@@ -38,8 +40,8 @@ public class eventListener {
            wallet.setUserId(Long.valueOf(event.getUserId()));
            wallet.setWalletType(WalletTypes.PRIMARY);
            wallet.setStatus(WalletStatus.INACTIVE);
-           wallet.setCreationDate(Instant.now());
-           wallet.setUpdatedAt(Instant.now());
+           wallet.setCreationDate(LocalDateTime.now());
+           wallet.setUpdatedAt(LocalDateTime.now());
            wallet.setCurrencyType(CurrencyType.POUND);
            wallet.setTransactionCount(0);
            wallet.setLimits(WalletLimits.builder().dailyTransactionLimit(BigDecimal.valueOf(1000)).lowBalanceThreshold(BigDecimal.valueOf(1000)).maxBalance(BigDecimal.valueOf(2000)).maxTransactionAmount(BigDecimal.valueOf(200)).build());

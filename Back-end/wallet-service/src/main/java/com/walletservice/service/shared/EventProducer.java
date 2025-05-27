@@ -1,4 +1,4 @@
-package com.walletservice.service;
+package com.walletservice.service.shared;
 
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
@@ -16,6 +16,12 @@ public class EventProducer {
     private final KafkaTemplate<String, Event> kafkaTemplate;
     
     public void publishWalletCreationEvent(Event event) {
+     
+        kafkaTemplate.send("wallet-creation-event", event);
+        log.info("Published wallet event: {}", event);
+  
+    }
+    public void publishWalletStatusChangedEvent(Event event) {
      
         kafkaTemplate.send("wallet-creation-event", event);
         log.info("Published wallet event: {}", event);
