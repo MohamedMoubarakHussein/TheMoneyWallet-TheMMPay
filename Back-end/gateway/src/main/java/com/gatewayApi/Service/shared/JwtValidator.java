@@ -2,6 +2,7 @@ package com.gatewayApi.Service.shared;
 
 import java.security.Key;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Map;
 
 import org.springframework.http.HttpStatusCode;
@@ -88,8 +89,11 @@ public class JwtValidator   {
        
        boolean fact1 =  claim.getExpiration().after(new Date());
       
-     
-      return Map.of(1, String.valueOf(fact1) , 2, status,3 , this.newToken);
+       Map<Integer , Object> mp =  new HashMap<>();
+       mp.put(1, String.valueOf(fact1));
+       mp.put(2, status);
+       mp.put(3 , this.newToken);
+      return mp;
     }
 
     

@@ -9,6 +9,7 @@ import org.springframework.web.reactive.config.EnableWebFlux;
 @EnableDiscoveryClient
 @EnableWebFlux
 public class Gateway {
+
     public static void main(String[] args) {
         SpringApplication.run(Gateway.class, args);
     }
