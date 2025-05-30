@@ -1,33 +1,26 @@
 package com.themoneywallet.usermanagmentservice.utilite;
 
+import com.themoneywallet.usermanagmentservice.dto.response.UnifiedResponse;
 import java.time.Instant;
-
+import java.time.LocalDateTime;
 import java.util.Map;
-
-
 import org.springframework.stereotype.Component;
 
-import com.themoneywallet.usermanagmentservice.dto.response.UnifiedResponse;
-
-
-
-
 @Component
-
 public class UnifidResponseHandler {
 
-    
-    public UnifiedResponse makResponse(boolean haveData ,
-                                        Map<String , String> data,
-                                        boolean haveError , 
-                                        String statusInternalCode)
-    {
-        return  UnifiedResponse.builder()
-                                .timeStamp(Instant.now())
-                                .haveData(haveData)
-                                .data(data)
-                                .haveError(haveError)
-                                .statusInternalCode(statusInternalCode)
-                                .build();
+    public UnifiedResponse makResponse(
+        boolean haveData,
+        Map<String, Map<String, String>> data,
+        boolean haveError,
+        String statusInternalCode
+    ) {
+        return UnifiedResponse.builder()
+            .timeStamp(LocalDateTime.now())
+            .haveData(haveData)
+            .data(data)
+            .haveError(haveError)
+            .statusInternalCode(statusInternalCode)
+            .build();
     }
 }
