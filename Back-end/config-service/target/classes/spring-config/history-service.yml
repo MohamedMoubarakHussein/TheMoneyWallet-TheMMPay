@@ -8,15 +8,10 @@ spring:
             host: localhost
             port: 6379
     datasource:
-        driver-class-name: com.mysql.cj.jdbc.Driver
-        password: 123456789
-        url: jdbc:mysql://localhost:3306/history_service
-        username: root
-    jpa:
-        database-platform: org.hibernate.dialect.MySQLDialect
-        hibernate:
-            ddl-auto: update
-        show-sql: true
+      driver-class-name: ru.yandex.clickhouse.ClickHouseDriver
+      password: ''
+      url: jdbc:clickhouse://localhost:8123/default
+      username: default
     kafka:
         bootstrap-servers: localhost:9092
         consumer:
@@ -53,3 +48,4 @@ eureka:
     service-url:
       defaultZone: http://localhost:8888/eureka
       
+

@@ -3,16 +3,10 @@ server:
 spring:
     application:
         name: notification-service
-    datasource:
-        driver-class-name: com.mysql.cj.jdbc.Driver
-        password: 123456789
-        url: jdbc:mysql://localhost:3306/notification_service
-        username: root
-    jpa:
-        database-platform: org.hibernate.dialect.MySQLDialect
-        hibernate:
-            ddl-auto: update
-        show-sql: true
+    data:
+      mongodb:
+        uri: mongodb://localhost:27017/notification_db
+        auto-index-creation: true
     kafka:
         bootstrap-servers: localhost:9092
         consumer:
@@ -47,3 +41,31 @@ eureka:
     service-url:
       defaultZone: http://localhost:8888/eureka
       
+mail:
+  host: smtp.gmail.com
+  port: 587
+  username: ${EMAIL_USERNAME:your-email@gmail.com}
+  password: ${EMAIL_PASSWORD:your-app-password}
+  properties:
+    mail:
+      smtp:
+        auth: true
+        starttls:
+        enable: true
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+  endpoint:
+    health:
+      show-details: always
+
+notification:
+  email:
+    from: noreply@yourcompany.com
+  websocket:
+    endpoint: /ws
+  retry:
+    max-attempts: 3
+    delay: 1000
