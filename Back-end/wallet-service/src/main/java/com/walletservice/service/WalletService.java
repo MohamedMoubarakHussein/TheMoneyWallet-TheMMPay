@@ -26,6 +26,7 @@ import java.util.Map;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -367,13 +368,8 @@ public class WalletService {
             );
     }
 
+    @Cacheable(value = "getUserId", key = "#refToken")
     public long getUserId(String token, String refToken) {
-        String key = this.redisService.getData(refToken);
-        if (key != null) {
-            log.info("Fetching userId from cache");
-            return Long.valueOf(key);
-        }
-
         ResponseEntity<String> req;
         log.info("Trying to get user id from user");
         req = this.httpHelper.sendDataToUserMangmentService(token, refToken);
@@ -407,12 +403,6 @@ public class WalletService {
         }
 
         String userId = res.getData().get("data").get("id");
-
-        try {
-            this.redisService.saveData(refToken, userId);
-        } catch (Exception e) {
-            log.info("error in connecting to redis " + e.getMessage());
-        }
 
         return Long.valueOf(userId);
     }

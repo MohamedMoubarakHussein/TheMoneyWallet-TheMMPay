@@ -17,5 +17,5 @@ public class Event {
     private String userId;
     private EventType eventType;
     private LocalDateTime timestamp;
-    private Map<String, Object> additionalData;
+    private Map<String, Map<String, String>> additionalData;
 }

@@ -54,3 +54,16 @@ eureka:
       defaultZone: http://localhost:8888/eureka
       
 
+otel:
+  traces:
+    exporter:
+      otlp:
+        endpoint: http://localhost:4317
+  metrics:
+    exporter:
+      otlp:
+        endpoint: http://localhost:4317
+  resource:
+    attributes: service.name=my-spring-boot-app
+  sampler:
+    probability: 1.0

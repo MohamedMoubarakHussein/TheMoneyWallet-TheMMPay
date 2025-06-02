@@ -13,7 +13,7 @@ public class EventHandler {
     public Event makeEvent(
         EventType eventType,
         String userId,
-        Map<String, Object> additionalData
+        Map<String, Map<String, String>> additionalData
     ) {
         return Event.builder()
             .eventId(UUID.randomUUID().toString())
