@@ -1,4 +1,4 @@
-package com.walletservice.event;
+package com.themoneywallet.historyservice.event;
 
 import java.time.LocalDateTime;
 import java.util.Map;

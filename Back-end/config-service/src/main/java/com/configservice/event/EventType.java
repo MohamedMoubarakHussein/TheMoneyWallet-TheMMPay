@@ -1,4 +1,4 @@
-package com.themoneywallet.transcationservice.event;
+package com.themoneywallet.historyservice.event;
 
 public enum EventType {
     LOGIN_SUCCESS,
@@ -20,5 +20,4 @@ public enum EventType {
     WALLET_ADD_FUND,
     WALLET_REMOVE_FUND,
     WALLET_DELETED,
-    TRANSFER_TRANSACTION_START,
 }

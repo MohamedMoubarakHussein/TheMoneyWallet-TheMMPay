@@ -79,7 +79,10 @@ public class WalletService {
                     this.eventHandler.makeEvent(
                             EventType.CREATED_WALLET,
                             String.valueOf(userId),
-                            Map.of("data", userWallet)
+                            Map.of(
+                                "data",
+                                Map.of("data", userWallet.toString())
+                            )
                         )
                 );
             return ResponseEntity.ok()
@@ -181,7 +184,7 @@ public class WalletService {
                 this.eventHandler.makeEvent(
                         EventType.WALLET_STATUS_CHANGED,
                         String.valueOf(userId),
-                        Map.of("data", wallet)
+                        Map.of("data", Map.of("data", wallet.toString()))
                     )
             );
         this.walletRepository.save(wallet);
@@ -256,7 +259,7 @@ public class WalletService {
                 this.eventHandler.makeEvent(
                         EventType.WALLET_LIMIT_UPDATED,
                         String.valueOf(userId),
-                        Map.of("data", wallet)
+                        Map.of("data", Map.of("data", wallet.toString()))
                     )
             );
         this.walletRepository.save(wallet);
@@ -283,7 +286,7 @@ public class WalletService {
                 this.eventHandler.makeEvent(
                         EventType.WALLET_ADD_FUND,
                         String.valueOf(userId),
-                        Map.of("data", wallet)
+                        Map.of("data", Map.of("data", wallet.toString()))
                     )
             );
         this.walletRepository.save(wallet);
@@ -314,7 +317,7 @@ public class WalletService {
                     this.eventHandler.makeEvent(
                             EventType.WALLET_REMOVE_FUND,
                             String.valueOf(userId),
-                            Map.of("data", wallet)
+                            Map.of("data", Map.of("data", wallet.toString()))
                         )
                 );
             this.walletRepository.save(wallet);
@@ -354,7 +357,7 @@ public class WalletService {
                 this.eventHandler.makeEvent(
                         EventType.WALLET_DELETED,
                         String.valueOf(userId),
-                        Map.of("data", wallet)
+                        Map.of("data", Map.of("data", wallet.toString()))
                     )
             );
         return ResponseEntity.ok()
