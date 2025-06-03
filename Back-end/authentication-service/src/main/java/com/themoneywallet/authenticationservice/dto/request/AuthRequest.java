@@ -13,13 +13,21 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 public class AuthRequest {
-    
+
     @NotNull(message = "email cannot be null.")
-    @Size(min=4,max=64,message = "email should be between 4 and 64 characters.")
+    @Size(
+        min = 4,
+        max = 64,
+        message = "email should be between 4 and 64 characters."
+    )
     @Email(message = "You should put a vaild email address.")
     private String email;
 
     @NotNull(message = "password cannot be null.")
-    @Size(min=8,max=32,message = "password should be between 8 and 32 characters.")
+    @Size(
+        min = 8,
+        max = 256,
+        message = "password should be at least 8 characters."
+    )
     private String password;
 }

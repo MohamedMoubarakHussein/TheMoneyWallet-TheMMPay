@@ -1,90 +1,82 @@
 package com.themoneywallet.authenticationservice.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.themoneywallet.authenticationservice.dto.request.AuthRequest;
+import com.themoneywallet.authenticationservice.dto.request.SignUpRequest;
+import com.themoneywallet.authenticationservice.service.implementation.AuthService;
+import com.themoneywallet.authenticationservice.utilities.ValidtionRequestHandler;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.CookieValue;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.themoneywallet.authenticationservice.dto.request.AuthRequest;
-import com.themoneywallet.authenticationservice.dto.request.SignUpRequest;
-import com.themoneywallet.authenticationservice.dto.response.UnifiedResponse;
-import com.themoneywallet.authenticationservice.service.implementation.AuthService;
-import com.themoneywallet.authenticationservice.utilities.ValidtionRequestHandler;
-
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-
 @RestController
-@RequestMapping( value = "/auth" , produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(value = "/auth", produces = MediaType.APPLICATION_JSON_VALUE)
 @RequiredArgsConstructor
 @Slf4j
 public class AuthController {
+
     private final AuthService authService;
     private final ValidtionRequestHandler validtionRequestHandlerhandler;
-   
-  
-   
-    @PostMapping(value = "/signup" )
-    public ResponseEntity<String> Register(@Valid @RequestBody SignUpRequest user, BindingResult result){
-        if(result.hasErrors()){
-            UnifiedResponse myResponse = new UnifiedResponse();
-            this.validtionRequestHandlerhandler.handle(result ,myResponse);
-            return new ResponseEntity<>(myResponse.toString() , HttpStatus.BAD_REQUEST);
+    private final ObjectMapper objectMapper;
+
+    @PostMapping(value = "/signup")
+    public ResponseEntity<String> Register(
+        @Valid @RequestBody SignUpRequest user,
+        BindingResult result,
+        HttpServletRequest req
+    ) throws JsonProcessingException {
+        if (result.hasErrors()) {
+            return new ResponseEntity<>(
+                this.objectMapper.writeValueAsString(
+                        this.validtionRequestHandlerhandler.handle(result)
+                    ),
+                HttpStatus.BAD_REQUEST
+            );
         }
-     
-     
-     
-        return this.authService.signUp(user);
+
+        return this.authService.signUp(user, req);
     }
 
     @PostMapping("/signin")
-    public ResponseEntity<String> signIn(@Valid @RequestBody AuthRequest user , BindingResult result){
-        if(result.hasErrors()){
-            UnifiedResponse myResponse = new UnifiedResponse();
-            this.validtionRequestHandlerhandler.handle(result ,myResponse);
-            return new ResponseEntity<>(myResponse.toString() , HttpStatus.BAD_REQUEST);
+    public ResponseEntity<String> signIn(
+        @Valid @RequestBody AuthRequest user,
+        BindingResult result,
+        HttpServletRequest req
+    ) throws JsonProcessingException {
+        if (result.hasErrors()) {
+            return new ResponseEntity<>(
+                this.objectMapper.writeValueAsString(
+                        this.validtionRequestHandlerhandler.handle(result)
+                    ),
+                HttpStatus.BAD_REQUEST
+            );
         }
 
-        return this.authService.signIn(user);
+        return this.authService.signIn(user, req);
     }
 
-
-    @PostMapping("/refreshtoken2")
-    public ResponseEntity<String> refresh2(@RequestHeader("Authorization") String token) {
-        log.info(token);
-        return this.authService.refreshToken(token);
-
+    @PostMapping("/refreshtoken")
+    public ResponseEntity<String> refresh(
+        @RequestHeader("Authorization") String token,
+        HttpServletRequest req
+    ) throws JsonProcessingException {
+        return this.authService.refreshToken(token, req);
     }
-    
-
-   
-
-
-   @PostMapping("/verify-email")
-    public ResponseEntity<UnifiedResponse> verifyEmail(@CookieValue("refreshToken") String token) {
-        return this.authService.verifyEmail(token);
-    }
-
-
-
 
     @PostMapping("/logout")
-    public ResponseEntity<UnifiedResponse> logout(HttpServletRequest request) {
+    public ResponseEntity<String> logout(HttpServletRequest request)
+        throws JsonProcessingException {
         return this.authService.logout(request);
     }
- 
-
-
-
-
-
 }

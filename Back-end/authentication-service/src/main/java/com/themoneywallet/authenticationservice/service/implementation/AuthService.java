@@ -1,10 +1,13 @@
 package com.themoneywallet.authenticationservice.service.implementation;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.themoneywallet.authenticationservice.dto.request.AuthRequest;
 import com.themoneywallet.authenticationservice.dto.request.SignUpRequest;
 import com.themoneywallet.authenticationservice.dto.response.UnifiedResponse;
 import com.themoneywallet.authenticationservice.entity.UserCredential;
-import com.themoneywallet.authenticationservice.entity.UserRole;
+import com.themoneywallet.authenticationservice.entity.fixed.ResponseKey;
+import com.themoneywallet.authenticationservice.entity.fixed.UserRole;
 import com.themoneywallet.authenticationservice.event.Event;
 import com.themoneywallet.authenticationservice.event.EventType;
 import com.themoneywallet.authenticationservice.event.UserCreationEvent;
@@ -12,37 +15,29 @@ import com.themoneywallet.authenticationservice.event.UserLogInEvent;
 import com.themoneywallet.authenticationservice.repository.UserCredentialRepository;
 import com.themoneywallet.authenticationservice.service.defintion.AuthServiceDefintion;
 import com.themoneywallet.authenticationservice.utilities.DatabaseHelper;
-import com.themoneywallet.authenticationservice.utilities.HttpHelper;
-import jakarta.servlet.http.Cookie;
+import com.themoneywallet.authenticationservice.utilities.UnifidResponseHandler;
+import jakarta.servlet.ServletRequest;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
-import jakarta.validation.Valid;
 import java.time.Duration;
-import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.boot.autoconfigure.security.SecurityProperties.User;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
-import org.springframework.messaging.MessagingException;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 
 /**
  *  Auth service is the core service of the auth
@@ -58,16 +53,22 @@ public class AuthService implements AuthServiceDefintion {
     private final JwtRefService jwtRefService;
     private final AuthenticationManager authenticationManager;
     private final DatabaseHelper databaseHelper;
-    private final HttpHelper httpHelper;
+    private final ObjectMapper objectMapper;
+    private final UnifidResponseHandler unifidHandler;
     private final UnifiedResponse unifiedResponse;
     private final EventProducer eventProducer;
     private final Integer COOKIE_MAX_AGE_H = 7;
     private final String COOKIE_PATH = "/";
     private final boolean IS_COOKIE_SECURE = false;
+    private final String COOKIE_SAME_SITE = "Lax";
 
     @Override
     @Transactional
-    public ResponseEntity<String> signUp(SignUpRequest request) {
+    public ResponseEntity<String> signUp(
+        SignUpRequest request,
+        ServletRequest req
+    ) throws JsonProcessingException {
+        String userIdent = getIden(req);
         Map<String, String> data = new HashMap<>();
         boolean errorFlage = false;
         if (databaseHelper.isEmailExist(request.getEmail())) {
@@ -79,12 +80,18 @@ public class AuthService implements AuthServiceDefintion {
             errorFlage = true;
         }
         if (errorFlage) {
-            unifiedResponse.setData(data);
-            unifiedResponse.setHaveError(true);
-            unifiedResponse.setHaveData(true);
-            unifiedResponse.setStatusInternalCode(null);
             return new ResponseEntity<>(
-                unifiedResponse.toString(),
+                this.objectMapper.writeValueAsString(
+                        this.unifidHandler.makResponse(
+                                true,
+                                this.unifidHandler.makeRespoData(
+                                        ResponseKey.ERROR,
+                                        data
+                                    ),
+                                true,
+                                "AUVD11002"
+                            )
+                    ),
                 HttpStatus.BAD_REQUEST
             );
         }
@@ -92,15 +99,26 @@ public class AuthService implements AuthServiceDefintion {
         // first part save the userCredential
         UserCredential userCredential;
         try {
-            userCredential = saveUserCredentialInAuthDb(request);
+            userCredential = saveUserCredentialInAuthDb(request, userIdent);
         } catch (Exception e) {
-            data.put("internal", "Contact website support Auth006 happend.");
-            unifiedResponse.setData(data);
-            unifiedResponse.setHaveError(true);
+            data.put(
+                "internal",
+                "Contact website support error code #AUDB10001."
+            );
 
-            unifiedResponse.setStatusInternalCode("Auth006");
+            unifiedResponse.setStatusInternalCode("AUDB10001");
             return new ResponseEntity<>(
-                unifiedResponse.toString(),
+                this.objectMapper.writeValueAsString(
+                        this.unifidHandler.makResponse(
+                                true,
+                                this.unifidHandler.makeRespoData(
+                                        ResponseKey.ERROR,
+                                        data
+                                    ),
+                                true,
+                                "AUDB10001"
+                            )
+                    ),
                 HttpStatus.BAD_REQUEST
             );
         }
@@ -112,21 +130,36 @@ public class AuthService implements AuthServiceDefintion {
         } catch (Exception e) {
             TransactionAspectSupport.currentTransactionStatus()
                 .setRollbackOnly();
-            unifiedResponse.setHaveError(true);
-            data.put("internal", "Contact website support Auth007 happend.");
-            unifiedResponse.setData(data);
-            unifiedResponse.setStatusInternalCode("Auth007");
+            data.put(
+                "internal",
+                "Contact website support error code #AUUC10001."
+            );
+
             return new ResponseEntity<>(
-                unifiedResponse.toString(),
+                this.objectMapper.writeValueAsString(
+                        this.unifidHandler.makResponse(
+                                true,
+                                this.unifidHandler.makeRespoData(
+                                        ResponseKey.ERROR,
+                                        data
+                                    ),
+                                true,
+                                "AUUC10001"
+                            )
+                    ),
                 HttpStatus.BAD_REQUEST
             );
         }
 
-        return handleSuccessed(request.getEmail());
+        return handleSuccessed(request.getEmail(), userIdent, "signup");
     }
 
     @Override
-    public ResponseEntity<String> signIn(AuthRequest request) {
+    public ResponseEntity<String> signIn(
+        AuthRequest request,
+        ServletRequest req
+    ) throws JsonProcessingException {
+        String userIdent = getIden(req);
         Map<String, String> data = new HashMap<>();
         try {
             this.authenticationManager.authenticate(
@@ -135,21 +168,21 @@ public class AuthService implements AuthServiceDefintion {
                         request.getPassword()
                     )
                 );
-
-            return handleSuccessedLogIn(
-                this.userCredentialRepository.findByEmail(
-                        request.getEmail()
-                    ).get()
-            );
+            return handleSuccessed(request.getEmail(), userIdent, "signin");
         } catch (Exception ex) {
             data.put("Internal", "Wrong userName or password.");
-            unifiedResponse.setHaveData(true);
-            unifiedResponse.setData(data);
-            unifiedResponse.setHaveError(true);
-            unifiedResponse.setStatusInternalCode("RAuth005");
-
             return new ResponseEntity<>(
-                unifiedResponse.toString(),
+                this.objectMapper.writeValueAsString(
+                        this.unifidHandler.makResponse(
+                                true,
+                                this.unifidHandler.makeRespoData(
+                                        ResponseKey.ERROR,
+                                        data
+                                    ),
+                                true,
+                                "AUCR11001"
+                            )
+                    ),
                 HttpStatus.BAD_REQUEST
             );
         }
@@ -161,14 +194,18 @@ public class AuthService implements AuthServiceDefintion {
         return isValid;
     }
 
-    private ResponseEntity<String> handleSuccessed(String email) {
+    private ResponseEntity<String> handleSuccessed(
+        String email,
+        String userIdent,
+        String status
+    ) throws JsonProcessingException {
         String accToken = this.jwtService.generateToken(email);
         String refToken = this.jwtRefService.generateToken(email);
 
         ResponseCookie cookie = ResponseCookie.from("refreshToken", refToken)
             .httpOnly(true)
-            .secure(IS_COOKIE_SECURE) // For HTTPS only
-            .sameSite("Lax")
+            .secure(IS_COOKIE_SECURE)
+            .sameSite(COOKIE_SAME_SITE)
             .maxAge(Duration.ofHours(COOKIE_MAX_AGE_H))
             .path(COOKIE_PATH)
             .build();
@@ -177,62 +214,48 @@ public class AuthService implements AuthServiceDefintion {
             this.userCredentialRepository.findByEmail(email).get();
         user.setToken(refToken);
         user.setLastLogin(LocalDateTime.now());
-        user.setIpAddress("192.168.1.1");
+        user.setIpAddress(userIdent);
+        user.setValidTill(LocalDateTime.now().plusHours(COOKIE_MAX_AGE_H));
         user.setRevoked(false);
         this.userCredentialRepository.save(user);
-        unifiedResponse.setHaveData(false);
-        unifiedResponse.setStatusInternalCode(null);
+        if (status.equals("signin")) {
+            UserLogInEvent info = UserLogInEvent.builder()
+                .email(user.getEmail())
+                .userRole(user.getUserRole().toString())
+                .id(user.getId())
+                .build();
 
+            Event event = Event.builder()
+                .eventId(UUID.randomUUID().toString())
+                .timestamp(LocalDateTime.now())
+                .userId(user.getId())
+                .eventType(EventType.LOGIN_SUCCESS)
+                .additionalData(
+                    this.unifidHandler.makeRespoData(
+                            ResponseKey.DATA,
+                            Map.of(
+                                "usreData",
+                                this.objectMapper.writeValueAsString(info)
+                            )
+                        )
+                )
+                .build();
+            this.eventProducer.publishSigninEvent(event);
+        }
         return ResponseEntity.status(HttpStatus.OK)
             .header(HttpHeaders.SET_COOKIE, cookie.toString())
             .header("Authorization", "Bearer " + accToken)
-            .body(unifiedResponse.toString());
+            .body(
+                this.objectMapper.writeValueAsString(
+                        this.unifidHandler.makResponse(false, null, false, null)
+                    )
+            );
     }
 
-    private ResponseEntity<String> handleSuccessedLogIn(UserCredential user) {
-        String email = user.getEmail();
-        String accToken = this.jwtService.generateToken(email);
-        String refToken = this.jwtRefService.generateToken(email);
-        user.setToken(refToken);
-        this.userCredentialRepository.save(user);
-        ResponseCookie cookie = ResponseCookie.from("refreshToken", refToken)
-            .httpOnly(true)
-            .secure(IS_COOKIE_SECURE) // For HTTPS only
-            .sameSite("Lax")
-            .maxAge(Duration.ofHours(COOKIE_MAX_AGE_H))
-            .path(COOKIE_PATH)
-            .build();
-
-        user.setToken(refToken);
-        user.setLastLogin(LocalDateTime.now());
-        user.setIpAddress("192.168.1.1");
-        user.setRevoked(false);
-        this.userCredentialRepository.save(user);
-        unifiedResponse.setHaveData(false);
-        unifiedResponse.setStatusInternalCode(null);
-
-        UserLogInEvent info = UserLogInEvent.builder()
-            .email(user.getEmail())
-            .userRole(user.getUserRole().toString())
-            .id(user.getId())
-            .build();
-
-        Event event = Event.builder()
-            .eventId(UUID.randomUUID().toString())
-            .timestamp(LocalDateTime.now())
-            .userId(String.valueOf(user.getId()))
-            .eventType(EventType.LOGIN_SUCCESS)
-            .additionalData(Map.of("data", Map.of("usreData", info.toString())))
-            .build();
-        this.eventProducer.publishSigninEvent(event);
-
-        return ResponseEntity.status(HttpStatus.OK)
-            .header(HttpHeaders.SET_COOKIE, cookie.toString())
-            .header("Authorization", "Bearer " + accToken)
-            .body(unifiedResponse.toString());
-    }
-
-    private UserCredential saveUserCredentialInAuthDb(SignUpRequest request) {
+    private UserCredential saveUserCredentialInAuthDb(
+        SignUpRequest request,
+        String ident
+    ) {
         UserCredential credential = UserCredential.builder()
             .email(request.getEmail())
             .userName(request.getUserName())
@@ -240,6 +263,9 @@ public class AuthService implements AuthServiceDefintion {
             .userRole(UserRole.ROLE_USER)
             .locked(false)
             .enabled(true)
+            .lastLogin(LocalDateTime.now())
+            .validTill(LocalDateTime.now().plusHours(COOKIE_MAX_AGE_H))
+            .ipAddress(ident)
             .build();
 
         return this.userCredentialRepository.save(credential);
@@ -248,10 +274,9 @@ public class AuthService implements AuthServiceDefintion {
     private void saveUserCredentialInUserMangmentService(
         SignUpRequest request,
         UserCredential credential
-    ) {
+    ) throws JsonProcessingException {
         UserCreationEvent info = UserCreationEvent.builder()
             .email(request.getEmail())
-            .password(credential.getPassword())
             .userRole(credential.getUserRole().toString())
             .userName(request.getUserName())
             .firstName(request.getFirstName())
@@ -261,16 +286,27 @@ public class AuthService implements AuthServiceDefintion {
         Event authEvent = Event.builder()
             .eventId(UUID.randomUUID().toString())
             .timestamp(LocalDateTime.now())
-            .userId(String.valueOf(info.getId()))
+            .userId(info.getId())
             .eventType(EventType.SIGN_UP)
-            .additionalData(Map.of("data", Map.of("usreData", info.toString())))
+            .additionalData(
+                Map.of(
+                    ResponseKey.DATA.toString(),
+                    Map.of(
+                        "usreData",
+                        this.objectMapper.writeValueAsString(info)
+                    )
+                )
+            )
             .build();
 
         eventProducer.publishSignUpEvent(authEvent);
     }
 
-    public ResponseEntity<String> refreshToken(String refreshToken) {
-        log.info("cdcd ");
+    public ResponseEntity<String> refreshToken(
+        String refreshToken,
+        ServletRequest req
+    ) throws JsonProcessingException {
+        String userIdent = getIden(req);
 
         Optional<UserCredential> user =
             this.userCredentialRepository.findByToken(refreshToken);
@@ -278,79 +314,88 @@ public class AuthService implements AuthServiceDefintion {
         if (user.isPresent()) {
             userr = user.get();
         } else {
-            return ResponseEntity.status(401).body("Invalid  Token");
+            return new ResponseEntity<>(
+                this.objectMapper.writeValueAsString(
+                        this.unifidHandler.makResponse(
+                                true,
+                                this.unifidHandler.makeRespoData(
+                                        ResponseKey.ERROR,
+                                        Map.of("token", "Invalid  Token")
+                                    ),
+                                true,
+                                "AUTK11001"
+                            )
+                    ),
+                HttpStatus.valueOf(401)
+            );
         }
 
-        /* 
-        if(userr.isRevoked()){
-            return ResponseEntity.status(401).body(UnifiedResponse.builder().data(Map.of("internal","Invalid  Token"))
-            .haveError(true)
-            .statusInternalCode("Auth004").build());
-        }
-            */
-
-        // revoke the token
-
-        // generate new access , refresh token
         String accToken = this.jwtService.generateToken(userr.getEmail());
         String refToken = this.jwtRefService.generateToken(userr.getEmail());
 
         ResponseCookie cookie = ResponseCookie.from("refreshToken", refToken)
             .httpOnly(true)
-            //.secure(true) // For HTTPS only
-            .sameSite("Lax")
-            .maxAge(Duration.ofHours(7))
-            .path("/")
+            .secure(IS_COOKIE_SECURE)
+            .sameSite(COOKIE_SAME_SITE)
+            .maxAge(Duration.ofHours(COOKIE_MAX_AGE_H))
+            .path(COOKIE_PATH)
             .build();
         user.get().setToken(refreshToken);
+        user.get().setIpAddress(userIdent);
+        user
+            .get()
+            .setValidTill(LocalDateTime.now().plusHours(COOKIE_MAX_AGE_H));
         this.userCredentialRepository.save(user.get());
-
-        Map<String, String> data = new HashMap<>();
-        data.put("token", accToken);
 
         return ResponseEntity.status(HttpStatus.OK)
             .header(HttpHeaders.SET_COOKIE, cookie.toString())
             .header("Authorization", "Bearer " + accToken)
-            .body(accToken);
+            .body(
+                this.objectMapper.writeValueAsString(
+                        this.unifidHandler.makResponse(false, null, false, null)
+                    )
+            );
     }
 
-    public ResponseEntity<UnifiedResponse> verifyEmail(String token) {
-        // validate token that send to email  if vaild change user to active
-        return null;
-    }
-
-    public ResponseEntity<UnifiedResponse> logout(HttpServletRequest request) {
+    public ResponseEntity<String> logout(HttpServletRequest request)
+        throws JsonProcessingException {
         String cookieName = "refreshToken";
         String token = Arrays.stream(request.getCookies())
             .filter(cookie -> cookieName.equals(cookie.getName()))
             .findFirst()
             .get()
             .getValue();
-        log.info("*************" + token);
+
         if (token != null) {
             Optional<UserCredential> user =
                 userCredentialRepository.findByToken(token);
-
-            user.ifPresent(t -> {
-                user.get().setToken("");
+            if (user.isPresent()) {
+                UserCredential userCredential = user.get();
+                userCredential.setToken("");
+                userCredential.setIpAddress(getIden(request));
+                userCredential.setLastLogin(LocalDateTime.now());
 
                 Event event = Event.builder()
                     .eventId(UUID.randomUUID().toString())
                     .timestamp(LocalDateTime.now())
-                    .userId(String.valueOf(user.get().getId()))
+                    .userId(user.get().getId())
                     .eventType(EventType.LOGOUT)
                     .additionalData(
                         Map.of(
-                            "data",
-                            Map.of("usreData", user.get().toString())
+                            ResponseKey.DATA.toString(),
+                            Map.of(
+                                "usreData",
+                                this.objectMapper.writeValueAsString(user.get())
+                            )
                         )
                     )
                     .build();
-                this.eventProducer.publishSigninEvent(event);
+
+                this.eventProducer.publishLogOutEvent(event);
                 userCredentialRepository.save(user.get());
-            });
+            }
         }
-        log.info("******************");
+
         ResponseCookie cookie = ResponseCookie.from("refreshToken", null)
             .httpOnly(true)
             .secure(IS_COOKIE_SECURE)
@@ -365,10 +410,17 @@ public class AuthService implements AuthServiceDefintion {
             .header(HttpHeaders.SET_COOKIE, cookie.toString())
             .header("Authorization", "")
             .body(
-                UnifiedResponse.builder()
-                    .haveError(false)
-                    .haveData(false)
-                    .build()
+                this.objectMapper.writeValueAsString(
+                        this.unifidHandler.makResponse(false, null, false, null)
+                    )
             );
+    }
+
+    private String getIden(ServletRequest req) {
+        return new StringBuilder("The user hostName : ")
+            .append(req.getRemoteHost())
+            .append(" The user ip address : ")
+            .append(req.getRemoteAddr())
+            .toString();
     }
 }
