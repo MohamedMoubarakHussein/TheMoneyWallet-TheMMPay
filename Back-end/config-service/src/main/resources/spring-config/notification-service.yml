@@ -7,6 +7,9 @@ spring:
       mongodb:
         uri: mongodb://localhost:27017/notification_db
         auto-index-creation: true
+        username: admin
+        password: 123456
+        authentication-database: admin
     kafka:
         bootstrap-servers: localhost:9092
         consumer:
@@ -41,17 +44,7 @@ eureka:
     service-url:
       defaultZone: http://localhost:8888/eureka
       
-mail:
-  host: smtp.gmail.com
-  port: 587
-  username: ${EMAIL_USERNAME:your-email@gmail.com}
-  password: ${EMAIL_PASSWORD:your-app-password}
-  properties:
-    mail:
-      smtp:
-        auth: true
-        starttls:
-        enable: true
+
 management:
   endpoints:
     web:
@@ -61,11 +54,3 @@ management:
     health:
       show-details: always
 
-notification:
-  email:
-    from: noreply@yourcompany.com
-  websocket:
-    endpoint: /ws
-  retry:
-    max-attempts: 3
-    delay: 1000

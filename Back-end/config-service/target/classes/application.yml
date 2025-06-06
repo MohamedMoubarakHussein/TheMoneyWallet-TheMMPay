@@ -1,20 +1,19 @@
-
 eureka:
-  client:
-    service-url:
-      defaultZone : http://localhost:8888/eureka
-
+    client:
+        service-url:
+            defaultZone: http://localhost:8888/eureka
 
 server:
-  port: 8109
+    port: 8109
 
 spring:
-  application:
-    name: config-server
-  cloud:
-    config:
-      server:
-        native:
-          search-locations: classpath:/spring-config/
-  profiles:
-    active: native
+    application:
+        name: config-server
+    cloud:
+        config:
+            server:
+                native:
+                    search-locations: classpath:/spring-config/
+
+    profiles:
+        active: native

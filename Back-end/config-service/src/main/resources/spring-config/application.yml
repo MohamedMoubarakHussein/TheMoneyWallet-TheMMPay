@@ -1,50 +1,47 @@
 # Log
 logging:
-  level:
-    org.springframework.security: TRACE
-    root : INFO
-    org.springframework.cloud.gateway: DEBUG
-    level.org.springframework.web : DEBUG
-    level.reactor.netty: DEBUG
-    
-    
+    level:
+        org.springframework.security: TRACE
+        root: INFO
+        org.springframework.cloud.gateway: DEBUG
+        level.org.springframework.web: DEBUG
+        level.reactor.netty: DEBUG
+        org.springframework.transaction: TRACE
+        logging.level.org.springframework.orm.jpa: DEBUG
 
-
-
-      
 spring:
-  datasource:
-    driver-class-name: com.mysql.cj.jdbc.Driver
-    username: root
-    password: 123456789
-  
-  jpa:
-    database-platform: org.hibernate.dialect.MySQLDialect
-    hibernate:
-      ddl-auto: update
-    show-sql: true
-  
-  kafka:
-    bootstrap-servers: localhost:9092
-    producer:
-      key-serializer: org.apache.kafka.common.serialization.StringSerializer
-      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
-      properties:
-        spring:
-          json:
-            add:
-              type:
-                headers: false
-    consumer:
-      auto-offset-reset: earliest
-      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
-      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
-      properties:
-        spring:
-          json:
-            trusted:
-              packages: '*'
-  
-  web:
-    resources:
-      add-mappings: false
+    datasource:
+        driver-class-name: com.mysql.cj.jdbc.Driver
+        username: root
+        password: 123456789
+
+    jpa:
+        database-platform: org.hibernate.dialect.MySQLDialect
+        hibernate:
+            ddl-auto: update
+        show-sql: true
+
+    kafka:
+        bootstrap-servers: localhost:9092
+        producer:
+            key-serializer: org.apache.kafka.common.serialization.StringSerializer
+            value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+            properties:
+                spring:
+                    json:
+                        add:
+                            type:
+                                headers: false
+        consumer:
+            auto-offset-reset: earliest
+            key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+            value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+            properties:
+                spring:
+                    json:
+                        trusted:
+                            packages: "*"
+
+    web:
+        resources:
+            add-mappings: false
