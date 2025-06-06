@@ -1,11 +1,14 @@
 package com.walletservice.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.walletservice.dto.request.WalletChangeFundReq;
 import com.walletservice.dto.request.WalletCreationRequest;
 import com.walletservice.entity.WalletLimits;
+import com.walletservice.entity.fixed.ResponseKey;
 import com.walletservice.service.WalletService;
 import com.walletservice.utilites.UnifidResponseHandler;
-import com.walletservice.utilites.ValidationErrorMessageConverter;
+import com.walletservice.utilites.ValidtionRequestHandler;
 import jakarta.validation.Valid;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
@@ -31,8 +34,9 @@ import org.springframework.web.bind.annotation.RestController;
 public class WalletController {
 
     private final WalletService walletService;
-    private final ValidationErrorMessageConverter VErrorConverter;
+    private final ValidtionRequestHandler VErrorConverter;
     private final UnifidResponseHandler uResponseHandler;
+    private final ObjectMapper objectMapper;
 
     @PostMapping("/create")
     public ResponseEntity<String> createWallet(
@@ -40,27 +44,33 @@ public class WalletController {
         BindingResult result,
         @RequestHeader("Authorization") String token,
         @CookieValue("refreshToken") String refToken
-    ) {
+    ) throws JsonProcessingException {
         if (wallet == null) return ResponseEntity.badRequest()
             .body(
-                this.uResponseHandler.makResponse(
-                        true,
-                        Map.of(
-                            "error",
-                            Map.of(
-                                "message",
-                                "Required request body is missing"
+                this.objectMapper.writeValueAsString(
+                        this.uResponseHandler.makResponse(
+                                true,
+                                Map.of(
+                                    ResponseKey.ERROR.toString(),
+                                    Map.of(
+                                        "message",
+                                        "Required request body is missing"
+                                    )
+                                ),
+                                true,
+                                "WA003"
                             )
-                        ),
-                        true,
-                        "WA003"
-                    ).toString()
+                    )
             );
 
         if (result.hasErrors()) return ResponseEntity.badRequest()
-            .body(this.VErrorConverter.Convert(result));
+            .body(
+                this.objectMapper.writeValueAsString(
+                        this.VErrorConverter.handle(result)
+                    )
+            );
 
-        Long id;
+        String id;
 
         try {
             log.info("token before xascsa" + token);
@@ -68,15 +78,17 @@ public class WalletController {
         } catch (Exception e) {
             return ResponseEntity.badRequest()
                 .body(
-                    this.uResponseHandler.makResponse(
-                            true,
-                            Map.of(
-                                "error",
-                                Map.of("message", "Internal error")
-                            ),
-                            true,
-                            "WA003"
-                        ).toString()
+                    this.objectMapper.writeValueAsString(
+                            this.uResponseHandler.makResponse(
+                                    true,
+                                    Map.of(
+                                        ResponseKey.ERROR.toString(),
+                                        Map.of("message", "Internal error")
+                                    ),
+                                    true,
+                                    "WA003"
+                                )
+                        )
                 );
         }
 
@@ -87,7 +99,7 @@ public class WalletController {
     public ResponseEntity<String> getAllWallets(
         @RequestHeader("Authorization") String token,
         @CookieValue("refreshToken") String refToken
-    ) {
+    ) throws JsonProcessingException {
         return this.walletService.getAllWallets(
                 this.walletService.getUserId(token, refToken)
             );
@@ -97,8 +109,8 @@ public class WalletController {
     public ResponseEntity<String> getWallet(
         @RequestHeader("Authorization") String token,
         @CookieValue("refreshToken") String refToken,
-        @RequestParam("id") Long id
-    ) {
+        @RequestParam("id") String id
+    ) throws JsonProcessingException {
         return this.walletService.getWallet(
                 this.walletService.getUserId(token, refToken),
                 id
@@ -109,8 +121,8 @@ public class WalletController {
     public ResponseEntity<String> walletStatus(
         @RequestHeader("Authorization") String token,
         @CookieValue("refreshToken") String refToken,
-        @RequestParam("id") Long id
-    ) {
+        @RequestParam("id") String id
+    ) throws JsonProcessingException {
         return this.walletService.getWalletStaus(
                 this.walletService.getUserId(token, refToken),
                 id
@@ -121,8 +133,8 @@ public class WalletController {
     public ResponseEntity<String> walletStatusChange(
         @RequestHeader("Authorization") String token,
         @CookieValue("refreshToken") String refToken,
-        @RequestParam("id") Long id
-    ) {
+        @RequestParam("id") String id
+    ) throws JsonProcessingException {
         return this.walletService.setWalletStaus(
                 this.walletService.getUserId(token, refToken),
                 id
@@ -133,8 +145,8 @@ public class WalletController {
     public ResponseEntity<String> getWalletBlance(
         @RequestHeader("Authorization") String token,
         @CookieValue("refreshToken") String refToken,
-        @RequestParam("id") Long id
-    ) {
+        @RequestParam("id") String id
+    ) throws JsonProcessingException {
         return this.walletService.getWalletBalance(
                 this.walletService.getUserId(token, refToken),
                 id
@@ -145,8 +157,8 @@ public class WalletController {
     public ResponseEntity<String> getWalletLimits(
         @RequestHeader("Authorization") String token,
         @CookieValue("refreshToken") String refToken,
-        @RequestParam("id") Long id
-    ) {
+        @RequestParam("id") String id
+    ) throws JsonProcessingException {
         return this.walletService.getWalletLimits(
                 this.walletService.getUserId(token, refToken),
                 id
@@ -160,46 +172,54 @@ public class WalletController {
         BindingResult result,
         @RequestHeader("Authorization") String token,
         @CookieValue("refreshToken") String refToken,
-        @RequestParam("id") Long id
-    ) {
+        @RequestParam("id") String id
+    ) throws JsonProcessingException {
         if (wallet == null) return ResponseEntity.badRequest()
             .body(
-                this.uResponseHandler.makResponse(
-                        true,
-                        Map.of(
-                            "error",
-                            Map.of(
-                                "message",
-                                "Required request body is missing"
+                this.objectMapper.writeValueAsString(
+                        this.uResponseHandler.makResponse(
+                                true,
+                                Map.of(
+                                    ResponseKey.ERROR.toString(),
+                                    Map.of(
+                                        "message",
+                                        "Required request body is missing"
+                                    )
+                                ),
+                                true,
+                                "WA003"
                             )
-                        ),
-                        true,
-                        "WA003"
-                    ).toString()
+                    )
             );
 
         if (result.hasErrors()) return ResponseEntity.badRequest()
-            .body(this.VErrorConverter.Convert(result));
+            .body(
+                this.objectMapper.writeValueAsString(
+                        this.VErrorConverter.handle(result)
+                    )
+            );
 
-        Long userId;
+        String userId;
         String refCookie;
         try {
             userId = this.walletService.getUserId(token, refToken);
         } catch (Exception e) {
             return ResponseEntity.badRequest()
                 .body(
-                    this.uResponseHandler.makResponse(
-                            true,
-                            Map.of(
-                                "error",
-                                Map.of(
-                                    "message",
-                                    "Required request body is missing"
+                    this.objectMapper.writeValueAsString(
+                            this.uResponseHandler.makResponse(
+                                    true,
+                                    Map.of(
+                                        ResponseKey.ERROR.toString(),
+                                        Map.of(
+                                            "message",
+                                            "Required request body is missing"
+                                        )
+                                    ),
+                                    true,
+                                    "WA003"
                                 )
-                            ),
-                            true,
-                            "WA003"
-                        ).toString()
+                        )
                 );
         }
 
@@ -212,45 +232,53 @@ public class WalletController {
         BindingResult result,
         @RequestHeader("Authorization") String token,
         @CookieValue("refreshToken") String refToken,
-        @RequestParam("id") Long id
-    ) {
+        @RequestParam("id") String id
+    ) throws JsonProcessingException {
         if (req == null) return ResponseEntity.badRequest()
             .body(
-                this.uResponseHandler.makResponse(
-                        true,
-                        Map.of(
-                            "error",
-                            Map.of(
-                                "message",
-                                "Required request body is missing"
+                this.objectMapper.writeValueAsString(
+                        this.uResponseHandler.makResponse(
+                                true,
+                                Map.of(
+                                    ResponseKey.ERROR.toString(),
+                                    Map.of(
+                                        "message",
+                                        "Required request body is missing"
+                                    )
+                                ),
+                                true,
+                                "WA003"
                             )
-                        ),
-                        true,
-                        "WA003"
-                    ).toString()
+                    )
             );
 
         if (result.hasErrors()) return ResponseEntity.badRequest()
-            .body(this.VErrorConverter.Convert(result));
+            .body(
+                this.objectMapper.writeValueAsString(
+                        this.VErrorConverter.handle(result)
+                    )
+            );
 
-        Long userId;
+        String userId;
         try {
             userId = this.walletService.getUserId(token, refToken);
         } catch (Exception e) {
             return ResponseEntity.badRequest()
                 .body(
-                    this.uResponseHandler.makResponse(
-                            true,
-                            Map.of(
-                                "error",
-                                Map.of(
-                                    "message",
-                                    "Required request body is missing"
+                    this.objectMapper.writeValueAsString(
+                            this.uResponseHandler.makResponse(
+                                    true,
+                                    Map.of(
+                                        ResponseKey.ERROR.toString(),
+                                        Map.of(
+                                            "message",
+                                            "Required request body is missing"
+                                        )
+                                    ),
+                                    true,
+                                    "WA003"
                                 )
-                            ),
-                            true,
-                            "WA003"
-                        ).toString()
+                        )
                 );
         }
 
@@ -263,45 +291,53 @@ public class WalletController {
         BindingResult result,
         @RequestHeader("Authorization") String token,
         @CookieValue("refreshToken") String refToken,
-        @RequestParam("id") Long id
-    ) {
+        @RequestParam("id") String id
+    ) throws JsonProcessingException {
         if (req == null) return ResponseEntity.badRequest()
             .body(
-                this.uResponseHandler.makResponse(
-                        true,
-                        Map.of(
-                            "error",
-                            Map.of(
-                                "message",
-                                "Required request body is missing"
+                this.objectMapper.writeValueAsString(
+                        this.uResponseHandler.makResponse(
+                                true,
+                                Map.of(
+                                    ResponseKey.ERROR.toString(),
+                                    Map.of(
+                                        "message",
+                                        "Required request body is missing"
+                                    )
+                                ),
+                                true,
+                                "WA003"
                             )
-                        ),
-                        true,
-                        "WA003"
-                    ).toString()
+                    )
             );
 
         if (result.hasErrors()) return ResponseEntity.badRequest()
-            .body(this.VErrorConverter.Convert(result));
+            .body(
+                this.objectMapper.writeValueAsString(
+                        this.VErrorConverter.handle(result)
+                    )
+            );
 
-        Long userId;
+        String userId;
         try {
             userId = this.walletService.getUserId(token, refToken);
         } catch (Exception e) {
             return ResponseEntity.badRequest()
                 .body(
-                    this.uResponseHandler.makResponse(
-                            true,
-                            Map.of(
-                                "error",
-                                Map.of(
-                                    "message",
-                                    "Required request body is missing"
+                    this.objectMapper.writeValueAsString(
+                            this.uResponseHandler.makResponse(
+                                    true,
+                                    Map.of(
+                                        ResponseKey.ERROR.toString(),
+                                        Map.of(
+                                            "message",
+                                            "Required request body is missing"
+                                        )
+                                    ),
+                                    true,
+                                    "WA003"
                                 )
-                            ),
-                            true,
-                            "WA003"
-                        ).toString()
+                        )
                 );
         }
 
@@ -312,8 +348,8 @@ public class WalletController {
     public ResponseEntity<String> walletDelete(
         @RequestHeader("Authorization") String token,
         @CookieValue("refreshToken") String refToken,
-        @RequestParam("id") Long id
-    ) {
+        @RequestParam("id") String id
+    ) throws JsonProcessingException {
         return this.walletService.Delete(
                 this.walletService.getUserId(token, refToken),
                 id

@@ -10,6 +10,7 @@ import com.walletservice.dto.response.UnifiedResponse;
 import com.walletservice.entity.Wallet;
 import com.walletservice.entity.WalletLimits;
 import com.walletservice.entity.WalletStatus;
+import com.walletservice.entity.fixed.ResponseKey;
 import com.walletservice.event.Event;
 import com.walletservice.event.EventType;
 import com.walletservice.repository.WalletRepository;
@@ -31,6 +32,22 @@ import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+/*
+ *  return new ResponseEntity<>(
+                this.objectMapper.writeValueAsString(
+                        this.unifidHandler.makResponse(
+                                true,
+                                this.unifidHandler.makeRespoData(
+                                        ResponseKey.ERROR,
+                                        data
+                                    ),
+                                true,
+                                "AUVD11002"
+                            )
+                    ),
+                HttpStatus.BAD_REQUEST
+            );
+ */
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -52,8 +69,8 @@ public class WalletService {
 
     public ResponseEntity<String> createWallet(
         WalletCreationRequest wallet,
-        long userId
-    ) {
+        String userId
+    ) throws JsonProcessingException {
         Wallet userWallet = Wallet.builder()
             .userId(userId)
             .walletType(wallet.getWalletType())
@@ -80,99 +97,124 @@ public class WalletService {
                             EventType.CREATED_WALLET,
                             String.valueOf(userId),
                             Map.of(
-                                "data",
-                                Map.of("data", userWallet.toString())
+                                ResponseKey.DATA.toString(),
+                                Map.of(
+                                    "data",
+                                    this.objectMapper.writeValueAsString(
+                                            userWallet
+                                        )
+                                )
                             )
                         )
                 );
             return ResponseEntity.ok()
                 .body(
-                    this.uResponseHandler.makResponse(
-                            false,
-                            null,
-                            false,
-                            null
-                        ).toString()
+                    this.objectMapper.writeValueAsString(
+                            this.uResponseHandler.makResponse(
+                                    false,
+                                    null,
+                                    false,
+                                    null
+                                )
+                        )
                 );
         } catch (Exception e) {
             return ResponseEntity.badRequest()
                 .body(
-                    this.uResponseHandler.makResponse(
-                            true,
-                            Map.of("error", Map.of("message", e.getMessage())),
-                            true,
-                            "WA004"
-                        ).toString()
+                    this.objectMapper.writeValueAsString(
+                            this.uResponseHandler.makResponse(
+                                    true,
+                                    Map.of(
+                                        ResponseKey.ERROR.toString(),
+                                        Map.of("details", e.getMessage())
+                                    ),
+                                    true,
+                                    "WA004"
+                                )
+                        )
                 );
         }
     }
 
-    public ResponseEntity<String> getAllWallets(long userId) {
-        StringBuilder sb = new StringBuilder();
-
-        for (Wallet we : this.walletRepository.findAllByUserId(userId)) {
-            sb.append(we.toString() + " \n");
-        }
-
+    public ResponseEntity<String> getAllWallets(String userId)
+        throws JsonProcessingException {
         return ResponseEntity.ok()
             .body(
-                this.uResponseHandler.makResponse(
-                        true,
-                        Map.of("data", Map.of("allWallet", sb.toString())),
-                        false,
-                        null
-                    ).toString()
-            );
-    }
-
-    public ResponseEntity<String> getWallet(long userId, Long id) {
-        log.info("user id :" + userId + " wallet id : " + id);
-        return ResponseEntity.ok()
-            .body(
-                this.uResponseHandler.makResponse(
-                        true,
-                        Map.of(
-                            "data",
-                            Map.of(
-                                "wallet",
-                                this.walletRepository.findByUserIdAndId(
-                                        userId,
-                                        id
-                                    ).toString()
-                            )
-                        ),
-                        false,
-                        null
-                    ).toString()
-            );
-    }
-
-    public ResponseEntity<String> getWalletStaus(long userId, Long id) {
-        log.info("user id :" + userId + " wallet id : " + id);
-        return ResponseEntity.ok()
-            .body(
-                this.uResponseHandler.makResponse(
-                        true,
-                        Map.of(
-                            "data",
-                            Map.of(
-                                "status",
-                                this.walletRepository.findByUserIdAndId(
-                                        userId,
-                                        id
+                this.objectMapper.writeValueAsString(
+                        this.uResponseHandler.makResponse(
+                                true,
+                                Map.of(
+                                    ResponseKey.DATA.toString(),
+                                    Map.of(
+                                        "Wallets",
+                                        this.objectMapper.writeValueAsString(
+                                                this.walletRepository.findAllByUserId(
+                                                        userId
+                                                    )
+                                            )
                                     )
-                                    .getStatus()
-                                    .toString()
+                                ),
+                                false,
+                                null
                             )
-                        ),
-                        false,
-                        null
-                    ).toString()
+                    )
             );
     }
 
-    public ResponseEntity<String> setWalletStaus(long userId, Long id) {
-        log.info("user id :" + userId + " wallet id : " + id);
+    public ResponseEntity<String> getWallet(String userId, String id)
+        throws JsonProcessingException {
+        return ResponseEntity.ok()
+            .body(
+                this.objectMapper.writeValueAsString(
+                        this.uResponseHandler.makResponse(
+                                true,
+                                Map.of(
+                                    ResponseKey.DATA.toString(),
+                                    Map.of(
+                                        "wallet",
+                                        this.objectMapper.writeValueAsString(
+                                                this.walletRepository.findByUserIdAndId(
+                                                        userId,
+                                                        id
+                                                    )
+                                            )
+                                    )
+                                ),
+                                false,
+                                null
+                            )
+                    )
+            );
+    }
+
+    public ResponseEntity<String> getWalletStaus(String userId, String id)
+        throws JsonProcessingException {
+        return ResponseEntity.ok()
+            .body(
+                this.objectMapper.writeValueAsString(
+                        this.uResponseHandler.makResponse(
+                                true,
+                                Map.of(
+                                    ResponseKey.DATA.toString(),
+                                    Map.of(
+                                        "status",
+                                        this.objectMapper.writeValueAsString(
+                                                this.walletRepository.findByUserIdAndId(
+                                                        userId,
+                                                        id
+                                                    ).getStatus()
+                                            )
+                                    )
+                                ),
+                                false,
+                                null
+                            )
+                    )
+            );
+    }
+
+    public ResponseEntity<String> setWalletStaus(String userId, String id)
+        throws JsonProcessingException {
         Wallet wallet = this.walletRepository.findByUserIdAndId(userId, id);
         if (wallet.getStatus().equals(WalletStatus.INACTIVE)) {
             wallet.setStatus(WalletStatus.ACTIVE);
@@ -184,130 +226,157 @@ public class WalletService {
                 this.eventHandler.makeEvent(
                         EventType.WALLET_STATUS_CHANGED,
                         String.valueOf(userId),
-                        Map.of("data", Map.of("data", wallet.toString()))
+                        Map.of(
+                            ResponseKey.DATA.toString(),
+                            Map.of(
+                                "data",
+                                this.objectMapper.writeValueAsString(wallet)
+                            )
+                        )
                     )
             );
         this.walletRepository.save(wallet);
         return ResponseEntity.ok()
             .body(
-                this.uResponseHandler.makResponse(
-                        false,
-                        null,
-                        false,
-                        null
-                    ).toString()
+                this.objectMapper.writeValueAsString(
+                        this.uResponseHandler.makResponse(
+                                false,
+                                null,
+                                false,
+                                null
+                            )
+                    )
             );
     }
 
-    public ResponseEntity<String> getWalletBalance(long userId, Long id) {
+    public ResponseEntity<String> getWalletBalance(String userId, String id)
+        throws JsonProcessingException {
         log.info("user id :" + userId + " wallet id : " + id);
         return ResponseEntity.ok()
             .body(
-                this.uResponseHandler.makResponse(
-                        true,
-                        Map.of(
-                            "data",
-                            Map.of(
-                                "balance",
-                                this.walletRepository.findByUserIdAndId(
-                                        userId,
-                                        id
+                this.objectMapper.writeValueAsString(
+                        this.uResponseHandler.makResponse(
+                                true,
+                                Map.of(
+                                    ResponseKey.DATA.toString(),
+                                    Map.of(
+                                        "balance",
+                                        this.objectMapper.writeValueAsString(
+                                                this.walletRepository.findByUserIdAndId(
+                                                        userId,
+                                                        id
+                                                    ).getBalance()
+                                            )
                                     )
-                                    .getBalance()
-                                    .toString()
+                                ),
+                                false,
+                                null
                             )
-                        ),
-                        false,
-                        null
-                    ).toString()
+                    )
             );
     }
 
-    public ResponseEntity<String> getWalletLimits(long userId, Long id) {
+    public ResponseEntity<String> getWalletLimits(String userId, String id)
+        throws JsonProcessingException {
         log.info("user id :" + userId + " wallet id : " + id);
         return ResponseEntity.ok()
             .body(
-                this.uResponseHandler.makResponse(
-                        true,
-                        Map.of(
-                            "data",
-                            Map.of(
-                                "limits",
-                                this.walletRepository.findByUserIdAndId(
-                                        userId,
-                                        id
+                this.objectMapper.writeValueAsString(
+                        this.uResponseHandler.makResponse(
+                                true,
+                                Map.of(
+                                    ResponseKey.DATA.toString(),
+                                    Map.of(
+                                        "limits",
+                                        this.objectMapper.writeValueAsString(
+                                                this.walletRepository.findByUserIdAndId(
+                                                        userId,
+                                                        id
+                                                    ).getLimits()
+                                            )
                                     )
-                                    .getLimits()
-                                    .toString()
+                                ),
+                                false,
+                                null
                             )
-                        ),
-                        false,
-                        null
-                    ).toString()
+                    )
             );
     }
 
     public ResponseEntity<String> UpdateWalletLimits(
         WalletLimits walletLimit,
-        Long userId,
-        Long id
-    ) {
-        Wallet wallet =
-            this.walletRepository.findByUserIdAndId(userId, Long.valueOf(id));
+        String userId,
+        String id
+    ) throws JsonProcessingException {
+        Wallet wallet = this.walletRepository.findByUserIdAndId(userId, id);
         wallet.setLimits(walletLimit);
         this.eventProducer.publishWalletStatusChangedEvent(
                 this.eventHandler.makeEvent(
                         EventType.WALLET_LIMIT_UPDATED,
-                        String.valueOf(userId),
-                        Map.of("data", Map.of("data", wallet.toString()))
+                        userId,
+                        Map.of(
+                            ResponseKey.DATA.toString(),
+                            Map.of(
+                                "data",
+                                this.objectMapper.writeValueAsString(wallet)
+                            )
+                        )
                     )
             );
         this.walletRepository.save(wallet);
         return ResponseEntity.ok()
             .body(
-                this.uResponseHandler.makResponse(
-                        false,
-                        null,
-                        false,
-                        null
-                    ).toString()
+                this.objectMapper.writeValueAsString(
+                        this.uResponseHandler.makResponse(
+                                false,
+                                null,
+                                false,
+                                null
+                            )
+                    )
             );
     }
 
     public ResponseEntity<String> addfund(
         WalletChangeFundReq req,
-        Long userId,
-        Long id
-    ) {
-        Wallet wallet =
-            this.walletRepository.findByUserIdAndId(userId, Long.valueOf(id));
+        String userId,
+        String id
+    ) throws JsonProcessingException {
+        Wallet wallet = this.walletRepository.findByUserIdAndId(userId, id);
         wallet.setBalance(wallet.getBalance().add(req.getAmount()));
         this.eventProducer.publishWalletStatusChangedEvent(
                 this.eventHandler.makeEvent(
                         EventType.WALLET_ADD_FUND,
-                        String.valueOf(userId),
-                        Map.of("data", Map.of("data", wallet.toString()))
+                        userId,
+                        Map.of(
+                            ResponseKey.DATA.toString(),
+                            Map.of(
+                                "data",
+                                this.objectMapper.writeValueAsString(wallet)
+                            )
+                        )
                     )
             );
         this.walletRepository.save(wallet);
         return ResponseEntity.ok()
             .body(
-                this.uResponseHandler.makResponse(
-                        false,
-                        null,
-                        false,
-                        null
-                    ).toString()
+                this.objectMapper.writeValueAsString(
+                        this.uResponseHandler.makResponse(
+                                false,
+                                null,
+                                false,
+                                null
+                            )
+                    )
             );
     }
 
     public ResponseEntity<String> rmfund(
         WalletChangeFundReq req,
-        Long userId,
-        Long id
-    ) {
-        Wallet wallet =
-            this.walletRepository.findByUserIdAndId(userId, Long.valueOf(id));
+        String userId,
+        String id
+    ) throws JsonProcessingException {
+        Wallet wallet = this.walletRepository.findByUserIdAndId(userId, id);
         if (
             wallet.getBalance().compareTo(req.getAmount()) == 1 ||
             wallet.getBalance().compareTo(req.getAmount()) == 0
@@ -316,63 +385,79 @@ public class WalletService {
             this.eventProducer.publishWalletStatusChangedEvent(
                     this.eventHandler.makeEvent(
                             EventType.WALLET_REMOVE_FUND,
-                            String.valueOf(userId),
-                            Map.of("data", Map.of("data", wallet.toString()))
+                            userId,
+                            Map.of(
+                                ResponseKey.DATA.toString(),
+                                Map.of(
+                                    "data",
+                                    this.objectMapper.writeValueAsString(wallet)
+                                )
+                            )
                         )
                 );
             this.walletRepository.save(wallet);
             return ResponseEntity.ok()
                 .body(
-                    this.uResponseHandler.makResponse(
-                            false,
-                            null,
-                            false,
-                            null
-                        ).toString()
+                    this.objectMapper.writeValueAsString(
+                            this.uResponseHandler.makResponse(
+                                    false,
+                                    null,
+                                    false,
+                                    null
+                                )
+                        )
                 );
         } else {
             return ResponseEntity.badRequest()
                 .body(
-                    this.uResponseHandler.makResponse(
-                            true,
-                            Map.of(
-                                "error",
-                                Map.of("message", "Insuffcient balance")
-                            ),
-                            true,
-                            null
-                        ).toString()
+                    this.objectMapper.writeValueAsString(
+                            this.uResponseHandler.makResponse(
+                                    true,
+                                    Map.of(
+                                        ResponseKey.ERROR.toString(),
+                                        Map.of("message", "Insuffcient balance")
+                                    ),
+                                    true,
+                                    null
+                                )
+                        )
                 );
         }
     }
 
-    public ResponseEntity<String> Delete(long userId, Long walletId) {
+    public ResponseEntity<String> Delete(String userId, String walletId)
+        throws JsonProcessingException {
         Wallet wallet =
-            this.walletRepository.findByUserIdAndId(
-                    userId,
-                    Long.valueOf(walletId)
-                );
+            this.walletRepository.findByUserIdAndId(userId, walletId);
         this.walletRepository.delete(wallet);
         this.eventProducer.publishWalletStatusChangedEvent(
                 this.eventHandler.makeEvent(
                         EventType.WALLET_DELETED,
-                        String.valueOf(userId),
-                        Map.of("data", Map.of("data", wallet.toString()))
+                        userId,
+                        Map.of(
+                            ResponseKey.DATA.toString(),
+                            Map.of(
+                                "data",
+                                this.objectMapper.writeValueAsString(wallet)
+                            )
+                        )
                     )
             );
         return ResponseEntity.ok()
             .body(
-                this.uResponseHandler.makResponse(
-                        false,
-                        null,
-                        false,
-                        null
-                    ).toString()
+                this.objectMapper.writeValueAsString(
+                        this.uResponseHandler.makResponse(
+                                false,
+                                null,
+                                false,
+                                null
+                            )
+                    )
             );
     }
 
     @Cacheable(value = "getUserId", key = "#refToken")
-    public long getUserId(String token, String refToken) {
+    public String getUserId(String token, String refToken) {
         ResponseEntity<String> req;
         log.info("Trying to get user id from user");
         req = this.httpHelper.sendDataToUserMangmentService(token, refToken);
@@ -407,6 +492,6 @@ public class WalletService {
 
         String userId = res.getData().get("data").get("id");
 
-        return Long.valueOf(userId);
+        return userId;
     }
 }
