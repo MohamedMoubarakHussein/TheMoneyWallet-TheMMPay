@@ -9,7 +9,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
-import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
@@ -46,30 +45,45 @@ public class HistoryEventRepository {
         }
     }
 
-    public List<HistoryEvent> findAll() {
-        String sql = "SELECT * FROM history_event";
+    public List<HistoryEvent> findAll(int page, int size) {
+        int offset = page * size;
+        String sql =
+            "SELECT * FROM history_event ORDER BY timestamp DESC LIMIT ? OFFSET ?";
 
-        return jdbcTemplate.query(sql, (rs, rowNum) -> {
-            HistoryEvent event = new HistoryEvent();
-            event.setId(rs.getString("id"));
-            event.setEventId(rs.getString("event_id"));
-            event.setUserId(rs.getString("user_id"));
-            event.setEventType(EventType.valueOf(rs.getString("event_type")));
-            event.setServiceSource(rs.getString("service_source"));
-            event.setTimestamp(rs.getTimestamp("timestamp").toLocalDateTime());
-            event.setEventData(fromJson(rs.getString("event_data")));
-            return event;
-        });
+        return jdbcTemplate.query(
+            sql,
+            (rs, rowNum) -> {
+                HistoryEvent event = new HistoryEvent();
+                event.setId(rs.getString("id"));
+                event.setEventId(rs.getString("event_id"));
+                event.setUserId(rs.getString("user_id"));
+                event.setEventType(
+                    EventType.valueOf(rs.getString("event_type"))
+                );
+                event.setServiceSource(rs.getString("service_source"));
+                event.setTimestamp(
+                    rs.getTimestamp("timestamp").toLocalDateTime()
+                );
+                event.setEventData(fromJson(rs.getString("event_data")));
+                return event;
+            },
+            size,
+            offset
+        );
     }
 
     public List<HistoryEvent> findByUserIdAndTimestampBetween(
         String userId,
         LocalDateTime start,
-        LocalDateTime end
+        LocalDateTime end,
+        int page,
+        int size
     ) {
+        int offset = page * size;
+
         String sql =
             "SELECT * FROM history_event " +
-            "WHERE user_id = ? AND timestamp BETWEEN ? AND ?";
+            "WHERE user_id = ? AND timestamp BETWEEN ? AND ? ORDER BY timestamp DESC LIMIT ? OFFSET ?";
 
         return jdbcTemplate.query(
             sql,
@@ -93,7 +107,9 @@ public class HistoryEventRepository {
             },
             userId,
             Timestamp.valueOf(start),
-            Timestamp.valueOf(end)
+            Timestamp.valueOf(end),
+            size,
+            offset
         );
     }
 

@@ -10,12 +10,9 @@ import com.themoneywallet.historyservice.utilites.EventHandler;
 import com.themoneywallet.historyservice.utilites.HttpHelper;
 import com.themoneywallet.historyservice.utilites.UnifidResponseHandler;
 import java.time.LocalDateTime;
-import java.util.HashMap;
 import java.util.List;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -35,13 +32,17 @@ public class HistoryService {
         String userId,
         LocalDateTime startDate,
         LocalDateTime endDate,
-        List<EventType> eventTypes
+        List<EventType> eventTypes,
+        int page,
+        int size
     ) {
         List<HistoryEvent> events =
             this.hEventRepository.findByUserIdAndTimestampBetween(
                     userId,
                     startDate,
-                    endDate
+                    endDate,
+                    page,
+                    size
                 );
         return events;
     }

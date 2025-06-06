@@ -1,21 +1,19 @@
 package com.themoneywallet.historyservice.controller;
 
-import com.themoneywallet.historyservice.dto.response.UnifiedResponse;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.themoneywallet.historyservice.entity.HistoryEvent;
+import com.themoneywallet.historyservice.entity.fixed.ResponseKey;
 import com.themoneywallet.historyservice.event.EventType;
 import com.themoneywallet.historyservice.service.HistoryService;
 import com.themoneywallet.historyservice.utilites.UnifidResponseHandler;
-import com.themoneywallet.historyservice.utilites.ValidationErrorMessageConverter;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.data.web.SpringDataWebProperties.Pageable;
-import org.springframework.boot.autoconfigure.data.web.SpringDataWebProperties.Sort;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -29,13 +27,13 @@ import org.springframework.web.bind.annotation.RestController;
 @Slf4j
 public class HistoryController {
 
-    private final ValidationErrorMessageConverter VErrorConverter;
     private final UnifidResponseHandler uResponseHandler;
     private final HistoryService historyService;
+    private final ObjectMapper objectMapper;
 
-    @GetMapping("/user/{userId}")
+    @GetMapping("/user")
     public ResponseEntity<String> getUserHistory(
-        @PathVariable String userId,
+        @RequestParam String userId,
         @RequestParam(defaultValue = "0") int page,
         @RequestParam(defaultValue = "20") int size,
         @RequestParam(required = false) @DateTimeFormat(
@@ -45,7 +43,7 @@ public class HistoryController {
             iso = DateTimeFormat.ISO.DATE_TIME
         ) LocalDateTime endDate,
         @RequestParam(required = false) List<EventType> eventTypes
-    ) {
+    ) throws JsonProcessingException {
         if (startDate == null) {
             startDate = LocalDateTime.now().minusDays(30);
         }
@@ -57,20 +55,29 @@ public class HistoryController {
             userId,
             startDate,
             endDate,
-            eventTypes
+            eventTypes,
+            page,
+            size
         );
 
-        return ResponseEntity.ok()
-            .body(
-                this.uResponseHandler.makResponse(
-                        true,
-                        Map.of(
-                            "data",
-                            Map.of("allHistory", history.toString())
-                        ),
-                        false,
-                        null
-                    ).toString()
-            );
+        return new ResponseEntity<>(
+            this.objectMapper.writeValueAsString(
+                    this.uResponseHandler.makResponse(
+                            true,
+                            this.uResponseHandler.makeRespoData(
+                                    ResponseKey.DATA,
+                                    Map.of(
+                                        "history",
+                                        this.objectMapper.writeValueAsString(
+                                                history
+                                            )
+                                    )
+                                ),
+                            false,
+                            null
+                        )
+                ),
+            HttpStatus.OK
+        );
     }
 }

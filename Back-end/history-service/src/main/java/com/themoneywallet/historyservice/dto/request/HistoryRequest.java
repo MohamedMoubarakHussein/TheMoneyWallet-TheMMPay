@@ -2,6 +2,7 @@ package com.themoneywallet.historyservice.dto.request;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.themoneywallet.historyservice.entity.fixed.TimeInterval;
 import com.themoneywallet.historyservice.event.EventType;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;

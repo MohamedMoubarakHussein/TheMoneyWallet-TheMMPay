@@ -1,10 +1,14 @@
 package com.themoneywallet.historyservice.dto.response;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-import java.time.Instant;
+
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
+
+import org.springframework.context.annotation.Scope;
+import org.springframework.context.annotation.ScopedProxyMode;
+import org.springframework.web.context.WebApplicationContext;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -14,6 +18,10 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
+@Scope(
+    value = WebApplicationContext.SCOPE_SESSION,
+    proxyMode = ScopedProxyMode.TARGET_CLASS
+)
 public class UnifiedResponse {
 
     @Builder.Default

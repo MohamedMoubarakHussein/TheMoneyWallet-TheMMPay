@@ -34,7 +34,7 @@ public class eventListener {
             .eventData(event.getAdditionalData())
             .timestamp(event.getTimestamp())
             .build();
-
+        log.info("csx");
         this.historyEventRepository.save(hEvent);
     }
 }
