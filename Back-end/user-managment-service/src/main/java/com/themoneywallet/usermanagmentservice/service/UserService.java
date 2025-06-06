@@ -6,8 +6,8 @@ import com.themoneywallet.usermanagmentservice.dto.request.UserRequest;
 import com.themoneywallet.usermanagmentservice.dto.request.UserUpdateRequest;
 import com.themoneywallet.usermanagmentservice.dto.response.UnifiedResponse;
 import com.themoneywallet.usermanagmentservice.dto.response.UserInformation;
-import com.themoneywallet.usermanagmentservice.entity.Role;
 import com.themoneywallet.usermanagmentservice.entity.User;
+import com.themoneywallet.usermanagmentservice.entity.fixed.UserRole;
 import com.themoneywallet.usermanagmentservice.repository.UserRepository;
 import com.themoneywallet.usermanagmentservice.utilite.DatabaseVaildation;
 import com.themoneywallet.usermanagmentservice.utilite.MyObjectMapper;
@@ -40,7 +40,7 @@ public class UserService {
     public ResponseEntity<String> signUp(UserRequest userRequest) {
         User user = new User();
         this.objectMapper.map(userRequest, user);
-        user.setRole(Role.USER);
+        user.setUserRole(UserRole.ROLE_USER);
         if (dataVaildation.isEmailExist(user.getEmail())) {
             return ResponseEntity.badRequest().body("Email already exists");
         }
@@ -90,7 +90,7 @@ public class UserService {
                 .firstName(user.getFirstName())
                 .lastName(user.getLastName())
                 .email(user.getEmail())
-                .role(user.getRole().toString())
+                .role(user.getUserRole().toString())
                 .build()
                 .toString();
             return ResponseEntity.ok(
@@ -344,7 +344,7 @@ public class UserService {
                 .firstName(user.getFirstName())
                 .lastName(user.getLastName())
                 .email(user.getEmail())
-                .role(user.getRole().toString())
+                .role(user.getUserRole().toString())
                 .build()
                 .toString();
             return ResponseEntity.ok(
@@ -376,7 +376,7 @@ public class UserService {
                         true,
                         Map.of(
                             "data",
-                            Map.of("role", usr.get().getRole().toString())
+                            Map.of("role", usr.get().getUserRole().toString())
                         ),
                         false,
                         null

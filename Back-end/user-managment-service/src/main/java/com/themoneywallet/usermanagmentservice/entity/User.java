@@ -2,6 +2,7 @@ package com.themoneywallet.usermanagmentservice.entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonUnwrapped;
+import com.themoneywallet.usermanagmentservice.entity.fixed.UserRole;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -11,12 +12,14 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Index;
 import jakarta.persistence.OneToOne;
+import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import java.time.LocalDateTime;
+import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -41,8 +44,7 @@ import lombok.NoArgsConstructor;
 public class User {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private int id;
+    private String id;
 
     @NotNull(message = "user name cannot be null.")
     @Size(
@@ -78,9 +80,10 @@ public class User {
     private String email;
 
     @Enumerated(EnumType.STRING)
-    private Role role;
+    private UserRole userRole;
 
-    private String password;
+    private boolean locked;
+    private boolean enabled;
 
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSSSSSSS")
     private LocalDateTime createdAt;
@@ -91,4 +94,9 @@ public class User {
     @OneToOne(cascade = CascadeType.ALL)
     @JsonUnwrapped
     private UserPreferences preferences;
+
+    @PrePersist
+    public void setup() {
+        if (this.id == null) this.id = UUID.randomUUID().toString();
+    }
 }

@@ -1,8 +1,9 @@
 package com.themoneywallet.usermanagmentservice.utilite;
 
 import com.themoneywallet.usermanagmentservice.dto.response.UnifiedResponse;
-import java.time.Instant;
+import com.themoneywallet.usermanagmentservice.entity.fixed.ResponseKey;
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.Map;
 import org.springframework.stereotype.Component;
 
@@ -22,5 +23,14 @@ public class UnifidResponseHandler {
             .haveError(haveError)
             .statusInternalCode(statusInternalCode)
             .build();
+    }
+
+    public Map<String, Map<String, String>> makeRespoData(
+        ResponseKey key,
+        Map<String, String> insideMp
+    ) {
+        Map<String, Map<String, String>> data = new HashMap<>();
+        data.computeIfAbsent(key.toString(), k -> new HashMap<>(insideMp));
+        return data;
     }
 }
