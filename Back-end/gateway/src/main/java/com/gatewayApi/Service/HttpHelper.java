@@ -4,7 +4,6 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClientException;
@@ -38,10 +37,8 @@ public class HttpHelper {
         } catch (RestClientException e) {
             responseEntity = new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }catch (Exception e){
-            log.info(e.getMessage());
             return null;
         }
-        log.info("xxx " + responseEntity.getBody() + " xxx "+ responseEntity.getStatusCode());
         return responseEntity;
     }
 }

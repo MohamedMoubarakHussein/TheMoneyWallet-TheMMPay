@@ -18,7 +18,6 @@ public class GetNewAccToken {
        ResponseEntity<String> res = this.httpHelper.getRefToken(token);
         if(!res.getStatusCode().equals(HttpStatusCode.valueOf(200)))
             return "";
-      log.info("Done getting New acc token using ref token");
        return  res.getBody();
     }
 }

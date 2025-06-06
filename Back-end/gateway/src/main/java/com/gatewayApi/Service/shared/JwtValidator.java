@@ -5,13 +5,11 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.springframework.http.HttpStatusCode;
-import org.springframework.http.ResponseEntity;
+
 import org.springframework.stereotype.Component;
 
 import com.gatewayApi.Service.GetNewAccToken;
-import com.gatewayApi.Service.HttpHelper;
-import com.gatewayApi.exception.JwtExpiredTokenException;
+
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -65,7 +63,6 @@ public class JwtValidator   {
             if(second == 0){
              log.info("Token is exipred trying to get New ref token");
             String newToken = this.accToken.getNewAccToken(refCookie);
-            log.info("2Token is exipred trying to get New ref token");
 
             status = 2;
             this.newToken = newToken;
