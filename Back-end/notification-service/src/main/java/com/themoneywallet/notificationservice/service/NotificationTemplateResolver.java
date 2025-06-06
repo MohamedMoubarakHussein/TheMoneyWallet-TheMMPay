@@ -13,7 +13,9 @@ public class NotificationTemplateResolver {
         "PASSWORD_CHANGED",
         "Your password was updated",
         "WALLET_LOW",
-        "Low balance warning: ${balance}"
+        "Low balance warning: ${balance}",
+        " USER_PROFILE_CREATED",
+        "Wlcome ${name} to our service"
         // Add your predefined event types
     );
 
@@ -29,13 +31,11 @@ public class NotificationTemplateResolver {
         String template,
         Map<String, Map<String, String>> data
     ) {
-        // Simple MVP implementation (use proper templating later)
-        for (Map.Entry<String, Map<String, String>> entry : data.entrySet()) {
+        return (
             template = template.replace(
-                "${" + entry.getKey() + "}",
-                entry.getValue().toString()
-            );
-        }
-        return template;
+                "${" + "name" + "}",
+                data.get("data").get("name")
+            )
+        );
     }
 }

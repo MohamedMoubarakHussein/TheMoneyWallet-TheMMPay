@@ -14,7 +14,7 @@ public class eventListener {
 
     private final NotificationService notificationService;
 
-    @KafkaListener(topics = "${kafka.topics.notifications}")
+    @KafkaListener(topics = "USER_PROFILE_CREATED", groupId = "notification")
     public void consumeNotificationEvent(Event event) {
         notificationService.processEvent(event);
     }

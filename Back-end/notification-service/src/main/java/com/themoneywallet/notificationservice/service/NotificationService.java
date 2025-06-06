@@ -8,11 +8,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class NotificationService {
 
     private final NotificationRepository repository;
@@ -22,6 +24,7 @@ public class NotificationService {
     public void processEvent(Event event) {
         Notification notification = createNotification(event);
         repository.save(notification);
+        log.info("notification" + notification);
         // Future extension: Trigger real-time push here
     }
 
