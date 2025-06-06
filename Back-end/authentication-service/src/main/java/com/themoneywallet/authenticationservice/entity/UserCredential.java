@@ -17,6 +17,7 @@ import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -34,7 +35,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 public class UserCredential implements UserDetails {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
     private String id;
 
     @Column(unique = true, nullable = false)
@@ -78,6 +78,7 @@ public class UserCredential implements UserDetails {
     private void intial() {
         this.locked = false;
         this.enabled = true;
+        if (this.id == null) this.id = UUID.randomUUID().toString();
     }
 
     @Override

@@ -63,7 +63,7 @@ public class AuthService implements AuthServiceDefintion {
     private final String COOKIE_SAME_SITE = "Lax";
 
     @Override
-    @Transactional
+    @Transactional(dontRollbackOn = { JsonProcessingException.class })
     public ResponseEntity<String> signUp(
         SignUpRequest request,
         ServletRequest req
@@ -95,12 +95,14 @@ public class AuthService implements AuthServiceDefintion {
                 HttpStatus.BAD_REQUEST
             );
         }
-
+        log.info("first part done");
         // first part save the userCredential
         UserCredential userCredential;
         try {
             userCredential = saveUserCredentialInAuthDb(request, userIdent);
         } catch (Exception e) {
+            log.info("internal first part done");
+
             data.put(
                 "internal",
                 "Contact website support error code #AUDB10001."
@@ -124,10 +126,13 @@ public class AuthService implements AuthServiceDefintion {
         }
 
         //  second part save the rest of information in user managment service
+        log.info("second part done");
 
         try {
             saveUserCredentialInUserMangmentService(request, userCredential);
         } catch (Exception e) {
+            log.info("internal second part done");
+
             TransactionAspectSupport.currentTransactionStatus()
                 .setRollbackOnly();
             data.put(
@@ -150,7 +155,7 @@ public class AuthService implements AuthServiceDefintion {
                 HttpStatus.BAD_REQUEST
             );
         }
-
+        log.info("for");
         return handleSuccessed(request.getEmail(), userIdent, "signup");
     }
 

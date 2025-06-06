@@ -13,11 +13,6 @@ import org.springframework.web.reactive.function.client.WebClient;
 public class CustomBean {
 
     @Bean
-    public WebClient webClient() {
-        return WebClient.builder().build();
-    }
-
-    @Bean
     public RestTemplate restTemplate() {
         HttpComponentsClientHttpRequestFactory factory =
             new HttpComponentsClientHttpRequestFactory();
