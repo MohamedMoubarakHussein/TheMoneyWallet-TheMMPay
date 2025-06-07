@@ -20,7 +20,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.context.WebApplicationContext;
-import org.springframework.web.reactive.function.client.WebClient;
 
 @EnableWebSecurity
 @Configuration
@@ -32,11 +31,6 @@ public class AuthConfig {
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
-    }
-
-    @Bean
-    public WebClient webClient() {
-        return WebClient.builder().build();
     }
 
     @Bean

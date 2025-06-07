@@ -4,7 +4,9 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.themoneywallet.authenticationservice.dto.request.AuthRequest;
 import com.themoneywallet.authenticationservice.dto.request.SignUpRequest;
+import com.themoneywallet.authenticationservice.dto.response.UnifiedResponse;
 import com.themoneywallet.authenticationservice.service.implementation.AuthService;
+import com.themoneywallet.authenticationservice.utilities.SerializationDeHalper;
 import com.themoneywallet.authenticationservice.utilities.ValidtionRequestHandler;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
@@ -28,19 +30,16 @@ public class AuthController {
 
     private final AuthService authService;
     private final ValidtionRequestHandler validtionRequestHandlerhandler;
-    private final ObjectMapper objectMapper;
 
     @PostMapping(value = "/signup")
-    public ResponseEntity<String> Register(
+    public ResponseEntity<UnifiedResponse> Register(
         @Valid @RequestBody SignUpRequest user,
         BindingResult result,
         HttpServletRequest req
-    ) throws JsonProcessingException {
+    ) {
         if (result.hasErrors()) {
             return new ResponseEntity<>(
-                this.objectMapper.writeValueAsString(
-                        this.validtionRequestHandlerhandler.handle(result)
-                    ),
+                this.validtionRequestHandlerhandler.handle(result),
                 HttpStatus.BAD_REQUEST
             );
         }
@@ -49,16 +48,14 @@ public class AuthController {
     }
 
     @PostMapping("/signin")
-    public ResponseEntity<String> signIn(
+    public ResponseEntity<UnifiedResponse> signIn(
         @Valid @RequestBody AuthRequest user,
         BindingResult result,
         HttpServletRequest req
-    ) throws JsonProcessingException {
+    ) {
         if (result.hasErrors()) {
             return new ResponseEntity<>(
-                this.objectMapper.writeValueAsString(
-                        this.validtionRequestHandlerhandler.handle(result)
-                    ),
+                this.validtionRequestHandlerhandler.handle(result),
                 HttpStatus.BAD_REQUEST
             );
         }
