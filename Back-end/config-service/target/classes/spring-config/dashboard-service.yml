@@ -1,13 +1,13 @@
 server:
-    port: 8099
+    port: 8095
 
 spring:
     application:
-        name: authentication-service
+        name: dashboard-service
     datasource:
         driver-class-name: com.mysql.cj.jdbc.Driver
         password: 123456789
-        url: jdbc:mysql://localhost:3306/authentication_service
+        url: jdbc:mysql://localhost:3306/dashboard_service
         username: root
     jpa:
         database-platform: org.hibernate.dialect.MySQLDialect
@@ -16,6 +16,19 @@ spring:
         show-sql: true
     kafka:
         bootstrap-servers: localhost:9092
+        consumer:
+            auto-offset-reset: earliest
+            group-id: wallet-service
+            key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+            properties:
+                spring:
+                    json:
+                        trusted:
+                            packages: "*"
+                        value:
+                            default:
+                                type: com.themoneywallet.dashboardservice.event.Event
+            value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
         producer:
             key-serializer: org.apache.kafka.common.serialization.StringSerializer
             properties:
@@ -25,23 +38,12 @@ spring:
                             type:
                                 headers: false
             value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
-    security:
-        oauth2:
-            client:
-                registration:
-                    google:
-                        client-id: 
-                        client-secret: 
-                        scope: openid,profile,email
-
+    redis:
+        host: localhost
+        port: 6379
+        timeout: 60000
 # Discovery service
 eureka:
     client:
         service-url:
             defaultZone: http://localhost:8888/eureka
-
-springdoc:
-    api-docs:
-        path: /auth/v3/api-docs
-    swagger-ui:
-        path: /auth/swagger-ui

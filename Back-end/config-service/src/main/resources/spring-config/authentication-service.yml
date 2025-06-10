@@ -25,6 +25,14 @@ spring:
                             type:
                                 headers: false
             value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+    security:
+        oauth2:
+            client:
+                registration:
+                    google:
+                        client-id: 
+                        client-secret: 
+                        scope: openid,profile,email
 
 # Discovery service
 eureka:
