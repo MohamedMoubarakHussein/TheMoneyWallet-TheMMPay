@@ -37,6 +37,12 @@ public class UserCredential implements UserDetails {
     @Id
     private String id;
 
+    @Column(name = "oauth2_provider_id")
+    private String oauth2ProviderId;
+
+    @Column(name = "is_oauth2_user")
+    private boolean isOAuth2User = false;
+
     @Column(unique = true, nullable = false)
     @Email(message = "Please provide a valid email")
     private String email;

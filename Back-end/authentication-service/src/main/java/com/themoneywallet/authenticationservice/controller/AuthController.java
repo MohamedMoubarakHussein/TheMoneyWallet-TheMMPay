@@ -1,12 +1,10 @@
 package com.themoneywallet.authenticationservice.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.themoneywallet.authenticationservice.dto.request.AuthRequest;
 import com.themoneywallet.authenticationservice.dto.request.SignUpRequest;
 import com.themoneywallet.authenticationservice.dto.response.UnifiedResponse;
 import com.themoneywallet.authenticationservice.service.implementation.AuthService;
-import com.themoneywallet.authenticationservice.utilities.SerializationDeHalper;
 import com.themoneywallet.authenticationservice.utilities.ValidtionRequestHandler;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
@@ -33,10 +31,11 @@ public class AuthController {
 
     @PostMapping(value = "/signup")
     public ResponseEntity<UnifiedResponse> Register(
-        @Valid @RequestBody SignUpRequest user,
+        @Valid @RequestBody(required = false) SignUpRequest user,
         BindingResult result,
         HttpServletRequest req
     ) {
+        log.info("csdacvasd " + user.toString());
         if (result.hasErrors()) {
             return new ResponseEntity<>(
                 this.validtionRequestHandlerhandler.handle(result),

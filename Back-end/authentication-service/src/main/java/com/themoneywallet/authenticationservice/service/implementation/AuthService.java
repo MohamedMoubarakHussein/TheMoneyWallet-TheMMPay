@@ -433,4 +433,27 @@ public class AuthService implements AuthServiceDefintion {
             .append(req.getRemoteAddr())
             .toString();
     }
+
+    public UserCredential createOrUpdateOAuth2User(
+        String email,
+        String name,
+        String providerId
+    ) {
+        Optional<UserCredential> existingUser =
+            this.userCredentialRepository.findByEmail(email);
+
+        if (existingUser.isPresent()) {
+            // Update existing user with OAuth info if needed
+            UserCredential user = existingUser.get();
+            user.setOauth2ProviderId(providerId);
+            return this.userCredentialRepository.save(user);
+        } else {
+            // Create new user from OAuth data
+            UserCredential newUser = new UserCredential();
+            newUser.setEmail(email);
+            newUser.setOauth2ProviderId(providerId);
+            newUser.setEnabled(true); // OAuth users are pre-verified
+            return userCredentialRepository.save(newUser);
+        }
+    }
 }
