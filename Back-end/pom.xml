@@ -25,6 +25,7 @@
         <module>notification-service</module>
         <module>history-service</module>
         <module>config-service</module>
+        <module>dashboard-service</module>
         
     </modules>
 
