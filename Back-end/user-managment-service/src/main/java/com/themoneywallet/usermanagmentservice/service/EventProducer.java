@@ -16,8 +16,8 @@ import lombok.extern.slf4j.Slf4j;
 public class EventProducer {
     private final KafkaTemplate<String, Event> kafkaTemplate;
     
-    public void publishSignUpEvent(Event event) {
-        kafkaTemplate.send("user-signup-event", event.getEventId(),event);
+    public void publishProfileCreatedEvent(Event event) {
+        kafkaTemplate.send("user-profile-created-event", event.getEventId(),event);
         log.info("Published user event: {}", event);
     }
     

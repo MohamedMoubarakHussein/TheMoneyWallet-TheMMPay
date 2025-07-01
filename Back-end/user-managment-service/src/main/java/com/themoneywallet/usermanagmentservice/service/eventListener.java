@@ -29,41 +29,23 @@ public class eventListener {
     private final EventProducer eventProducer;
     private final EventHandler eventHandler;
     private final UnifidResponseHandler uHandler;
+    private final UserService userService;
 
-    @KafkaListener(topics = "auth-signup-event", groupId = "user-service")
-    public void handleSignupEvent(Event eventz)
-        throws JsonMappingException, JsonProcessingException {
-        // switch event based on the eventz type
-        log.info(eventz.toString());
-        Map<String, String> event = eventz
-            .getAdditionalData()
-            .get(ResponseKey.DATA.toString());
-
-        User profile = objectMapper.readValue(
-            event.get("usreData"),
-            User.class
-        );
-        profile.setUserRole(UserRole.ROLE_USER);
-        profile.setCreatedAt(LocalDateTime.now());
-        profile.setUpdatedAt(LocalDateTime.now());
-
-        this.profileRepository.save(profile);
-        try {
-            Event event2 = eventHandler.makeEvent(
-                EventType.USER_PROFILE_CREATED,
-                UUID.randomUUID().toString(),
-                this.uHandler.makeRespoData(
-                        ResponseKey.DATA,
-                        Map.of(
-                            "profile",
-                            this.objectMapper.writeValueAsString(profile)
-                        )
-                    )
-            );
-
-            this.eventProducer.publishSignUpEvent(event2);
-        } catch (Exception e) {
-            log.info(e.getMessage());
-        }
+     @KafkaListener(topics = "auth-user-signup", groupId = "user-service")
+    public void handleEvents(Event event){
+            switch (event.getEventType()) {
+                case EventType.AUTH_USER_LOGIN_SUCCESSED:
+                    this.userService.userLogin(event);
+                    break;
+                case EventType.AUTH_USER_SIGN_UP:
+                    log.info("recived event  "+ event);
+                    this.userService.handleSignup(event);
+                    break;
+            
+                default:
+                    break;
+            }
     }
+
+
 }

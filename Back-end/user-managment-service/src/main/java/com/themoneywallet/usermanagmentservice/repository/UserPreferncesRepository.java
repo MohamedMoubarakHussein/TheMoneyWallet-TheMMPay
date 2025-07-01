@@ -8,6 +8,6 @@ import org.springframework.stereotype.Repository;
 import com.themoneywallet.usermanagmentservice.entity.User;
 
 @Repository
-public interface UserPreferncesRepository extends CrudRepository<User , Integer> {
+public interface UserPreferncesRepository extends CrudRepository<User , String> {
  
 }

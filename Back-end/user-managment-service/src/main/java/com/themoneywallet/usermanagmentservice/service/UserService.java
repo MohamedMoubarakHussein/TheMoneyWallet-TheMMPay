@@ -1,19 +1,24 @@
 package com.themoneywallet.usermanagmentservice.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.themoneywallet.usermanagmentservice.dto.request.UserRequest;
 import com.themoneywallet.usermanagmentservice.dto.request.UserUpdateRequest;
 import com.themoneywallet.usermanagmentservice.dto.response.UnifiedResponse;
 import com.themoneywallet.usermanagmentservice.dto.response.UserInformation;
 import com.themoneywallet.usermanagmentservice.entity.User;
+import com.themoneywallet.usermanagmentservice.entity.fixed.ResponseKey;
 import com.themoneywallet.usermanagmentservice.entity.fixed.UserRole;
+import com.themoneywallet.usermanagmentservice.event.Event;
 import com.themoneywallet.usermanagmentservice.repository.UserRepository;
 import com.themoneywallet.usermanagmentservice.utilite.DatabaseVaildation;
 import com.themoneywallet.usermanagmentservice.utilite.MyObjectMapper;
 import com.themoneywallet.usermanagmentservice.utilite.UnifidResponseHandler;
 import com.themoneywallet.usermanagmentservice.utilite.shared.JwtValidator;
 import jakarta.transaction.Transactional;
+
+import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -147,12 +152,15 @@ public class UserService {
         return ResponseEntity.badRequest().body(data);
     }
 
-    public ResponseEntity<String> getIdByToken(String token, String refToken)
+    public ResponseEntity<String> getIdByToken(String token)
         throws JsonProcessingException {
         String email = this.jwtValidator.extractUserName(token);
+        log.info(email + "  emailss");
         Optional<User> usr = this.userRepository.findByEmail(email);
+        log.info(usr.isPresent() + "  sads");
         if (usr.isPresent()) {
-            String data =
+            return ResponseEntity.ok(usr.get().getId());
+          /*  String data = 
                 this.originalObjectMapper.writeValueAsString(
                         this.uResponseHandler.makResponse(
                                 true,
@@ -168,6 +176,7 @@ public class UserService {
                             )
                     );
             return ResponseEntity.ok(data);
+            */
         }
         String data =
             this.originalObjectMapper.writeValueAsString(
@@ -392,5 +401,35 @@ public class UserService {
                         "USR"
                     ).toString()
             );
+    }
+
+    public void userLogin(Event event) {
+        // TODO prepare user profile in cashe 
+        throw new UnsupportedOperationException("Unimplemented method 'userLogin'");
+    }
+
+    public void handleSignup(Event event) {
+      User profile;
+        try {
+            profile = this.originalObjectMapper.readValue(
+                event
+            .getAdditionalData()
+            .get(ResponseKey.DATA.toString()).get("data"),
+                User.class
+            );
+        } catch (JsonMappingException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+            return;
+        } catch (JsonProcessingException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+            return;
+        }
+        profile.setUserRole(UserRole.ROLE_USER);
+        profile.setCreatedAt(LocalDateTime.now());
+        profile.setUpdatedAt(LocalDateTime.now());
+
+        this.userRepository.save(profile);
     }
 }

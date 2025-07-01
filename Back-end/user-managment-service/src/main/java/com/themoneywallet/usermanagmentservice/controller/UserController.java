@@ -42,11 +42,11 @@ public class UserController {
 
     @GetMapping("/getidbytoken")
     public ResponseEntity<String> getIdByToken(
-        @RequestHeader("Authorization") String token,
-        @CookieValue("refreshToken") String refToken
+        @RequestHeader("Authorization") String token
     ) throws JsonProcessingException {
         log.info("Inside the userman service" + token);
-        return this.userService.getIdByToken(token, refToken);
+        log.info(this.userService.getIdByToken(token).getBody() + " cd");
+        return this.userService.getIdByToken(token);
     }
 
     @GetMapping("/userprefernce")
