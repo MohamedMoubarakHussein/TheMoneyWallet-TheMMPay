@@ -1,0 +1,9 @@
+/home/mohamed/Desktop/TheMoneyWallet-TheMMPay/Back-end/dashboard-service-legacy/src/main/java/com/themoneywallet/config/database/MyFirstJdbc.java
+/home/mohamed/Desktop/TheMoneyWallet-TheMMPay/Back-end/dashboard-service-legacy/src/main/java/com/themoneywallet/bean/UserBean.java
+/home/mohamed/Desktop/TheMoneyWallet-TheMMPay/Back-end/dashboard-service-legacy/src/main/java/com/themoneywallet/controller/httpservlet/DownloadFilesServlet.java
+/home/mohamed/Desktop/TheMoneyWallet-TheMMPay/Back-end/dashboard-service-legacy/src/main/java/com/themoneywallet/service/GetUserDashboardServiceBean.java
+/home/mohamed/Desktop/TheMoneyWallet-TheMMPay/Back-end/dashboard-service-legacy/src/main/java/com/themoneywallet/controller/httpservletannotation/GetUserDashboardServletAnn.java
+/home/mohamed/Desktop/TheMoneyWallet-TheMMPay/Back-end/dashboard-service-legacy/src/main/java/com/themoneywallet/filter/HeaderFooterFilter.java
+/home/mohamed/Desktop/TheMoneyWallet-TheMMPay/Back-end/dashboard-service-legacy/src/main/java/com/themoneywallet/controller/httpservlet/GetUserDashboardHttpServlet.java
+/home/mohamed/Desktop/TheMoneyWallet-TheMMPay/Back-end/dashboard-service-legacy/src/main/java/com/themoneywallet/controller/serveltraw/GetUserDashboardServlet.java
+/home/mohamed/Desktop/TheMoneyWallet-TheMMPay/Back-end/dashboard-service-legacy/src/main/java/com/themoneywallet/listener/ServletContextListener.java
