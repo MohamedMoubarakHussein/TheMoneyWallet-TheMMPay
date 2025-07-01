@@ -2,6 +2,7 @@ package com.themoneywallet.historyservice.service.shared;
 
 import com.themoneywallet.historyservice.entity.HistoryEvent;
 import com.themoneywallet.historyservice.event.Event;
+import com.themoneywallet.historyservice.event.EventType;
 import com.themoneywallet.historyservice.repository.HistoryEventRepository;
 import com.themoneywallet.historyservice.service.HistoryService;
 import java.util.UUID;
@@ -21,20 +22,33 @@ public class eventListener {
     private final HistoryEventRepository historyEventRepository;
 
     @KafkaListener(
-        topics = { "user-signup-event" },
+        topicPattern = ".*",
         groupId = "history-service"
     )
     public void consumeEvents(Event event) {
+        String sourceService = "Not avilable ";
+        switch (event.getEventType()) {
+            case EventType.AUTH_USER_SIGN_UP:
+                sourceService = "Authentication Service";
+                break;
+            case EventType.AUTH_USER_LOGIN_SUCCESSED:
+             sourceService = "Authentication Service";
+                break;
+        
+            default:
+                return;
+                
+        }
         HistoryEvent hEvent = HistoryEvent.builder()
             .eventId(event.getEventId())
             .id(UUID.randomUUID().toString())
             .userId(event.getUserId())
             .eventType(event.getEventType())
-            .serviceSource("add not now ")
+            .serviceSource(sourceService)
             .eventData(event.getAdditionalData())
             .timestamp(event.getTimestamp())
             .build();
-        log.info("csx");
+    
         this.historyEventRepository.save(hEvent);
     }
 }
