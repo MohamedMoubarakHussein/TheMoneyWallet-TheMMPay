@@ -8,7 +8,6 @@ import java.util.Map;
 
 import org.springframework.stereotype.Component;
 
-import com.gatewayApi.Service.GetNewAccToken;
 
 
 import io.jsonwebtoken.Claims;
@@ -24,7 +23,6 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class JwtValidator   {
 
-    private final GetNewAccToken accToken;
     private static final String SECRET = "b2phbHpsdU54Z3htb2NSanBCK3ErWkxOeFNmeTdiZk9XNkR2NEt0Mkhraz0=";
     public String msg ;
     private Integer status ;
@@ -37,10 +35,10 @@ public class JwtValidator   {
     }
 
 
-    public Map<Integer, Object> isTokenValid(String token , String refCookie) {
+    public Map<Integer, Object> isTokenValid(String token) {
    
 
-             return handleClamis(token , refCookie);
+             return handleClamis(token);
            
            
    
@@ -53,33 +51,23 @@ public class JwtValidator   {
 
 
 
-    public Claims extractInfoFromToken(String token  , String refCookie , int second) {
+    public Claims extractInfoFromToken(String token) {
         
         try {
              return Jwts.parserBuilder().setSigningKey(getKey())
                 .build()
                 .parseClaimsJws(token).getBody();
         } catch (ExpiredJwtException e) {
-            if(second == 0){
-             log.info("Token is exipred trying to get New ref token");
-            String newToken = this.accToken.getNewAccToken(refCookie);
-
-            status = 2;
-            this.newToken = newToken;
-            return extractInfoFromToken(newToken , refCookie,1);
-            }else{
-                 return Jwts.parserBuilder().setSigningKey(getKey())
-                .build()
-                .parseClaimsJws(token).getBody();
-            }
+                log.info("exiptred token   ");
+                throw e;
             
         }
        
     }
 
-    public Map<Integer, Object> handleClamis(String token , String refCookie)  {
+    public Map<Integer, Object> handleClamis(String token)  {
  
-        Claims claim = this.extractInfoFromToken(token , refCookie,0);
+        Claims claim = this.extractInfoFromToken(token );
        
        
        

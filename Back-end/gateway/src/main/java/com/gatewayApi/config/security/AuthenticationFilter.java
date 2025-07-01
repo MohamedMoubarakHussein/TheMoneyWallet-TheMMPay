@@ -51,21 +51,17 @@ public class AuthenticationFilter implements GatewayFilter {
                     .get(0)
                     .startsWith("Bearer ")
             ) {
-                oldTok = token;
-                token = request
+                oldTok = request
                     .getHeaders()
                     .get("Authorization")
-                    .get(0)
+                    .get(0);
+                token = oldTok
                     .substring(7);
             }
 
-            HttpCookie refCookie = exchange
-                .getRequest()
-                .getCookies()
-                .getFirst("refreshToken");
-
+          
             Map<Integer, Object> isValid =
-                this.jwtValidator.isTokenValid(token, refCookie.getValue());
+                this.jwtValidator.isTokenValid(token);
             if (!Boolean.valueOf((String) isValid.get(1))) {
                 ServerHttpResponse re = exchange.getResponse();
                 re.setStatusCode(HttpStatus.UNAUTHORIZED);
@@ -77,12 +73,13 @@ public class AuthenticationFilter implements GatewayFilter {
 
                 return re.writeWith(Mono.just(buffer));
             } else {
+                log.info("tiktok  "+oldTok);
                 ServerHttpRequest mutatedRequest = request
                     .mutate()
                     .header("x-Authorization", token)
                     .header(
                         "Authorization",
-                        (String) isValid.getOrDefault(3, oldTok)
+                         token
                     )
                     .build();
 
