@@ -1,172 +1,131 @@
+
 <div class="dashboard-container">
- 
-  <!-- Header 
-    <div class="dashboard-header">
-      <h2>Welcome back, Alex</h2>
-      <div class="header-actions">
-        <button class="notification-btn" (click)="showNotification()">
-          <i class="fas fa-bell"></i>
-        </button>
-        <div class="user-avatar">
-          <a href="/profile" style="text-decoration: none;">
-          <img src="assets/avatar.png" alt="User Avatar">
-        </a>
-        </div>
-      </div>
-    </div>-->
-    <div class="dashboard-header">
-      <!-- In dashboard-header div -->
-<h2>Welcome back, {{ userName }}</h2>
-<div class="header-actions">
-  <div class="notification-wrapper">
-    <button class="notification-btn" (click)="toggleNotifications()">
-      <i class="fas fa-bell"></i>
-<!-- Change the notification badge to use the getter -->
-<span class="notification-badge" *ngIf="unreadCount > 0">{{ unreadCount }}</span>    </button>
-    <div class="notification-dropdown" *ngIf="showNotifications">
-      <div class="notification-header">
-        <h4>Notifications</h4>
-      </div>
-      <div class="notification-list">
-        <div class="notification-item" *ngFor="let notif of notifications | slice:0:3">
-          <a [href]="'#' + notif.id" style="text-decoration: none; width: 100%;height: 100%; display: flex;">
-          <div class="notification-indicator" [class.unread]="!notif.read"></div>
-          <div class="notification-content">
-            <p>{{ notif.text }}</p>
-            <small>{{ notif.date }}</small>
-          </div>
-        </a>
-        </div>
-      </div>
-      <div class="notification-footer">
-        <a href="/notifications" class="view-all">View All Notifications</a>
-      </div>
-    </div>
-  </div>
+ <app-sub-header>
+  [user]="user"
+  [notifications]="notifications"
+  [selectedWallet]="selectedWallet"
+  [availableWallets]="availableWallets"
+  [isUpdatingWallet]="isUpdatingWallet"
+  (walletSelected)="onWalletSelected($event)"
+  (notificationMarkedAsRead)="onNotificationMarkedAsRead($event)"
+  (allNotificationsCleared)="onAllNotificationsCleared()"
+  (primaryWalletUpdateRequested)="onPrimaryWalletUpdateRequested($event)">
+</app-sub-header> 
 
-  <div class="user-avatar" (click)="toggleUserMenu()">
-    <img src="assets/avatar.png" alt="User Avatar">
-    <div class="user-menu-dropdown" *ngIf="showUserMenu">
-      <a href="/profile" class="menu-item">
-        <i class="fas fa-user-edit"></i> Edit Profile
-      </a>
-      <button class="menu-item" (click)="logout()">
-        <i class="fas fa-sign-out-alt"></i> Log Out
-      </button>
-    </div>
-  </div>
-</div>
+  <!-- Main Content -->
+  <main class="dashboard-main">
+    <!-- Welcome Section -->
+    <section class="welcome-section">
+      <h2>Welcome back, {{ userName }}!</h2>
+      <p>Manage your finances with ease</p>
+    </section>
 
-    </div>
-  
-    <!-- Stats Cards -->
-    <div class="stats-grid">
-      <div class="stat-card">
-        <div class="stat-content">
-          <div class="stat-icon balance">
-            <i class="fas fa-wallet"></i>
-          </div>
-          <div class="stat-info">
-            <span class="stat-label">Total Balance</span>
-            <h3>$12,450.00</h3>
-          </div>
-        </div>
-      </div>
-  
-      <div class="stat-card">
-        <div class="stat-content">
-          <div class="stat-icon income">
-            <i class="fas fa-arrow-down"></i>
-          </div>
-          <div class="stat-info">
-            <span class="stat-label">Monthly Income</span>
-            <h3>$4,200.00</h3>
-          </div>
-        </div>
-      </div>
-  
-      <div class="stat-card">
-        <div class="stat-content">
-          <div class="stat-icon expense">
-            <i class="fas fa-arrow-up"></i>
-          </div>
-          <div class="stat-info">
-            <span class="stat-label">Monthly Expense</span>
-            <h3>$2,850.00</h3>
-          </div>
-        </div>
-      </div>
-    </div>
-  
-    <!-- Main Content -->
-    <div class="main-content">
-      <!-- Recent Transactions -->
-      <div class="transactions-section">
-        <div class="section-header">
-          <h3>Recent Transactions</h3>
-          <a href="/transactions" class="view-all">View All</a>
+
+    <!-- Account Overview    -->
+    <section class="account-overview" *ngIf="user">
+      <div class="overview-grid">
+        <div class="overview-card balance-card">
+          <h4>Total Balance</h4>
+          <p class="balance-amount">{{ user.totalBalance | currency:'USD' }}</p>
         </div>
         
-        <div class="transactions-list">
-          <div class="transaction-item" *ngFor="let transaction of transactions">
-            <div class="transaction-icon">
-              <i class="fas" [class.fa-shopping-bag]="transaction.type === 'shopping'"
-                         [class.fa-money-bill-wave]="transaction.type === 'payment'"
-                         [class.fa-utensils]="transaction.type === 'food'"></i>
+        <div class="overview-card wallets-card">
+          <h4>Active Wallets</h4>
+          <p class="wallets-count">{{ user.walletsCount || 0 }}</p>
+        </div>
+        
+        <div class="overview-card transactions-card">
+          <h4>Recent Transactions</h4>
+          <p class="transactions-count">{{ user.recentTransactionsCount || 0 }}</p>
+        </div>
+      </div>
+    </section>
+    
+    <!-- Wallet Selector Section -->
+    <section class="wallet-section" *ngIf="availableWallets.length > 0">
+      <div class="wallet-selector-wrapper">
+        <div class="wallet-display" (click)="toggleWalletSelector()">
+          <div class="wallet-info">
+            <span class="wallet-icon" 
+                  [style.color]="getWalletTypeColor(selectedWallet?.type || '')">
+              {{ getWalletTypeIcon(selectedWallet?.type || '') }}
+            </span>
+            <div class="wallet-details">
+              <span class="wallet-name">{{ selectedWalletName }}</span>
+              <span class="wallet-balance">
+                {{ selectedWalletBalance | currency:selectedWalletCurrency }}
+              </span>
             </div>
-            <div class="transaction-details">
-              <h4>{{ transaction.name }}</h4>
-              <span class="transaction-date">{{ transaction.date }}</span>
+          </div>
+          <span class="dropdown-arrow" [class.rotated]="showWalletSelector">▼</span>
+        </div>
+
+        <!-- Wallet Dropdown -->
+        <div class="wallet-dropdown" *ngIf="showWalletSelector">
+          <div class="wallet-option" 
+               *ngFor="let wallet of availableWallets"
+               [class.selected]="selectedWallet?.id === wallet.id"
+               [class.inactive]="!isWalletActive(wallet)"
+               (click)="selectWallet(wallet)">
+            <span class="wallet-icon" 
+                  [style.color]="getWalletTypeColor(wallet.type)">
+              {{ getWalletTypeIcon(wallet.type) }}
+            </span>
+            <div class="wallet-info">
+              <span class="wallet-name">{{ wallet.name }}</span>
+              <span class="wallet-balance">
+                {{ wallet.balance | currency:wallet.currency }}
+              </span>
+              <span class="wallet-type">{{ wallet.type | titlecase }}</span>
             </div>
-            <div class="transaction-amount" [class.negative]="transaction.amount < 0">
-              {{ transaction.amount | currency }}
-            </div>
+            <span class="primary-badge" *ngIf="wallet.id === user?.primaryWalletId">
+              Primary
+            </span>
           </div>
         </div>
       </div>
+    </section>
+
+    <!-- Quick Actions -->
+    <section class="quick-actions">
+      <h3>Quick Actions</h3>
+      <div class="actions-grid">
+        <button class="action-btn send-money" (click)="sendMoney()">
+          <span class="action-icon">💸</span>
+          <span class="action-text">Send Money</span>
+        </button>
+        
+        <button class="action-btn add-funds" (click)="addFunds()">
+          <span class="action-icon">💰</span>
+          <span class="action-text">Add Funds</span>
+        </button>
+        
+        <button class="action-btn request-money" (click)="requestMoney()">
+          <span class="action-icon">📥</span>
+          <span class="action-text">Request Money</span>
+        </button>
+        
+        <button class="action-btn invoice" (click)="invoice()">
+          <span class="action-icon">🧾</span>
+          <span class="action-text">Invoice</span>
+        </button>
+      </div>
+    </section>
+
+
+
   
-      <!-- Quick Actions -->
-      <div class="quick-actions-section">
-        <div class="section-header">
-          <h3>Quick Actions</h3>
-        </div>
-        <div class="actions-grid">
-          <button class="action-btn send-money"   (click)="sendMoney()">
-            <i class="fas fa-paper-plane"></i>
-            <span>Send Money</span>
-          </button>
-          <button class="action-btn add-funds"  (click)="addFunds()">
-            <i class="fas fa-plus-circle"></i>
-            <span>Add Funds</span>
-          </button>
-          <button class="action-btn pay-bill"  (click)="invoice()">
-            <i class="fas fa-file-invoice-dollar"></i>
-            <span>Pay Bill</span>
-          </button>
-          <button class="action-btn request-money"  (click)="requestMoney()">
-            <i class="fas fa-hand-holding-usd"></i>
-            <span>Request Money</span>
-          </button>
-        </div>
+
+    <!-- Empty State -->
+    <section class="empty-state" *ngIf="availableWallets.length === 0">
+      <div class="empty-content">
+        <span class="empty-icon">👛</span>
+        <h3>No Wallets Found</h3>
+        <p>Get started by adding your first wallet</p>
+        <button class="add-wallet-btn">Add Wallet</button>
       </div>
-    </div>
-  
-    <!-- Chart Section -->
-    <div class="chart-section">
-      <div class="section-header">
-        <h3>Spending Overview</h3>
-        <select class="chart-filter">
-          <option>Last 7 Days</option>
-          <option>Last 30 Days</option>
-          <option>Last Year</option>
-        </select>
-      </div>
-      <div class="chart-container">
-        <!-- Add your chart implementation here -->
-        <div class="chart-placeholder">
-          <i class="fas fa-chart-line"></i>
-          <p>Spending chart will be displayed here</p>
-        </div>
-      </div>
-    </div>
-  </div>
+    </section>
+  </main>
+</div>
+<app-recent-transactions></app-recent-transactions>
+<app-footer></app-footer>

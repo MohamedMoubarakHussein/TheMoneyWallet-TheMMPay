@@ -1,0 +1,140 @@
+<div class="dashboard-container">
+  <div class="create-wallet-container">
+    <div class="create-wallet-card">
+      <div class="wallet-header">
+        <button class="back-btn" (click)="goBack()">
+          <i class="fas fa-arrow-left"></i>
+        </button>
+        <div class="header-content">
+          <h2>Create New Wallet</h2>
+          <p class="wallet-subtitle">Choose your wallet type and customize your financial experience</p>
+        </div>
+      </div>
+
+      <div class="wallet-form">
+        <!-- Wallet Name Input -->
+        <div class="form-section">
+          <h3>Wallet Details</h3>
+          <div class="form-group">
+            <label for="walletName">Wallet Name</label>
+            <input 
+              type="text" 
+              id="walletName"
+              class="form-input modern-input"
+              [(ngModel)]="walletName"
+              placeholder="My Awesome Wallet"
+              [disabled]="isLoading"
+            >
+          </div>
+        </div>
+
+        <!-- Wallet Type Selection -->
+        <div class="form-section">
+          <h3>Choose Wallet Type</h3>
+          <div class="wallet-types-grid">
+            <div 
+              *ngFor="let walletType of walletTypes"
+              class="wallet-type-card modern-card"
+              [class.selected]="selectedWalletType === walletType.id"
+              (click)="selectWalletType(walletType.id)"
+            >
+              <div class="card-header">
+                <div class="wallet-icon" [style.background]="walletType.gradient">
+                  <i [class]="walletType.icon"></i>
+                </div>
+                <div class="selection-indicator">
+                  <div class="radio-button" [class.selected]="selectedWalletType === walletType.id">
+                    <i class="fas fa-check" *ngIf="selectedWalletType === walletType.id"></i>
+                  </div>
+                </div>
+              </div>
+              <div class="card-content">
+                <h4>{{ walletType.name }}</h4>
+                <p class="description">{{ walletType.description }}</p>
+                <div class="features">
+                  <span *ngFor="let feature of walletType.features" class="feature-tag">
+                    {{ feature }}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Settings Section -->
+        <div class="form-section">
+          <h3>Wallet Settings</h3>
+          <div class="settings-grid">
+            <!-- Currency Selection -->
+            <div class="setting-item">
+              <label for="currency">Currency</label>
+              <div class="custom-select">
+                <select 
+                  id="currency"
+                  class="form-select modern-select"
+                  [(ngModel)]="currency"
+                  [disabled]="isLoading"
+                >
+                  <option *ngFor="let curr of currencies" [value]="curr">{{ curr }}</option>
+                </select>
+                <i class="fas fa-chevron-down select-arrow"></i>
+              </div>
+            </div>
+
+            <!-- Primary Wallet Toggle -->
+            <div class="setting-item">
+              <div class="toggle-setting">
+                <div class="toggle-info">
+                  <label>Set as Primary Wallet</label>
+                  <p class="toggle-description">Make this your default wallet for all transactions</p>
+                </div>
+                <div class="toggle-switch" [class.active]="setPrimaryWallet" (click)="togglePrimaryWallet()">
+                  <div class="toggle-slider"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Error/Success Messages -->
+        <div class="message-container">
+          <div class="error-message modern-message" *ngIf="errorMessage">
+            <i class="fas fa-exclamation-triangle"></i>
+            <span>{{ errorMessage }}</span>
+          </div>
+
+          <div class="success-message modern-message" *ngIf="successMessage">
+            <i class="fas fa-check-circle"></i>
+            <span>{{ successMessage }}</span>
+          </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="form-actions">
+          <button 
+            class="secondary-btn modern-btn"
+            (click)="resetForm()"
+            [disabled]="isLoading"
+          >
+            <i class="fas fa-undo"></i>
+            Reset
+          </button>
+          <button 
+            class="primary-btn modern-btn"
+            (click)="createWallet()"
+            [disabled]="isLoading || !walletName.trim()"
+          >
+            <span *ngIf="!isLoading">
+              <i class="fas fa-plus"></i>
+              Create Wallet
+            </span>
+            <span *ngIf="isLoading">
+              <i class="fas fa-spinner fa-spin"></i>
+              Creating...
+            </span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

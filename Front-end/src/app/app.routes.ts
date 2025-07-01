@@ -2,7 +2,6 @@ import { Routes } from '@angular/router';
 import { HomeComponent } from './components/home/home.component';
 import { SigninComponent } from './components/signin/signin.component';
 import { SignupComponent } from './components/signup/signup.component';
-import { DashboardComponent } from './components/dashboard/dashboard.component';
 import { EditProfileComponent } from './components/edit-profile/edit-profile.component';
 import { TransactionHistoryComponent } from './components/transaction-history/transaction-history.component';
 import { SendMoneyComponent } from './components/send-money/send-money.component';
@@ -10,7 +9,9 @@ import { AddFundsComponent } from './components/add-funds/add-funds.component';
 import { PayBillComponent } from './components/pay-bill/pay-bill.component';
 import { RequestMoneyComponent } from './components/request-money/request-money.component';
 import { NotificationsComponent } from './components/notifications/notifications.component';
-
+import { EmailVerifcationComponent } from './components/email-verifcation/email-verifcation.component';
+import { CreateWalletComponent } from './components/create-wallet/create-wallet.component';
+import { DashboardComponent } from './components/dashboard/dashboard.component';
 export const routes: Routes = [  
     { path: '', component: HomeComponent },
     { path: 'signin', component: SigninComponent },
@@ -22,5 +23,7 @@ export const routes: Routes = [
     { path: 'add-funds', component: AddFundsComponent },
     { path: 'pay-bill', component: PayBillComponent },
     { path: 'request-money', component: RequestMoneyComponent },
-    { path: 'notifications', component: NotificationsComponent }
+    { path: 'notifications', component: NotificationsComponent },
+    { path: 'verification', component: EmailVerifcationComponent },
+    { path: 'createwallet', component: CreateWalletComponent },
 ];

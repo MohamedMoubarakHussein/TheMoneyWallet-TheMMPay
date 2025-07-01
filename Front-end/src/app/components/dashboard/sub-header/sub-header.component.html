@@ -1,0 +1,66 @@
+ <!-- Header -->
+  <header class="dashboard-header">
+    <div class="header-left">
+      <h1 class="app-title">PaymentApp</h1>
+    </div>
+    
+    <div class="header-right">
+      <!-- Notifications -->
+      <div class="notification-wrapper">
+        <button class="notification-btn" (click)="toggleNotifications()">
+          <span class="notification-icon">🔔</span>
+          <span class="notification-badge" *ngIf="unreadCount > 0">{{ unreadCount }}</span>
+        </button>
+        
+        <!-- Notifications Dropdown -->
+        <div class="notifications-dropdown" *ngIf="showNotifications">
+          <div class="notifications-header">
+            <h3>Notifications</h3>
+            <button class="clear-all-btn" (click)="clearAllNotifications()" *ngIf="notifications.length > 0">
+              Clear All
+            </button>
+          </div>
+          
+          <div class="notifications-list" *ngIf="notifications.length > 0; else noNotifications">
+            <div class="notification-item" 
+                 *ngFor="let notification of notifications" 
+                 [class.unread]="!notification.read"
+                 (click)="markAsRead(notification.id)">
+              <div class="notification-content">
+                <h4>{{ notification.title }}</h4>
+                <p>{{ notification.message }}</p>
+                <span class="notification-time">{{ notification.createdAt | date:'short' }}</span>
+              </div>
+            </div>
+          </div>
+          
+          <ng-template #noNotifications>
+            <div class="no-notifications">
+              <span class="empty-icon">📭</span>
+              <p>No notifications</p>
+            </div>
+          </ng-template>
+        </div>
+      </div>
+      
+      <!-- User Menu -->
+      <div class="user-menu-wrapper">
+        <div class="user-avatar" (click)="toggleUserMenu()">
+          <span class="avatar-text">{{ userName.charAt(0).toUpperCase() }}</span>
+        </div>
+        
+        <!-- User Dropdown -->
+        <div class="user-dropdown" *ngIf="showUserMenu">
+          <div class="user-info">
+            <h4>{{ userName }}</h4>
+            <p>{{ user?.email }}</p>
+          </div>
+          <hr>
+          <!--<button class="dropdown-item" (click)="logout()">
+            <span class="item-icon">🚪</span>
+            Logout
+          </button> -->
+        </div>
+      </div>
+    </div>
+  </header>

@@ -1,0 +1,71 @@
+<!-- recent-transactions.component.html -->
+<div class="recent-transactions-card">
+  <!-- Header Section -->
+  <div class="card-header">
+    <div class="header-content">
+      <h3 class="card-title">
+        <i class="fas fa-clock"></i>
+        Recent Transactions
+      </h3>
+      <div class="header-actions">
+        
+      </div>
+    </div>
+  </div>
+
+  <!-- Transactions List -->
+  <div class="transactions-list">
+    <div 
+      class="transaction-item"
+      *ngFor="let transaction of recentTransactions; ">
+      
+      <!-- Transaction Icon -->
+      <div class="transaction-icon" 
+           [ngClass]="'icon-' + getTransactionColor(transaction.type)">
+        <i [class]="'fas fa-' + getTransactionIcon(transaction.type)"></i>
+      </div>
+
+      <!-- Transaction Details -->
+      <div class="transaction-details">
+        <div class="transaction-main">
+          <h4 class="transaction-description">{{ transaction.description }}</h4>
+          <span class="transaction-category">{{ transaction.category }}</span>
+        </div>
+        <div class="transaction-meta">
+          <span class="transaction-date">{{ transaction.date | date:'MMM d, y' }}</span>
+          <span class="transaction-status" 
+                [ngClass]="'status-' + transaction.status">
+            <i class="fas fa-circle status-indicator"></i>
+            {{ transaction.status | titlecase }}
+          </span>
+        </div>
+      </div>
+
+      <!-- Transaction Amount -->
+      <div class="transaction-amount" 
+           [ngClass]="'amount-' + getTransactionColor(transaction.type)">
+        <span class="amount-value">
+          {{ transaction.amount | currency:'USD':'symbol':'1.2-2' }}
+        </span>
+        <span class="amount-type">{{ transaction.type | titlecase }}</span>
+      </div>
+    </div>
+
+    <!-- Empty State -->
+    <div class="empty-state" *ngIf="recentTransactions.length === 0">
+      <i class="fas fa-receipt empty-icon"></i>
+      <h4>No Recent Transactions</h4>
+      <p>Your recent transactions will appear here once you make some.</p>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <div class="card-footer" *ngIf="recentTransactions.length > 0">
+    <button 
+      class="btn btn-primary full-width-btn"
+      (click)="viewAllTransactions()">
+      <i class="fas fa-list"></i>
+      View All Transactions
+    </button>
+  </div>
+</div>

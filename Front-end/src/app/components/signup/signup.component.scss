@@ -127,7 +127,7 @@ $background: #f8f9fa;
   transition: all 0.3s ease;
 
   &:hover {
-    background: darken($primary, 10%);
+    background: adjust-color($primary, $lightness: -10%);
   }
 }
 

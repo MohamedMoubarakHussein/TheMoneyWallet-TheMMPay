@@ -1,4 +1,6 @@
 // Colors
+@use 'sass:color';
+
 $primary: #2a2a72;
 $secondary: #009ffd;
 $success: #4CAF50;
@@ -34,7 +36,7 @@ $background: #f8f9fa;
       gap: 0.5rem;
 
       &:hover {
-        background: darken($background, 5%);
+background: color.adjust($background, $lightness: -5%);
       }
     }
   }
@@ -124,9 +126,20 @@ $background: #f8f9fa;
         font-size: 0.8rem;
         text-transform: capitalize;
 
-        &.success { background: lighten($success, 45%); color: darken($success, 20%); }
-        &.pending { background: lighten($secondary, 40%); color: darken($secondary, 20%); }
-        &.failed { background: lighten($danger, 40%); color: darken($danger, 20%); }
+&.success {
+  background: color.adjust($success, $lightness: 45%);
+  color: color.adjust($success, $lightness: -20%);
+}
+
+&.pending {
+  background: color.adjust($secondary, $lightness: 40%);
+  color: color.adjust($secondary, $lightness: -20%);
+}
+
+&.failed {
+  background: color.adjust($danger, $lightness: 40%);
+  color: color.adjust($danger, $lightness: -20%);
+}
       }
     }
   }
@@ -152,7 +165,7 @@ $background: #f8f9fa;
     }
 
     &:hover:not(:disabled) {
-      background: darken($background, 5%);
+background: color.adjust($background, $lightness: -5%);
     }
   }
 }
