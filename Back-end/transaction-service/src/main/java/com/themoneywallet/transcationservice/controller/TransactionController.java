@@ -37,9 +37,7 @@ public class TransactionController {
     public ResponseEntity<String> CreateTransferTransaction(
         @Valid @RequestBody(required = false) TransferCreationRequest transReq,
         BindingResult result,
-        @RequestHeader("Authorization") String token,
-        @CookieValue("refreshToken") String refToken
-    ) {
+        @RequestHeader("Authorization") String token    ) {
         if (transReq == null) return ResponseEntity.badRequest()
             .body(
                 this.uResponseHandler.makResponse(
@@ -67,9 +65,7 @@ public class TransactionController {
     public ResponseEntity<String> CreatePaymentTransaction(
         @Valid @RequestBody(required = false) TransferCreationRequest transReq,
         BindingResult result,
-        @RequestHeader("Authorization") String token,
-        @CookieValue("refreshToken") String refToken
-    ) {
+        @RequestHeader("Authorization") String token    ) {
         if (transReq == null) return ResponseEntity.badRequest()
             .body(
                 this.uResponseHandler.makResponse(
@@ -95,9 +91,7 @@ public class TransactionController {
     @GetMapping("/getall")
     public ResponseEntity<String> getAllTransactions(
         @Valid @RequestBody(required = false) GetTransactionDetails transReq,
-        @RequestHeader("Authorization") String token,
-        @CookieValue("refreshToken") String refToken
-    ) {
+        @RequestHeader("Authorization") String token    ) {
         return this.transactionService.getAllTransactions(transReq.getId());
     }
 
@@ -105,7 +99,6 @@ public class TransactionController {
     public ResponseEntity<String> getTransaction(
         @Valid @RequestBody(required = false) GetTransactionDetails transReq,
         @RequestHeader("Authorization") String token,
-        @CookieValue("refreshToken") String refToken,
         @RequestParam("id") String id
     ) {
         return this.transactionService.getTransaction(transReq.getId(), id);
