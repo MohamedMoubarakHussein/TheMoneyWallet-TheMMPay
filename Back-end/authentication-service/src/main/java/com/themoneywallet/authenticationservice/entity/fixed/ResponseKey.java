@@ -4,4 +4,5 @@ public enum ResponseKey {
     DATA,
     ERROR,
     INTERNAL_ERROR,
+    INFO
 }

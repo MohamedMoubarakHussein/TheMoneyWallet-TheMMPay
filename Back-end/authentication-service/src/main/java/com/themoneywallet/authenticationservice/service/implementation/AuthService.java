@@ -21,6 +21,9 @@ import com.themoneywallet.authenticationservice.utilities.SerializationDeHalper;
 import com.themoneywallet.authenticationservice.utilities.UnifidResponseHandler;
 import jakarta.servlet.ServletRequest;
 import jakarta.servlet.http.HttpServletRequest;
+
+import java.math.BigInteger;
+import java.security.SecureRandom;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.Arrays;
@@ -87,14 +90,16 @@ public class AuthService implements AuthServiceDefintion {
             data.put("userName", "This userName is used.");
             errorFlage = true;
         }
+       Map<String, Map<String, String>> mp = this.unifidHandler.makeRespoData(
+                                ResponseKey.ERROR,
+                                data
+                            );
+        mp.put(ResponseKey.INFO.toString(), Map.of("structure" , "This is a response error so the structure follow key(field name)  ->  (the error as a map value)"));
         if (errorFlage) {
             return new ResponseEntity<>(
                 this.unifidHandler.makResponse(
                         true,
-                        this.unifidHandler.makeRespoData(
-                                ResponseKey.ERROR,
-                                data
-                            ),
+                        mp,
                         true,
                         "AUVD11002"
                     ),
@@ -102,11 +107,9 @@ public class AuthService implements AuthServiceDefintion {
             );
         }
 
-        log.info("first part done");
-        // first part save the userCredential
-        UserCredential userCredential;
+        UserCredential user;
         try {
-            userCredential = saveUserCredentialInAuthDb(request, userIdent);
+             user = saveUserCredentialInAuthDb(request, userIdent);
         } catch (Exception e) {
             data.put(
                 "internal",
@@ -128,41 +131,8 @@ public class AuthService implements AuthServiceDefintion {
             );
         }
 
-        //  second part save the rest of information in user managment service
-        log.info("second part done");
-        int done = 0;
-        try {
-            done = saveUserCredentialInUserMangmentService(
-                request,
-                userCredential
-            );
-            if (done == 0) {
-                throw new Exception();
-            }
-        } catch (Exception e) {
-            TransactionAspectSupport.currentTransactionStatus()
-                .setRollbackOnly();
-            data.put(
-                "internal",
-                "Contact website support error code #AUUC10001."
-            );
-
-            return new ResponseEntity<>(
-                this.unifidHandler.makResponse(
-                        true,
-                        this.unifidHandler.makeRespoData(
-                                ResponseKey.ERROR,
-                                data
-                            ),
-                        true,
-                        "AUUC10001"
-                    ),
-                (done == 1)
-                    ? HttpStatus.INTERNAL_SERVER_ERROR
-                    : HttpStatus.BAD_REQUEST
-            );
-        }
-        return handleSuccessed(request.getEmail(), userIdent, "signup");
+     
+        return handleSuccessed(request,request.getEmail(),user, userIdent, "signup");
     }
 
     @Override
@@ -179,17 +149,18 @@ public class AuthService implements AuthServiceDefintion {
                         request.getPassword()
                     )
                 );
-            return handleSuccessed(request.getEmail(), userIdent, "signin");
+            return handleSuccessed(null,request.getEmail(),null, userIdent, "signin");
         } catch (Exception ex) {
-            data.put("Internal", "Wrong userName or password.");
-
-            return new ResponseEntity<>(
-                this.unifidHandler.makResponse(
-                        true,
-                        this.unifidHandler.makeRespoData(
+            data.put("error", "Wrong userName or password.");
+            Map<String, Map<String, String>>  mp = this.unifidHandler.makeRespoData(
                                 ResponseKey.ERROR,
                                 data
-                            ),
+                            );
+            mp.put(ResponseKey.INFO.toString(),Map.of("structure", "this is user side error so it represent that the user entered a wrong user name or password it stores in the (error) key"));
+            return new ResponseEntity<>(    
+                this.unifidHandler.makResponse(
+                        true,
+                        mp,
                         true,
                         "AUCR11001"
                     ),
@@ -205,13 +176,16 @@ public class AuthService implements AuthServiceDefintion {
     }
 
     private ResponseEntity<UnifiedResponse> handleSuccessed(
+        SignUpRequest signUpRequest,
         String email,
+        UserCredential userCredential,
         String userIdent,
         String status
     ) {
-        String accToken = this.jwtService.generateToken(email);
-        String refToken = this.jwtRefService.generateToken(email);
-        String signUpToken = UUID.randomUUID().toString();
+
+        String accToken = this.jwtService.generateToken(email , userCredential.getId());
+        String refToken = this.jwtRefService.generateToken(email , userCredential.getId());
+        String signUpToken =  new BigInteger(30, new SecureRandom()).toString(32).toUpperCase();
 
         ResponseCookie cookie = ResponseCookie.from("refreshToken", refToken)
             .httpOnly(true)
@@ -221,42 +195,24 @@ public class AuthService implements AuthServiceDefintion {
             .path(COOKIE_PATH)
             .build();
 
-        UserCredential user =
-            this.userCredentialRepository.findByEmail(email).get();
+        UserCredential user = userCredential;
         user.setToken(refToken);
         user.setLastLogin(LocalDateTime.now());
         user.setIpAddress(userIdent);
         user.setValidTill(LocalDateTime.now().plusHours(COOKIE_MAX_AGE_H));
+        // TODO-B Add a way to revoke token and token retion
         user.setRevoked(false);
+        // TODO-A remove signuptoken from database afrter x time 
         user.setEmailVerificationToken(signUpToken);
         this.userCredentialRepository.save(user);
         if (status.equals("signin")) {
-            UserLogInEvent info = UserLogInEvent.builder()
-                .email(user.getEmail())
-                .userRole(user.getUserRole().toString())
-                .id(user.getId())
-                .build();
-
-            String data = this.serializationDeHelper.serailization(info);
-            if (data.equals(FixedInternalValues.ERROR_HAS_OCCURED.toString())) {
-                //TODO
-            }
-
-            Event event =
-                this.eventHandler.makeEvent(
-                        EventType.LOGIN_SUCCESS,
-                        user.getId(),
-                        this.unifidHandler.makeRespoData(
-                                ResponseKey.DATA,
-                                Map.of("usreData", data)
-                            )
-                    );
-
-            this.eventProducer.publishSigninEvent(event);
+            this.publishSigninEvent(user);
+        }else{
+            this.publishSignUpEvent(signUpRequest , user);
         }
         return ResponseEntity.status(HttpStatus.OK)
             .header(HttpHeaders.SET_COOKIE, cookie.toString())
-            .header("Authorization", "Bearer " + accToken)
+            .header("Authorization",  accToken)
             .body(this.unifidHandler.makResponse(false, null, false, null));
     }
 
@@ -270,7 +226,7 @@ public class AuthService implements AuthServiceDefintion {
             .password(this.passwordEncoder.encode(request.getPassword()))
             .userRole(UserRole.ROLE_USER)
             .locked(false)
-            .enabled(true)
+            .enabled(false)
             .lastLogin(LocalDateTime.now())
             .validTill(LocalDateTime.now().plusHours(COOKIE_MAX_AGE_H))
             .ipAddress(ident)
@@ -279,43 +235,69 @@ public class AuthService implements AuthServiceDefintion {
         return this.userCredentialRepository.save(credential);
     }
 
-    // 0 not saved  1 saved
-    @Transactional(propagation = Propagation.REQUIRED)
-    private Integer saveUserCredentialInUserMangmentService(
-        SignUpRequest request,
-        UserCredential credential
-    ) {
-        UserCreationEvent info = UserCreationEvent.builder()
+
+    public void publishSignUpEvent(SignUpRequest request , UserCredential user){
+         UserCreationEvent info = UserCreationEvent.builder()
             .email(request.getEmail())
-            .userRole(credential.getUserRole().toString())
+            .userRole(user.getUserRole().toString())
             .userName(request.getUserName())
             .firstName(request.getFirstName())
             .lastName(request.getLastName())
-            .id(credential.getId())
+            .id(user.getId())
+            .emailVerficationCode(user.getEmailVerificationToken())
             .build();
 
         String data = this.serializationDeHelper.serailization(info);
         if (data.equals(FixedInternalValues.ERROR_HAS_OCCURED.toString())) {
-            return 0;
+            // TODO  when faild to serilization what should i do
         }
+         Map<String, Map<String, String>>  mp =this.unifidHandler.makeRespoData(
+                                ResponseKey.DATA,
+                                Map.of("data", data)
+                            );
+    mp.put(ResponseKey.INFO.toString(), Map.of("structure" , "This object stored in key(data) and stored as UserCreationEvent structured like that      String:id,String:userName,String:firstName,String:lastName,String:email,String:userRole,boolean:locked,boolean:enabled,String:emailVerficationCode "));
         Event event =
             this.eventHandler.makeEvent(
-                    EventType.SIGN_UP,
+                    EventType.AUTH_USER_SIGN_UP,
                     info.getId(),
-                    Map.of(
-                        ResponseKey.DATA.toString(),
-                        Map.of("usreData", data)
-                    )
+                 mp
                 );
 
-        eventProducer.publishSignUpEvent(event);
-        return 1;
+        this.eventProducer.publishSignUpEvent(event);
     }
+
+
+    public void publishSigninEvent(UserCredential user){
+ UserLogInEvent info = UserLogInEvent.builder()
+                .email(user.getEmail())
+                .userRole(user.getUserRole().toString())
+                .id(user.getId())
+                .build();
+
+            String data = this.serializationDeHelper.serailization(info);
+            if (data.equals(FixedInternalValues.ERROR_HAS_OCCURED.toString())) {
+                //TODO
+            }
+ Map<String, Map<String, String>>  mp =this.unifidHandler.makeRespoData(
+                                ResponseKey.DATA,
+                                Map.of("data", data)
+                            );
+    mp.put(ResponseKey.INFO.toString(), Map.of("structure" , "This object stored in key(data) and stored as UserLogInEvent structured like that String:id  , String:email , String:userRole "));
+            Event event =
+                this.eventHandler.makeEvent(
+                        EventType.AUTH_USER_LOGIN_SUCCESSED,
+                        user.getId(),
+                        mp
+                    );
+
+            this.eventProducer.publishSigninEvent(event);
+    }
+ 
 
     public ResponseEntity<String> refreshToken(
         String refreshToken,
         ServletRequest req
-    ) throws JsonProcessingException {
+    )   {
         String userIdent = getIden(req);
 
         Optional<UserCredential> user =
@@ -324,24 +306,33 @@ public class AuthService implements AuthServiceDefintion {
         if (user.isPresent()) {
             userr = user.get();
         } else {
-            return new ResponseEntity<>(
-                this.objectMapper.writeValueAsString(
-                        this.unifidHandler.makResponse(
-                                true,
-                                this.unifidHandler.makeRespoData(
+
+                            Map<String, Map<String, String>>  mp =                 this.unifidHandler.makeRespoData(
                                         ResponseKey.ERROR,
                                         Map.of("token", "Invalid  Token")
-                                    ),
-                                true,
-                                "AUTK11001"
-                            )
-                    ),
-                HttpStatus.valueOf(401)
-            );
+                                    );
+                mp.put(ResponseKey.INFO.toString(),Map.of("structure", "this  is an error that has it's data in the (token) key  "));
+            try {
+                return new ResponseEntity<>(
+                    this.objectMapper.writeValueAsString(
+                            this.unifidHandler.makResponse(
+                                    true,
+                                    mp,
+                                    true,
+                                    "AUTK11001"
+                                )
+                        ),
+                    HttpStatus.valueOf(401)
+                );
+            } catch (JsonProcessingException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+                return null;
+            }
         }
 
-        String accToken = this.jwtService.generateToken(userr.getEmail());
-        String refToken = this.jwtRefService.generateToken(userr.getEmail());
+        String accToken = this.jwtService.generateToken(userr.getEmail() , null);
+        String refToken = this.jwtRefService.generateToken(userr.getEmail() , null);
 
         ResponseCookie cookie = ResponseCookie.from("refreshToken", refToken)
             .httpOnly(true)
@@ -357,14 +348,20 @@ public class AuthService implements AuthServiceDefintion {
             .setValidTill(LocalDateTime.now().plusHours(COOKIE_MAX_AGE_H));
         this.userCredentialRepository.save(user.get());
 
-        return ResponseEntity.status(HttpStatus.OK)
-            .header(HttpHeaders.SET_COOKIE, cookie.toString())
-            .header("Authorization", "Bearer " + accToken)
-            .body(
-                this.objectMapper.writeValueAsString(
-                        this.unifidHandler.makResponse(false, null, false, null)
-                    )
-            );
+        try {
+            return ResponseEntity.status(HttpStatus.OK)
+                .header(HttpHeaders.SET_COOKIE, cookie.toString())
+                .header("Authorization", "Bearer " + accToken)
+                .body(
+                    this.objectMapper.writeValueAsString(
+                            this.unifidHandler.makResponse(false, null, false, null)
+                        )
+                );
+        } catch (JsonProcessingException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+            return null;
+        }
     }
 
     public ResponseEntity<String> logout(HttpServletRequest request)
@@ -455,5 +452,11 @@ public class AuthService implements AuthServiceDefintion {
             newUser.setEnabled(true); // OAuth users are pre-verified
             return userCredentialRepository.save(newUser);
         }
+    }
+
+    public ResponseEntity<UnifiedResponse> verfiyEmail(String code, String token, HttpServletRequest req) {
+        // get user email from token then retrive verify email from the db
+        // and check if it avaliable
+        return null;
     }
 }

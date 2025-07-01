@@ -32,7 +32,7 @@ public class JwtRefService extends JwtService {
     }
 
     @Override
-     public String generateToken(String email) {
+     public String generateToken(String email , String userId) {
         return Jwts.builder()
                 .setClaims(new HashMap<>())
                 .setSubject(email)

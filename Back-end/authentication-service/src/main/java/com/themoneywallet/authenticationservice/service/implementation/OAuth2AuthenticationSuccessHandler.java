@@ -42,7 +42,7 @@ public class OAuth2AuthenticationSuccessHandler
         );
 
         // Generate your JWT token
-        String jwtToken = this.jwtService.generateToken(user.getEmail());
+        String jwtToken = this.jwtService.generateToken(user.getEmail() , null);
 
         // You can redirect to frontend with token or set it in cookie
         String redirectUrl =

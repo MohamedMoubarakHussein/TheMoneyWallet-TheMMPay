@@ -31,10 +31,13 @@ public class JwtService implements JwtServiceDefintion {
 
     
 
-    public String generateToken(String email) {
+    public String generateToken(String email, String userId) {
+            HashMap<String, Object> claims = new HashMap<>();
+            claims.put("userid", userId);
         return Jwts.builder()
                 .setClaims(new HashMap<>())
                 .setSubject(email)
+                .setClaims(claims)
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + TOKEN_EXPIRATION))
                 .signWith(getKey(), SignatureAlgorithm.HS256)

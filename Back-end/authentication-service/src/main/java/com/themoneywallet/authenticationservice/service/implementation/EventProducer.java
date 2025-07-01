@@ -15,12 +15,12 @@ public class EventProducer {
     private final KafkaTemplate<String, Event> kafkaTemplate;
     
     public void publishSignUpEvent(Event event) {
-        kafkaTemplate.send("auth-signup-event", event.getUserId(), event);
+        kafkaTemplate.send("auth-user-signup", event);
         log.info("Published auth event: {}", event);
     }
     
     public void publishSigninEvent(Event event) {
-        kafkaTemplate.send("auth-login-events", event.getUserId(), event);
+        kafkaTemplate.send("auth-user-login-sucessed-events", event);
         log.info("Published login event: {}", event);
     }
 

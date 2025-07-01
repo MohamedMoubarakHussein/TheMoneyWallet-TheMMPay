@@ -81,7 +81,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                         this.jwtRefService.extractUserName(refreshToken);
 
                     String newAccessToken =
-                        this.jwtService.generateToken(refreshUsername);
+                        this.jwtService.generateToken(refreshUsername , null);
 
                     // Add the new token to the response
                     this.jwtRefService.addNewAccessTokenCookie(

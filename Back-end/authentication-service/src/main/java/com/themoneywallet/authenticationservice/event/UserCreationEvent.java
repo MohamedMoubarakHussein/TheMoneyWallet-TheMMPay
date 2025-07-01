@@ -27,4 +27,6 @@ public class UserCreationEvent {
 
     private boolean locked;
     private boolean enabled;
+
+    private String emailVerficationCode;
 }

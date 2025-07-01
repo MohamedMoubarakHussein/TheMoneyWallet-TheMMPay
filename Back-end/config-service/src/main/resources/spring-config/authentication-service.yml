@@ -30,8 +30,8 @@ spring:
             client:
                 registration:
                     google:
-                        client-id: 
-                        client-secret: 
+                        client-id:  cd
+                        client-secret:  cs
                         scope: openid,profile,email
 
 # Discovery service
