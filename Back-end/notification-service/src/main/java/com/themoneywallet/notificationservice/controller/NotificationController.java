@@ -1,11 +1,9 @@
 package com.themoneywallet.notificationservice.controller;
 
-import com.themoneywallet.notificationservice.entity.Notification;
+import com.themoneywallet.notificationservice.dto.response.UnifiedResponse;
 import com.themoneywallet.notificationservice.service.NotificationService;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -21,20 +19,18 @@ public class NotificationController {
 
     private final NotificationService notificationService;
 
-    @GetMapping("/user/{userId}")
-    public ResponseEntity<String> getUserNotifications(
+    @GetMapping("/get")
+    public ResponseEntity<UnifiedResponse> getUserNotifications(
         @RequestHeader("Authorization") String token,
-        @CookieValue("refreshToken") String refToken,
         @RequestParam(defaultValue = "false") boolean unreadOnly
     ) {
-        String userId = "1";
         return unreadOnly
-            ? notificationService.getUnreadNotifications(userId)
-            : notificationService.getAllUserNotifications(userId);
+            ? notificationService.getUnreadNotifications(token)
+            : notificationService.getAllUserNotifications(token);
     }
 
     @PatchMapping("/{id}/mark-read")
-    public void markAsRead(@PathVariable String id) {
-        notificationService.markNotificationRead(id);
+    public void markAsRead( @RequestHeader("Authorization") String token,@PathVariable String NotificationId) {
+        notificationService.markNotificationRead(token , NotificationId);
     }
 }

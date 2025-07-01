@@ -1,6 +1,7 @@
 package com.themoneywallet.notificationservice.entity;
 
-import com.themoneywallet.notificationservice.event.EventType;
+import com.themoneywallet.notificationservice.entity.fixed.NotificationStatus;
+import com.themoneywallet.notificationservice.entity.fixed.NotificationType;
 import java.time.LocalDateTime;
 import java.util.Map;
 import lombok.AllArgsConstructor;
@@ -19,11 +20,20 @@ public class Notification {
 
     @Id
     private String id;
-
     private String userId;
-    private EventType eventType;
+    private String title;
     private String message;
-    private LocalDateTime createdDate = LocalDateTime.now();
+    @Builder.Default()
     private boolean read = false;
-    private Map<String, Map<String, String>> metadata;
+    
+    @Builder.Default()
+    private LocalDateTime createdDate = LocalDateTime.now();
+    @Builder.Default()
+    private LocalDateTime readAt = LocalDateTime.now();
+
+    private NotificationType type;        
+    private NotificationStatus status; 
+
+    private Map<String, Map<String , String>> metadata;
+
 }

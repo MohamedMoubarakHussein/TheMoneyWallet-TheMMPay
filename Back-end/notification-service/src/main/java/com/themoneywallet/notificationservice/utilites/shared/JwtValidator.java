@@ -49,4 +49,13 @@ public class JwtValidator {
     public String extractUserName(String token) {
         return extractInfoFromToken(token).getSubject();
     }
+
+
+    public String getUserId(String token) {
+        if(this.isTokenValid(token)){
+            Claims claims = this.extractInfoFromToken(token);
+            return  (String)claims.get("userid");
+        }
+        return null;
+    }
 }
