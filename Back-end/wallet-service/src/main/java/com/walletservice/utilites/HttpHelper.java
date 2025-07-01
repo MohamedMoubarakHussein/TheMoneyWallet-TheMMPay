@@ -16,7 +16,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class HttpHelper {
 
-    public ResponseEntity<String> sendDataToUserMangmentService(String token, String refToken) {
+    public ResponseEntity<String> sendDataToUserMangmentService(String token) {
   
         RestTemplate restTemplate = new RestTemplate();
         HttpHeaders headers = new HttpHeaders();
@@ -24,7 +24,6 @@ public class HttpHelper {
         ResponseEntity<String> responseEntity;
 
         headers.add("Authorization", "Bearer "+token);
-        headers.add(HttpHeaders.COOKIE, "refreshToken="+refToken);  
 
 
         HttpEntity<String> entity = new HttpEntity<String>(headers);

@@ -1,7 +1,7 @@
 package com.walletservice.event;
 
 public enum EventType {
-    LOGIN_SUCCESS,
+    AUTH_USER_LOGIN_SUCCESSED,
     LOGIN_FAILED,
     LOGOUT,
     PASSWORD_CHANGED,

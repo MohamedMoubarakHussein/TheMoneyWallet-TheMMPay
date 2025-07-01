@@ -42,8 +42,7 @@ public class WalletController {
     public ResponseEntity<String> createWallet(
         @Valid @RequestBody(required = false) WalletCreationRequest wallet,
         BindingResult result,
-        @RequestHeader("Authorization") String token,
-        @CookieValue("refreshToken") String refToken
+        @RequestHeader("Authorization") String token
     ) throws JsonProcessingException {
         if (wallet == null) return ResponseEntity.badRequest()
             .body(
@@ -74,7 +73,7 @@ public class WalletController {
 
         try {
             log.info("token before xascsa" + token);
-            id = this.walletService.getUserId(token, refToken);
+            id = this.walletService.getUserId(token);
         } catch (Exception e) {
             return ResponseEntity.badRequest()
                 .body(
@@ -97,22 +96,20 @@ public class WalletController {
 
     @GetMapping("/wallets")
     public ResponseEntity<String> getAllWallets(
-        @RequestHeader("Authorization") String token,
-        @CookieValue("refreshToken") String refToken
+        @RequestHeader("Authorization") String token
     ) throws JsonProcessingException {
         return this.walletService.getAllWallets(
-                this.walletService.getUserId(token, refToken)
+                this.walletService.getUserId(token)
             );
     }
 
     @GetMapping("/get")
     public ResponseEntity<String> getWallet(
         @RequestHeader("Authorization") String token,
-        @CookieValue("refreshToken") String refToken,
         @RequestParam("id") String id
     ) throws JsonProcessingException {
         return this.walletService.getWallet(
-                this.walletService.getUserId(token, refToken),
+                this.walletService.getUserId(token),
                 id
             );
     }
@@ -120,11 +117,10 @@ public class WalletController {
     @GetMapping("/status")
     public ResponseEntity<String> walletStatus(
         @RequestHeader("Authorization") String token,
-        @CookieValue("refreshToken") String refToken,
         @RequestParam("id") String id
     ) throws JsonProcessingException {
         return this.walletService.getWalletStaus(
-                this.walletService.getUserId(token, refToken),
+                this.walletService.getUserId(token),
                 id
             );
     }
@@ -132,11 +128,10 @@ public class WalletController {
     @PostMapping("/status")
     public ResponseEntity<String> walletStatusChange(
         @RequestHeader("Authorization") String token,
-        @CookieValue("refreshToken") String refToken,
         @RequestParam("id") String id
     ) throws JsonProcessingException {
         return this.walletService.setWalletStaus(
-                this.walletService.getUserId(token, refToken),
+                this.walletService.getUserId(token),
                 id
             );
     }
@@ -144,11 +139,10 @@ public class WalletController {
     @GetMapping("/balance")
     public ResponseEntity<String> getWalletBlance(
         @RequestHeader("Authorization") String token,
-        @CookieValue("refreshToken") String refToken,
         @RequestParam("id") String id
     ) throws JsonProcessingException {
         return this.walletService.getWalletBalance(
-                this.walletService.getUserId(token, refToken),
+                this.walletService.getUserId(token),
                 id
             );
     }
@@ -156,11 +150,10 @@ public class WalletController {
     @GetMapping("/limits")
     public ResponseEntity<String> getWalletLimits(
         @RequestHeader("Authorization") String token,
-        @CookieValue("refreshToken") String refToken,
         @RequestParam("id") String id
     ) throws JsonProcessingException {
         return this.walletService.getWalletLimits(
-                this.walletService.getUserId(token, refToken),
+                this.walletService.getUserId(token),
                 id
             );
     }
@@ -171,7 +164,6 @@ public class WalletController {
         @Valid @RequestBody(required = false) WalletLimits wallet,
         BindingResult result,
         @RequestHeader("Authorization") String token,
-        @CookieValue("refreshToken") String refToken,
         @RequestParam("id") String id
     ) throws JsonProcessingException {
         if (wallet == null) return ResponseEntity.badRequest()
@@ -202,7 +194,7 @@ public class WalletController {
         String userId;
         String refCookie;
         try {
-            userId = this.walletService.getUserId(token, refToken);
+            userId = this.walletService.getUserId(token);
         } catch (Exception e) {
             return ResponseEntity.badRequest()
                 .body(
@@ -231,7 +223,6 @@ public class WalletController {
         @Valid @RequestBody(required = false) WalletChangeFundReq req,
         BindingResult result,
         @RequestHeader("Authorization") String token,
-        @CookieValue("refreshToken") String refToken,
         @RequestParam("id") String id
     ) throws JsonProcessingException {
         if (req == null) return ResponseEntity.badRequest()
@@ -261,7 +252,7 @@ public class WalletController {
 
         String userId;
         try {
-            userId = this.walletService.getUserId(token, refToken);
+            userId = this.walletService.getUserId(token);
         } catch (Exception e) {
             return ResponseEntity.badRequest()
                 .body(
@@ -290,7 +281,6 @@ public class WalletController {
         @Valid @RequestBody(required = false) WalletChangeFundReq req,
         BindingResult result,
         @RequestHeader("Authorization") String token,
-        @CookieValue("refreshToken") String refToken,
         @RequestParam("id") String id
     ) throws JsonProcessingException {
         if (req == null) return ResponseEntity.badRequest()
@@ -320,7 +310,7 @@ public class WalletController {
 
         String userId;
         try {
-            userId = this.walletService.getUserId(token, refToken);
+            userId = this.walletService.getUserId(token);
         } catch (Exception e) {
             return ResponseEntity.badRequest()
                 .body(
@@ -347,11 +337,10 @@ public class WalletController {
     @DeleteMapping("/delete")
     public ResponseEntity<String> walletDelete(
         @RequestHeader("Authorization") String token,
-        @CookieValue("refreshToken") String refToken,
         @RequestParam("id") String id
     ) throws JsonProcessingException {
         return this.walletService.Delete(
-                this.walletService.getUserId(token, refToken),
+                this.walletService.getUserId(token),
                 id
             );
     }

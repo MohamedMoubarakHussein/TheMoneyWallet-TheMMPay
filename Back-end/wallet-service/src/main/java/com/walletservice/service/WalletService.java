@@ -457,10 +457,10 @@ public class WalletService {
     }
 
     @Cacheable(value = "getUserId", key = "#refToken")
-    public String getUserId(String token, String refToken) {
+    public String getUserId(String token ) {
         ResponseEntity<String> req;
         log.info("Trying to get user id from user");
-        req = this.httpHelper.sendDataToUserMangmentService(token, refToken);
+        req = this.httpHelper.sendDataToUserMangmentService(token);
         log.info("Finished getting respo from user service");
         if (
             req == null ||
@@ -493,5 +493,10 @@ public class WalletService {
         String userId = res.getData().get("data").get("id");
 
         return userId;
+    }
+
+    public void userLogin(Event event) {
+        // TODO Auto-generated method stub Add in cash user wallets
+        throw new UnsupportedOperationException("Unimplemented method 'userLogin'");
     }
 }

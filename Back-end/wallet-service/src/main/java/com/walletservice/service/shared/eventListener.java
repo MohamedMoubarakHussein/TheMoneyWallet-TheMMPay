@@ -6,6 +6,7 @@ import com.walletservice.entity.WalletLimits;
 import com.walletservice.entity.WalletStatus;
 import com.walletservice.entity.WalletTypes;
 import com.walletservice.event.Event;
+import com.walletservice.event.EventType;
 import com.walletservice.repository.WalletRepository;
 import com.walletservice.service.WalletService;
 import java.math.BigDecimal;
@@ -28,6 +29,18 @@ public class eventListener {
     private final WalletService walletService;
     private final WalletRepository walletRepository;
 
+      @KafkaListener(topics = "user-signup-event", groupId = "wallet-service")
+    public void handleEvent(Event event) {
+        switch (event.getEventType()) {
+            case EventType.AUTH_USER_LOGIN_SUCCESSED:
+                    this.walletService.userLogin(event);
+                break;
+        
+            default:
+                break;
+        }
+
+    }
     @KafkaListener(topics = "user-signup-event", groupId = "wallet-service")
     public void handleEvents(Event event) {
         Wallet wallet = new Wallet();
