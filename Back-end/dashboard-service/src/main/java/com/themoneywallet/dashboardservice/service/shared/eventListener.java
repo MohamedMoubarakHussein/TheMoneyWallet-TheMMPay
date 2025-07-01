@@ -20,19 +20,21 @@ public class eventListener {
     private final DashboardDataService dashboardDataService;
   
 
-    @KafkaListener(topics = {"user-signup-event", "wallet-creation-event"}, groupId = "dashboard-service")
+    @KafkaListener(topics = {"auth-user-signup"}, groupId = "dashboard-service")
     public void handleEvents(Event event) {
         
         switch (event.getEventType()) {
-            case EventType.USER_PROFILE_CREATED:
+            case EventType.AUTH_USER_SIGN_UP:
+                    log.info(event.toString());
                     this.dashboardDataService.createUserDashboard(event);
                 break;
-             /*case EventType. USER_PROFILE_UPDATED:
-                    this.dashboardDataService.updateUserInfo(event);
-                break;*/
-             case EventType.CREATED_WALLET:
-                    this.dashboardDataService.addUserWallet(event);
+             case EventType.AUTH_USER_LOGIN_SUCCESSED:
+                  
+                    this.dashboardDataService.userLogin(event);
                 break;
+             /*case EventType.CREATED_WALLET:
+                    this.dashboardDataService.addUserWallet(event);
+                break;*/
             /*   case EventType.WALLET_BALANCE_CHANGED:
                     this.dashboardDataService.updateWalletBalance(event);
                 break;

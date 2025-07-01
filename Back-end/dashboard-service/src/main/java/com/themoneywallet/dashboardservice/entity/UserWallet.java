@@ -26,8 +26,9 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import com.fasterxml.jackson.annotation.JsonUnwrapped;
 import  com.themoneywallet.dashboardservice.entity.fixed.CurrencyType;
-import com.themoneywallet.dashboardservice.entity.fixed.WalletLimits;
 
 @Entity
 @Table(name = "user_wallets",

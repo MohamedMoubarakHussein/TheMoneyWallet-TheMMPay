@@ -3,9 +3,9 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import com.themoneywallet.dashboardservice.entity.UserNotification;
 import com.themoneywallet.dashboardservice.entity.UserRecentTransaction;
 import com.themoneywallet.dashboardservice.entity.UserWallet;
-import com.themoneywallet.dashboardservice.event.eventDTO.WalletEventDTo;
 
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.Email;
@@ -40,6 +40,9 @@ public class UserDashboardResponse {
     
     @NotNull
     private List<UserRecentTransaction> recentTransactions;
+
+    @NotNull
+    private List<UserNotification> userNotifications;
     
     @NotNull
     private List<UserWallet> wallets;
@@ -47,16 +50,14 @@ public class UserDashboardResponse {
     @NotNull
     private LocalDateTime lastUpdated;
     
-    // Computed properties for convenience
-    public int getWalletCount() {
-        return wallets != null ? wallets.size() : 0;
-    }
+    private Integer walletsCount;
+    private Integer recentTransactionsCount;
+   
     
-    public int getTransactionCount() {
-        return recentTransactions != null ? recentTransactions.size() : 0;
+    @Override
+    public String toString(){
+        return "@NotBlank private String userId; @NotBlank private String fullName; @Email @NotBlank private String email; @NotNull @DecimalMin(\"0.0\") private BigDecimal totalBalance; private String primaryWalletId; @NotNull private List<UserRecentTransaction> recentTransactions; @NotNull private List<UserNotification> userNotifications; @NotNull private List<UserWallet> wallets;@NotNull private LocalDateTime lastUpdated;private Integer walletsCount;private Integer recentTransactionsCount;";                   
     }
-    
-    public boolean hasPrimaryWallet() {
-        return primaryWalletId != null && !primaryWalletId.isEmpty();
-    }
+  
+            
 }

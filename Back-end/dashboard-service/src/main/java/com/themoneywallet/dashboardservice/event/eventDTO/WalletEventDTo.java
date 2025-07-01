@@ -5,8 +5,7 @@ import java.math.BigDecimal;
 
 import java.time.LocalDateTime;
 
-
-import com.themoneywallet.dashboardservice.entity.fixed.WalletLimits;
+import com.themoneywallet.dashboardservice.entity.WalletLimits;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

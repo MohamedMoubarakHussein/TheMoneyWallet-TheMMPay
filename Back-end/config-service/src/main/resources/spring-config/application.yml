@@ -45,3 +45,12 @@ spring:
     web:
         resources:
             add-mappings: false
+
+app:
+  jwt:
+    expiration: 86400
+    secret-acc: "b2phbHpsdU54Z3htb2NSanBCK3ErWkxOeFNmeTdiZk9XNkR2NEt0Mkhraz0=" 
+  cors:
+    allowed-origins: "*"
+    allowed-methods: GET,POST,PUT,DELETE,OPTIONS
+    allowed-headers: "*"

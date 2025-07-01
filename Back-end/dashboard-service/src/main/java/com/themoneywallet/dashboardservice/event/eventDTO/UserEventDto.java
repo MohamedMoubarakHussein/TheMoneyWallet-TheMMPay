@@ -32,18 +32,14 @@ public class UserEventDto {
    
     private String userRole;
 
-    private boolean locked;
-    private boolean enabled;
+  
 
    
     private LocalDateTime createdAt;
 
     private LocalDateTime updatedAt;
 
- 
-    private boolean emailNotificationsEnabled ;
-    private String language ;
-    private String timezone ;
+
     
 
    

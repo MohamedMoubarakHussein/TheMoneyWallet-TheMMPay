@@ -4,6 +4,24 @@ server:
 spring:
     application:
         name: dashboard-service
+    cloud:
+        gateway:
+            globalcors:
+                cors-configurations:
+                    '[/**]':
+                        allow-credentials: true
+                        allowed-headers: '*'
+                        allowed-methods:
+                        - GET
+                        - POST
+                        - PUT
+                        - DELETE
+                        - OPTIONS
+                        allowed-origins:
+                        - http://localhost:4200
+                        exposed-headers:
+                        - Set-Cookie
+                        - Authorization
     datasource:
         driver-class-name: com.mysql.cj.jdbc.Driver
         password: 123456789
@@ -47,3 +65,13 @@ eureka:
     client:
         service-url:
             defaultZone: http://localhost:8888/eureka
+
+
+app:
+  jwt:
+    expiration: 86400
+    secret-access: "b2phbHpsdU54Z3htb2NSanBCK3ErWkxOeFNmeTdiZk9XNkR2NEt0Mkhraz0=" 
+  cors:
+    allowed-origins: "*"
+    allowed-methods: GET,POST,PUT,DELETE,OPTIONS
+    allowed-headers: "*"

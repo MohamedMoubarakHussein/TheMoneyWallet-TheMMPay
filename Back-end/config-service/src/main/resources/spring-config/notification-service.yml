@@ -1,5 +1,5 @@
 server:
-    port: 8094
+    port: 8194
 spring:
     application:
         name: notification-service
@@ -10,17 +10,32 @@ spring:
         username: admin
         password: 123456
         authentication-database: admin
+    mail:
+      host: smtp.gmail.com
+      port: 587
+      username: mohmedmoberk77@gmail.com
+      password: 0987654321@qQ
+      properties:
+        mail:
+          smtp:
+            auth: true
+            starttls:
+              enable: true
+
     kafka:
         bootstrap-servers: localhost:9092
         consumer:
-            auto-offset-reset: earliest
+            auto-offset-reset: latest
             group-id: notification-service
             key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
             properties:
                 spring:
                     json:
                         trusted:
-                            packages: '*'
+                            packages: "*"
+                        value:
+                            default:
+                                type: com.themoneywallet.notificationservice.event.Event
             value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
         producer:
             key-serializer: org.apache.kafka.common.serialization.StringSerializer
@@ -53,4 +68,5 @@ management:
   endpoint:
     health:
       show-details: always
+
 

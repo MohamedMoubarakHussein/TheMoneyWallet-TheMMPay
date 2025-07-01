@@ -43,15 +43,15 @@ public class DashboardDataService {
     private final UserWalletsRepository walletsRepository;
     private final ObjectMapper objectMapper;
     
-  
+    
     public void createUserDashboard(Event event) {
        
         Map<String, Map<String, String>> eventMap = event.getAdditionalData(); 
         UserEventDto user;
         try {
-            user = this.objectMapper.readValue(event.getAdditionalData().get(ResponseKey.DATA.toString()).get("profile"), UserEventDto.class);
+            user = this.objectMapper.readValue(event.getAdditionalData().get(ResponseKey.DATA.toString()).get("data"), UserEventDto.class);
         } catch (Exception e) {
-
+                log.info("csccccc  "+e.getMessage());
             return;
         } 
       
@@ -70,7 +70,7 @@ public class DashboardDataService {
                 .totalBalance(BigDecimal.ZERO)  
                 .lastUpdated(LocalDateTime.now())
                 .build();
-        
+        log.info("xsazz  " , dashboard.toString());
         this.dashboardRepository.save(dashboard);
     }
 
@@ -243,6 +243,10 @@ private void updateUserTotalBalance( String id) {
             dashboardRepository.save(dashboard);
         } 
   
+}
+
+public void userLogin(Event event){
+    // TODO call the user dashaboard and dashboard summery to be preperad for user request in the cash <--- check if the cash config exits
 }
  
 }
