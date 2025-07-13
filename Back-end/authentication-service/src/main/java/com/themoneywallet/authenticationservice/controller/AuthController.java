@@ -82,10 +82,10 @@ public class AuthController {
     }
 
 
-     @PostMapping("/verfiy")
+    @PostMapping("/verfiy")
     public ResponseEntity<UnifiedResponse> verfiyEmail(
         @RequestHeader("Authorization") String token,
-        @RequestParam("code") String code,
+        @RequestParam("Usercode") String code,
         HttpServletRequest req
     ) {
         if (code == null) {

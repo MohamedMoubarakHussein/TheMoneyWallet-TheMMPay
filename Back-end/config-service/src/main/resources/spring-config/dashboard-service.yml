@@ -4,24 +4,6 @@ server:
 spring:
     application:
         name: dashboard-service
-    cloud:
-        gateway:
-            globalcors:
-                cors-configurations:
-                    '[/**]':
-                        allow-credentials: true
-                        allowed-headers: '*'
-                        allowed-methods:
-                        - GET
-                        - POST
-                        - PUT
-                        - DELETE
-                        - OPTIONS
-                        allowed-origins:
-                        - http://localhost:4200
-                        exposed-headers:
-                        - Set-Cookie
-                        - Authorization
     datasource:
         driver-class-name: com.mysql.cj.jdbc.Driver
         password: 123456789

@@ -67,3 +67,13 @@ otel:
     attributes: service.name=my-spring-boot-app
   sampler:
     probability: 1.0
+
+
+app:
+  jwt:
+    expiration: 86400
+    secret-access: "b2phbHpsdU54Z3htb2NSanBCK3ErWkxOeFNmeTdiZk9XNkR2NEt0Mkhraz0=" 
+  cors:
+    allowed-origins: "*"
+    allowed-methods: GET,POST,PUT,DELETE,OPTIONS
+    allowed-headers: "*"
