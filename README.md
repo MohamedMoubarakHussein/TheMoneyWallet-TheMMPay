@@ -45,7 +45,7 @@ It is designed to be scalable, maintainable, and resilient for enterprise-grade 
 
 
 # Gateway service
-I use [Spring Cloud Gateway](https://spring.io/projects/spring-cloud-gateway) It creates a single entry point for the application, streamlining API routing, ensuring robust security, monitoring performance, and enhancing resiliency.
+This project uses [Spring Cloud Gateway](https://spring.io/projects/spring-cloud-gateway) It creates a single entry point for the application, streamlining API routing, ensuring robust security, monitoring performance, and enhancing resiliency.
 ![routing](Requirements/Gateway/routing.png)
 
 For example this is how the gateway only allow the requests with the right permisions to access the internal services.
@@ -54,30 +54,23 @@ For example this is how the gateway only allow the requests with the right permi
 
 
 # Discovery service
-I use [Spring Cloud Gateway](https://spring.io/projects/spring-cloud-gateway) It creates a single entry point for the application, streamlining API routing, ensuring robust security, monitoring performance, and enhancing resiliency.
-![routing](Requirements/Gateway/routing.png)
 
-For example this is how the gateway only allow the requests with the right permisions to access the internal services.
+This project uses [Spring Cloud Netflix Eureka](https://spring.io/projects/spring-cloud-netflix) for service discovery, allowing microservices to register and locate each other dynamically. It eliminates hardcoded service URLs, supports client-side load balancing, and improves scalability and fault tolerance in a distributed architecture.
 
-![Flow of auth](Requirements/Gateway/Flow%20of%20auth.png)
-
+![discovery_service flow ](Requirements/Discovery_Service/discovery_service.png)
 
 
 # Config service
-I use [Spring Cloud Gateway](https://spring.io/projects/spring-cloud-gateway) It creates a single entry point for the application, streamlining API routing, ensuring robust security, monitoring performance, and enhancing resiliency.
-![routing](Requirements/Gateway/routing.png)
 
-For example this is how the gateway only allow the requests with the right permisions to access the internal services.
+This project uses  [Spring Cloud Config](https://docs.spring.io/spring-cloud-config/docs/current/reference/html/) To externalize and centralize configuration management across microservices, ensuring consistency, reducing duplication, and enabling dynamic updates without redeployments. This improves scalability, maintainability, and environment-specific flexibility.
 
-![Flow of auth](Requirements/Gateway/Flow%20of%20auth.png)
-
-
-
-
+![config_service flow ](Requirements/Config_service/configService.png)
 
 # Authentication service 
-Implemented authentication in Spring Boot microservices using [Spring Security](https://spring.io/projects/spring-security), [JWT](https://en.wikipedia.org/wiki/JSON_Web_Token). Signup uses event-driven communication to User Management service (via [Kafka](https://kafka.apache.org/)). Signin returns refresh token in HTTP-only cookie and access token in headers; supports secure logout and token refresh endpoint. Optimized with stateless sessions and cookie flags (HttpOnly, Secure, SameSite).
 
+This service handles authentication and authorization for the microservices ecosystem using [Spring Security](https://spring.io/projects/spring-security), [JWT](https://en.wikipedia.org/wiki/JSON_Web_Token), [OAuth2](https://spring.io/guides/tutorials/spring-boot-oauth2) standards. It provides endpoints like : ***/signup, /signin, /refreshtoken, /logout, /forgotpassword, /verifytoken, and /verifyemail*** . Each critical action publishes domain events via [Kafka](https://kafka.apache.org/) (UserRegistered, UserLoggedIn, TokenRefreshed, etc.), enabling other services to react asynchronously and remain loosely coupled. Centralizing auth improves security, consistency, and token lifecycle control, while keeping each microservice focused on its domain logic.This modular design simplifies future scaling, auditing, and policy enforcement in distributed systems.
+
+Example of auth flow.
 ![Auth flow](Requirements/Authentication%20service/sys%20arch%20diagram.png)
 
 # User Managment service 
