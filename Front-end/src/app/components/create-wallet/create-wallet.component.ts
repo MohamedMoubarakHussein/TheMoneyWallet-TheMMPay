@@ -1,20 +1,12 @@
 import { Component, OnInit, OnDestroy, HostListener } from '@angular/core';
-import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { of, Subject } from 'rxjs';
+import { takeUntil, switchMap } from 'rxjs/operators';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthService } from '../../services/auth/auth.service';
-import { User } from '../../entity/UnifiedResponse';
-
-interface WalletType {
-  id: string;
-  name: string;
-  description: string;
-  icon: string;
-  gradient: string;
-  features: string[];
-}
+import { WalletService } from '../../services/wallet/wallet-service.service';
+import { CreateWalletRequest, CURRENCIES, CURRENTWALLETTYPES, User, WalletType } from '../../entity/UnifiedResponse';
 
 @Component({
   selector: 'app-create-wallet',
@@ -24,55 +16,32 @@ interface WalletType {
   styleUrls: ['./create-wallet.component.scss']
 })
 export class CreateWalletComponent implements OnInit, OnDestroy {
-
+  
   user: User | null = null;
   walletName: string = '';
   selectedWalletType: string = '';
   setPrimaryWallet: boolean = false;
   currency: string = 'USD';
+  initialBalance: number = 0;
+  description: string = '';
   isLoading: boolean = false;
   errorMessage: string = '';
   successMessage: string = '';
 
-  walletTypes: WalletType[] = [
-    {
-      id: 'personal',
-      name: 'Personal Wallet',
-      description: 'Perfect for everyday spending and personal finance management',
-      icon: 'fas fa-wallet',
-      gradient: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-      features: ['Daily transactions', 'Budget tracking', 'Expense categorization']
-    },
-    {
-      id: 'business',
-      name: 'Business Wallet',
-      description: 'Designed for business operations and professional transactions',
-      icon: 'fas fa-building',
-      gradient: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
-      features: ['Invoice management', 'Tax tracking', 'Business analytics']
-    },
-    {
-      id: 'savings',
-      name: 'Savings Wallet',
-      description: 'Built for long-term savings goals and investment tracking',
-      icon: 'fas fa-piggy-bank',
-      gradient: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
-      features: ['Goal setting', 'Interest tracking', 'Savings milestones']
-    }
-  ];
-
-  currencies: string[] = ['USD', 'EUR', 'GBP', 'CAD', 'AUD', 'JPY', 'CHF'];
+  walletTypes: WalletType[] = CURRENTWALLETTYPES;
+  currencies: string[] = CURRENCIES;
 
   private destroy$ = new Subject<void>();
 
   constructor(
     private authService: AuthService,
+    private walletService: WalletService,
     private router: Router
   ) {}
 
   ngOnInit(): void {
     this.loadUserData();
-    this.selectedWalletType = 'personal'; // Default selection
+    this.selectedWalletType = 'personal';
   }
 
   ngOnDestroy(): void {
@@ -85,7 +54,6 @@ export class CreateWalletComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe(user => {
         this.user = user;
-        // If user has no wallets, automatically set as primary
         if (user && (!user.wallets || user.wallets.length === 0)) {
           this.setPrimaryWallet = true;
         }
@@ -106,6 +74,7 @@ export class CreateWalletComponent implements OnInit, OnDestroy {
   }
 
   createWallet(): void {
+   
     if (!this.walletName.trim()) {
       this.errorMessage = 'Please enter a wallet name';
       return;
@@ -118,25 +87,50 @@ export class CreateWalletComponent implements OnInit, OnDestroy {
 
     this.isLoading = true;
     this.errorMessage = '';
+    this.successMessage = '';
 
-    const walletData = {
+    const walletData: CreateWalletRequest = {
       name: this.walletName.trim(),
-      type: this.selectedWalletType,
+      walletType: this.selectedWalletType as 'Personal' | 'Business' | 'Savings' ,
       currency: this.currency,
-      isPrimary: this.setPrimaryWallet
+      description: this.description?.trim() || undefined
     };
 
-    // Simulate API call
-    setTimeout(() => {
-      this.successMessage = 'Wallet created successfully!';
-      console.log('Creating wallet:', walletData);
+      // TODO adding the primary wallet funcationallity 
+    this.walletService.createWallet(walletData)
+  .pipe(
+    switchMap(createdWallet => {
+     /* if (this.setPrimaryWallet) {
+        return this.walletService.updatePrimaryWallet(createdWallet.id)
+          .pipe(
+         
+            switchMap(() => of(createdWallet)) 
+          );
+      } else {
+        
+        return of(createdWallet);
+      }*/
+      return of(createdWallet);
+    }),
+    takeUntil(this.destroy$)
+  )
+  .subscribe({
+    next: (wallet) => {
+      this.successMessage = `Wallet "${wallet.name}" created successfully!`;
+      console.log('Wallet created:', wallet);
       
       setTimeout(() => {
         this.router.navigate(['/dashboard']);
       }, 1500);
       
       this.isLoading = false;
-    }, 2000);
+    },
+    error: (error) => {
+      this.errorMessage = error.message || 'Failed to create wallet. Please try again.';
+      this.isLoading = false;
+      console.error('Error creating wallet:', error);
+    }
+  });
   }
 
   goBack(): void {
@@ -148,6 +142,8 @@ export class CreateWalletComponent implements OnInit, OnDestroy {
     this.selectedWalletType = 'personal';
     this.setPrimaryWallet = false;
     this.currency = 'USD';
+    this.initialBalance = 0;
+    this.description = '';
     this.errorMessage = '';
     this.successMessage = '';
   }

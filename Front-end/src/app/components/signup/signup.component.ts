@@ -5,8 +5,7 @@ import { Router, RouterModule } from '@angular/router';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Subject, debounceTime, takeUntil } from 'rxjs';
 
-import { SignupService } from '../../services/auth/signup/signup.service';
-import { TokenService } from '../../services/auth/token/token.service';
+import { AuthService } from '../../services/auth/auth.service';
 import { AuthValidators } from '../../utilities/validation.utils';
 import { HeaderComponent } from '../header/header.component';
 import { ComingSoonComponent } from '../coming-soon/coming-soon.component';
@@ -27,7 +26,7 @@ import { UserService } from '../../services/userService/user-service.service';
   styleUrls: ['./signup.component.scss']
 })
 export class SignupComponent implements OnInit, OnDestroy {
-//TODO EDITING AND ADDING THE GOOOGLE OAUTH2
+  //TODO EDITING AND ADDING THE GOOGLE OAUTH2
   showComingSoon = false;
   isSubmitting = false;
   serverErrorMessage = '';
@@ -36,20 +35,20 @@ export class SignupComponent implements OnInit, OnDestroy {
 
   constructor(
     private fb: FormBuilder,
-    private signupService: SignupService,
+    // Replaced multiple service injections with single AuthService
+    private authService: AuthService,
     private userService: UserService,
-    private router: Router,
-    private tokenService : TokenService
+    private router: Router
   ) {
     this.initializeForm();
     this.setupDebouncedValidation();
   }
 
   ngOnInit(): void {
-   
-    this.signupService.currentUser$
+    // Updated to use AuthService's currentUser$ observable
+    this.authService.currentUser$
       .pipe(takeUntil(this.destroy$))
-      .subscribe(user => {
+      .subscribe((user: any) => {
         if (user) this.handleAuthSuccess(user);
       });
   }
@@ -87,7 +86,8 @@ export class SignupComponent implements OnInit, OnDestroy {
     this.serverErrorMessage = '';
     const { confirmPassword, terms, ...signupData } = this.signupForm.value;
 
-    this.signupService.signup(signupData).subscribe({
+    // Updated to use AuthService's signup method
+    this.authService.signup(signupData).subscribe({
       next: () => {
         this.isSubmitting = false;
         this.handleSuccess();
@@ -95,9 +95,6 @@ export class SignupComponent implements OnInit, OnDestroy {
       error: (error) => this.handleError(error)
     });
   }
-
-
-  
 
   private handleSuccess(): void {
     this.router.navigate(['/verification']);
@@ -113,13 +110,12 @@ export class SignupComponent implements OnInit, OnDestroy {
   private handleError(error: HttpErrorResponse): void {
     this.isSubmitting = false;
 
-
     try {
-      const response =  error.error ;
+      const response = error.error;
       
       if (error.status === 400) {
         this.handleValidationErrors(response.data['ERROR']);
-      }  else {
+      } else {
         this.serverErrorMessage = response?.message || 'Unexpected error occurred.';
       }
     } catch (parseError) {
@@ -157,11 +153,18 @@ export class SignupComponent implements OnInit, OnDestroy {
     return '';
   }
   
-  btnGoogle =  () => this.toggleComingSoon();
+  btnGoogle = () => this.toggleComingSoon();
   btnApple = () => this.toggleComingSoon();
   toggleComingSoon = () => this.showComingSoon = !this.showComingSoon;
-  isAuthenticated(): boolean { return this.tokenService.isAuthenticated(); }
-  clearServerError(): void { this.serverErrorMessage = ''; }
+  
+  // Updated to use AuthService's isAuthenticated method
+  isAuthenticated(): boolean { 
+    return this.authService.isAuthenticated(); 
+  }
+  
+  clearServerError(): void { 
+    this.serverErrorMessage = ''; 
+  }
 
   ngOnDestroy(): void {
     this.destroy$.next();

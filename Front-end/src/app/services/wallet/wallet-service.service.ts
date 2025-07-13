@@ -1,206 +1,292 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Observable, BehaviorSubject, throwError } from 'rxjs';
-import { catchError, tap, map } from 'rxjs/operators';
-import { UserWallet, ApiResponse } from '../../entity/UnifiedResponse';
+import { catchError, tap, map, distinctUntilChanged } from 'rxjs/operators';
+import { UserWallet, CreateWalletRequest, UpdateWalletRequest, TransferRequest, User, UnifiedResponse } from '../../entity/UnifiedResponse';
 import { environment } from '../../environments/environment';
-
-export interface CreateWalletRequest {
-  name: string;
-  type: 'checking' | 'savings' | 'credit' | 'crypto' | 'business' | 'investment';
-  currency: string;
-  initialBalance?: number;
-  description?: string;
-}
-
-export interface UpdateWalletRequest {
-  name?: string;
-  description?: string;
-  currency?: string;
-}
-
-export interface TransferRequest {
-  fromWalletId: string;
-  toWalletId: string;
-  amount: number;
-  description?: string;
-}
+import { ResponseExtractor } from '../../utilities/responseExtractor';
 
 @Injectable({
   providedIn: 'root'
 })
 export class WalletService {
-  private readonly apiUrl = `${environment.apiUrl}/wallets`;
-  private walletsSubject = new BehaviorSubject<UserWallet[]>([]);
+  private readonly apiUrl = `${environment.apiUrl}/wallet`;
   
+  // State management
+  private walletsSubject = new BehaviorSubject<UserWallet[]>([]);
+  private primaryWalletSubject = new BehaviorSubject<UserWallet | null>(null);
+  private totalBalanceSubject = new BehaviorSubject<number>(0);
+  private isLoadingSubject = new BehaviorSubject<boolean>(false);
+  
+  // Public observables
   public wallets$ = this.walletsSubject.asObservable();
+  public primaryWallet$ = this.primaryWalletSubject.asObservable();
+  public totalBalance$ = this.totalBalanceSubject.asObservable();
+  public isLoading$ = this.isLoadingSubject.asObservable();
+  public walletsCount$ = this.wallets$.pipe(map(wallets => wallets.length));
+  public activeWallets$ = this.wallets$.pipe(
+    map(wallets => wallets.filter(wallet => wallet.status === 'active'))
+  );
 
-  constructor(private http: HttpClient) {}
-
-  // Get all user wallets
-  getWallets(): Observable<UserWallet[]> {
-    return this.http.get<ApiResponse<UserWallet[]>>(`${this.apiUrl}`)
-      .pipe(
-        map(response => response.data || []),
-        tap(wallets => this.walletsSubject.next(wallets)),
-        catchError(this.handleError)
-      );
+  constructor(private http: HttpClient) {
+    this.initializeCalculations();
   }
 
-  // Get wallet by ID
-  getWalletById(walletId: string): Observable<UserWallet> {
-    return this.http.get<ApiResponse<UserWallet>>(`${this.apiUrl}/${walletId}`)
-      .pipe(
-        map(response => response.data),
-        catchError(this.handleError)
-      );
+  private initializeCalculations(): void {
+    
+    this.wallets$.pipe(
+      map(wallets => wallets.reduce((total, wallet) => total + (wallet.balance || 0), 0)),
+      distinctUntilChanged()
+    ).subscribe(total => this.totalBalanceSubject.next(total));
+
+    
+    this.wallets$.pipe(
+      map(wallets => wallets.find(wallet => wallet.isPrimary) || null),
+      distinctUntilChanged((prev, curr) => prev?.id === curr?.id)
+    ).subscribe(primaryWallet => this.primaryWalletSubject.next(primaryWallet));
   }
 
-  // Create new wallet
-  createWallet(walletData: CreateWalletRequest): Observable<UserWallet> {
-    return this.http.post<ApiResponse<UserWallet>>(`${this.apiUrl}`, walletData)
+  initializeWithUser(user: User): void {
+    if (user.wallets?.length) {
+      this.walletsSubject.next(user.wallets);
+    }
+    this.totalBalanceSubject.next(user.totalBalance || 0);
+    
+    const primaryWallet = user.wallets?.find(w => w.id === user.primaryWalletId);
+    if (primaryWallet) {
+      this.primaryWalletSubject.next(primaryWallet);
+    }
+  }
+
+  getWallets(forceRefresh: boolean = false): Observable<UserWallet[]> {
+    if (!forceRefresh && this.walletsSubject.value.length > 0) {
+      return this.wallets$;
+    }
+
+    this.setLoading(true);
+    return this.http.get<UnifiedResponse>(`${this.apiUrl}`)
       .pipe(
-        map(response => response.data),
-        tap(newWallet => {
-          const currentWallets = this.walletsSubject.value;
-          this.walletsSubject.next([...currentWallets, newWallet]);
+        map(response => ResponseExtractor.extractData(response, 'data', 'wallets') || []),
+        tap(wallets => {
+          this.walletsSubject.next(wallets);
+          this.setLoading(false);
         }),
-        catchError(this.handleError)
+        catchError(error => {
+          this.setLoading(false);
+          return this.handleError(error);
+        })
       );
   }
 
-  // Update wallet
-  updateWallet(walletId: string, walletData: UpdateWalletRequest): Observable<UserWallet> {
-    return this.http.put<ApiResponse<UserWallet>>(`${this.apiUrl}/${walletId}`, walletData)
+  getWalletById(walletId: string): Observable<UserWallet> {
+    const cached = this.walletsSubject.value.find(w => w.id === walletId);
+    if (cached) {
+      return new Observable(observer => {
+        observer.next(cached);
+        observer.complete();
+      });
+    }
+
+    return this.http.get<UnifiedResponse>(`${this.apiUrl}/${walletId}`)
       .pipe(
-        map(response => response.data),
-        tap(updatedWallet => {
-          const currentWallets = this.walletsSubject.value;
-          const index = currentWallets.findIndex(w => w.id === walletId);
-          if (index !== -1) {
-            currentWallets[index] = updatedWallet;
-            this.walletsSubject.next([...currentWallets]);
+        map(response => ResponseExtractor.extractData(response, 'data', 'wallet')),
+        tap(wallet => {
+          if (wallet) {
+            const current = this.walletsSubject.value;
+            if (!current.find(w => w.id === walletId)) {
+              this.walletsSubject.next([...current, wallet]);
+            }
           }
         }),
         catchError(this.handleError)
       );
   }
 
-  // Update primary wallet
+  // TODO adding the primary wallet funcationallity
+  createWallet(walletData: CreateWalletRequest): Observable<UserWallet> {
+    this.setLoading(true);
+    return this.http.post<any>(`${this.apiUrl}/create`, walletData)
+      .pipe(
+       map(response => {
+
+  return ResponseExtractor.extractData(response, 'DATA', 'wallet');
+}),
+        tap(newWallet => {
+          if (newWallet) {
+            const updated = [...this.walletsSubject.value, newWallet];
+            this.walletsSubject.next(updated);
+          }
+          this.setLoading(false);
+        }),
+        catchError(error => {
+          console.log("xasxa   "+ error);
+          this.setLoading(false);
+          return this.handleError(error);
+        })
+      );
+  }
+
+  updateWallet(walletId: string, walletData: UpdateWalletRequest): Observable<UserWallet> {
+    this.setLoading(true);
+    return this.http.put<UnifiedResponse>(`${this.apiUrl}/${walletId}`, walletData)
+      .pipe(
+        map(response => ResponseExtractor.extractData(response, 'data', 'wallet')),
+        tap(updatedWallet => {
+          if (updatedWallet) {
+            const updated = this.walletsSubject.value.map(wallet => 
+              wallet.id === walletId ? updatedWallet : wallet
+            );
+            this.walletsSubject.next(updated);
+          }
+          this.setLoading(false);
+        }),
+        catchError(error => {
+          this.setLoading(false);
+          return this.handleError(error);
+        })
+      );
+  }
+
   updatePrimaryWallet(walletId: string): Observable<{ success: boolean; message: string }> {
-    return this.http.patch<ApiResponse<{ success: boolean; message: string }>>(
-      `${this.apiUrl}/${walletId}/set-primary`, 
-      {}
-    ).pipe(
-      map(response => response.data),
-      catchError(this.handleError)
-    );
+    this.setLoading(true);
+    return this.http.patch<UnifiedResponse>(`${this.apiUrl}/${walletId}/set-primary`, {})
+      .pipe(
+        map(response => ResponseExtractor.extractData(response, 'data', 'result') || 
+          { success: false, message: 'Unknown error' }),
+        tap(result => {
+          if (result.success) {
+            const updated = this.walletsSubject.value.map(wallet => ({
+              ...wallet,
+              isPrimary: wallet.id === walletId
+            }));
+            this.walletsSubject.next(updated);
+          }
+          this.setLoading(false);
+        }),
+        catchError(error => {
+          this.setLoading(false);
+          return this.handleError(error);
+        })
+      );
   }
 
-  // Activate/Deactivate wallet
   toggleWalletStatus(walletId: string, status: 'active' | 'inactive'): Observable<UserWallet> {
-    return this.http.patch<ApiResponse<UserWallet>>(
-      `${this.apiUrl}/${walletId}/status`,
-      { status }
-    ).pipe(
-      map(response => response.data),
-      tap(updatedWallet => {
-        const currentWallets = this.walletsSubject.value;
-        const index = currentWallets.findIndex(w => w.id === walletId);
-        if (index !== -1) {
-          currentWallets[index] = updatedWallet;
-          this.walletsSubject.next([...currentWallets]);
-        }
-      }),
-      catchError(this.handleError)
-    );
+    this.setLoading(true);
+    return this.http.patch<UnifiedResponse>(`${this.apiUrl}/${walletId}/status`, { status })
+      .pipe(
+        map(response => ResponseExtractor.extractData(response, 'data', 'wallet')),
+        tap(updatedWallet => {
+          if (updatedWallet) {
+            const updated = this.walletsSubject.value.map(wallet => 
+              wallet.id === walletId ? updatedWallet : wallet
+            );
+            this.walletsSubject.next(updated);
+          }
+          this.setLoading(false);
+        }),
+        catchError(error => {
+          this.setLoading(false);
+          return this.handleError(error);
+        })
+      );
   }
 
-  // Delete wallet
   deleteWallet(walletId: string): Observable<{ success: boolean; message: string }> {
-    return this.http.delete<ApiResponse<{ success: boolean; message: string }>>(
-      `${this.apiUrl}/${walletId}`
-    ).pipe(
-      map(response => response.data),
-      tap(() => {
-        const currentWallets = this.walletsSubject.value;
-        const filteredWallets = currentWallets.filter(w => w.id !== walletId);
-        this.walletsSubject.next(filteredWallets);
-      }),
-      catchError(this.handleError)
-    );
+    this.setLoading(true);
+    return this.http.delete<UnifiedResponse>(`${this.apiUrl}/${walletId}`)
+      .pipe(
+        map(response => ResponseExtractor.extractData(response, 'data', 'result') || 
+          { success: false, message: 'Unknown error' }),
+        tap(result => {
+          if (result.success) {
+            const updated = this.walletsSubject.value.filter(w => w.id !== walletId);
+            this.walletsSubject.next(updated);
+          }
+          this.setLoading(false);
+        }),
+        catchError(error => {
+          this.setLoading(false);
+          return this.handleError(error);
+        })
+      );
   }
 
-  // Transfer between wallets
   transferBetweenWallets(transferData: TransferRequest): Observable<{ success: boolean; message: string }> {
-    return this.http.post<ApiResponse<{ success: boolean; message: string }>>(
-      `${this.apiUrl}/transfer`,
-      transferData
-    ).pipe(
-      map(response => response.data),
-      tap(() => {
-        // Refresh wallets after transfer
-        this.getWallets().subscribe();
-      }),
-      catchError(this.handleError)
-    );
+    this.setLoading(true);
+    return this.http.post<UnifiedResponse>(`${this.apiUrl}/transfer`, transferData)
+      .pipe(
+        map(response => ResponseExtractor.extractData(response, 'data', 'result') || 
+          { success: false, message: 'Unknown error' }),
+        tap(result => {
+          if (result.success) {
+            this.getWallets(true).subscribe();
+          }
+          this.setLoading(false);
+        }),
+        catchError(error => {
+          this.setLoading(false);
+          return this.handleError(error);
+        })
+      );
   }
 
-  // Get wallet balance
   getWalletBalance(walletId: string): Observable<{ balance: number; currency: string }> {
-    return this.http.get<ApiResponse<{ balance: number; currency: string }>>(
-      `${this.apiUrl}/${walletId}/balance`
-    ).pipe(
-      map(response => response.data),
-      catchError(this.handleError)
-    );
-  }
+    const cached = this.walletsSubject.value.find(w => w.id === walletId);
+    if (cached?.balance !== undefined) {
+      return new Observable(observer => {
+        observer.next({ balance: cached.balance, currency: cached.currency });
+        observer.complete();
+      });
+    }
 
-  // Get wallet types
-  getWalletTypes(): Observable<string[]> {
-    return this.http.get<ApiResponse<string[]>>(`${this.apiUrl}/types`)
+    return this.http.get<UnifiedResponse>(`${this.apiUrl}/${walletId}/balance`)
       .pipe(
-        map(response => response.data || []),
+        map(response => ResponseExtractor.extractData(response, 'data', 'balance') || 
+          { balance: 0, currency: 'USD' }),
+        tap(balanceData => {
+          const updated = this.walletsSubject.value.map(wallet => 
+            wallet.id === walletId 
+              ? { ...wallet, balance: balanceData.balance, currency: balanceData.currency }
+              : wallet
+          );
+          this.walletsSubject.next(updated);
+        }),
         catchError(this.handleError)
       );
   }
 
-  // Get supported currencies
-  getSupportedCurrencies(): Observable<string[]> {
-    return this.http.get<ApiResponse<string[]>>(`${this.apiUrl}/currencies`)
-      .pipe(
-        map(response => response.data || []),
-        catchError(this.handleError)
-      );
+  // Utility methods
+  refreshWallets(): Observable<UserWallet[]> {
+    return this.getWallets(true);
   }
 
-  // Refresh wallets data
-  refreshWallets(): void {
-    this.getWallets().subscribe();
-  }
-
-  // Get current wallets value
   getCurrentWallets(): UserWallet[] {
     return this.walletsSubject.value;
   }
 
-  // Clear wallets (for logout)
+  getCurrentPrimaryWallet(): UserWallet | null {
+    return this.primaryWalletSubject.value;
+  }
+
+  getCurrentTotalBalance(): number {
+    return this.totalBalanceSubject.value;
+  }
+
   clearWallets(): void {
     this.walletsSubject.next([]);
+    this.primaryWalletSubject.next(null);
+    this.totalBalanceSubject.next(0);
+    this.setLoading(false);
+  }
+
+  private setLoading(loading: boolean): void {
+    this.isLoadingSubject.next(loading);
   }
 
   private handleError(error: HttpErrorResponse): Observable<never> {
     let errorMessage = 'An unknown error occurred';
+    console.log("fasaaa  "+ error.error );
     
-    if (error.error instanceof ErrorEvent) {
-      // Client-side error
-      errorMessage = `Client Error: ${error.error.message}`;
-    } else {
-      // Server-side error
-      errorMessage = error.error?.message || `Server Error: ${error.status} ${error.statusText}`;
-    }
-    
-    console.error('WalletService Error:', errorMessage);
     return throwError(() => new Error(errorMessage));
   }
 }

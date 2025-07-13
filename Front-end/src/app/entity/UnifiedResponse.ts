@@ -134,11 +134,12 @@ export interface UserWallet {
   description?: string;
   createdAt: Date;
   updatedAt: Date;
+  isPrimary: boolean;
   lastTransactionAt?: Date;
 }
 
 export interface User {
-  id: string;
+  userId: string;
   email: string;
   firstName?: string;
   lastName?: string;
@@ -174,4 +175,66 @@ export interface ResendCodeResponse {
   success: boolean;
   message: string;
   cooldownTime?: number;
+}
+
+
+export interface WalletType {
+  id: string;
+  name: string;
+  description: string;
+  icon: string;
+  gradient: string;
+  features: string[];
+}
+
+export const CURRENTWALLETTYPES: WalletType[] = [
+    {
+      id: 'personal',
+      name: 'Personal Wallet',
+      description: 'Perfect for everyday spending and personal finance management',
+      icon: 'fas fa-wallet',
+      gradient: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+      features: ['Daily transactions', 'Budget tracking', 'Expense categorization']
+    },
+    {
+      id: 'business',
+      name: 'Business Wallet',
+      description: 'Designed for business operations and professional transactions',
+      icon: 'fas fa-building',
+      gradient: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
+      features: ['Invoice management', 'Tax tracking', 'Business analytics']
+    },
+    {
+      id: 'savings',
+      name: 'Savings Wallet',
+      description: 'Built for long-term savings goals and investment tracking',
+      icon: 'fas fa-piggy-bank',
+      gradient: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
+      features: ['Goal setting', 'Interest tracking', 'Savings milestones']
+    }
+  ];
+
+
+
+   export const CURRENCIES: string[] = ['USD', 'EUR', 'GBP', 'CAD', 'AUD', 'JPY', 'CHF'];
+
+
+   export interface CreateWalletRequest {
+  name: string;
+  walletType: 'Personal' | 'Business' | 'Savings' ;
+  currency: string;
+  description?: string;
+}
+
+export interface UpdateWalletRequest {
+  name?: string;
+  description?: string;
+  currency?: string;
+}
+
+export interface TransferRequest {
+  fromWalletId: string;
+  toWalletId: string;
+  amount: number;
+  description?: string;
 }

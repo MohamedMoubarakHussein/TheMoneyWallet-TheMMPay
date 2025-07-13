@@ -4,7 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { HeaderComponent } from '../header/header.component';
 import { Router } from '@angular/router';
 import { ReactiveFormsModule, FormGroup, FormControl, Validators } from '@angular/forms';
-import { AuthService } from '../../services/auth/auth.service';
+//import { AuthService } from '../../services/auth/auth.service';
 import { UserService } from '../../services/userService/user-service.service';
 import { ComingSoonComponent } from '../coming-soon/coming-soon.component';
 
@@ -29,7 +29,7 @@ export class SigninComponent {
   });
 
 
-   constructor( private authService: AuthService,
+   constructor(// private authService: AuthService,
     private router: Router,
     private userService : UserService) {}
 
@@ -41,16 +41,16 @@ export class SigninComponent {
       return;
     }
     const { email, password, rememberMe } = this.signinForm.value;
-
+/*
     this.authService.signin(
       email ?? '',
       password ?? ''
     ).subscribe({
       next: () => this.handleSuccess(),
-      error: (error) => this.handleError(error)
+      error: (error: any) => this.handleError(error)
 
         
-    });
+    });*/
   }
 
 

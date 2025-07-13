@@ -3,7 +3,7 @@ import { User, Transaction, Notification, UserWallet, UnifiedResponse } from '..
 // Mock Users
 export const mockUsers: User[] = [
   {
-    id: '1',
+    userId: '1',
     email: 'john.doe@example.com',
     firstName: 'John',
     lastName: 'Doe',
@@ -26,7 +26,7 @@ export const mockUsers: User[] = [
     lastLoginAt: new Date('2024-06-27T10:30:00Z')
   },
   {
-    id: '2',
+    userId: '2',
     email: 'jane.smith@example.com',
     firstName: 'Jane',
     lastName: 'Smith',
@@ -62,6 +62,7 @@ export const mockWallets: UserWallet[] = [
     description: 'Main checking account for daily expenses',
     createdAt: new Date('2023-01-15'),
     updatedAt: new Date('2024-06-27'),
+    isPrimary: false,
     lastTransactionAt: new Date('2024-06-27T09:15:00Z')
   },
   {
@@ -75,6 +76,7 @@ export const mockWallets: UserWallet[] = [
     description: 'Emergency fund and vacation savings',
     createdAt: new Date('2023-02-01'),
     updatedAt: new Date('2024-06-26'),
+    isPrimary: false,
     lastTransactionAt: new Date('2024-06-25T14:20:00Z')
   },
   {
@@ -88,6 +90,7 @@ export const mockWallets: UserWallet[] = [
     description: 'Credit card for travel expenses',
     createdAt: new Date('2023-04-10'),
     updatedAt: new Date('2024-06-24'),
+    isPrimary: false,
     lastTransactionAt: new Date('2024-06-24T18:30:00Z')
   },
   {
@@ -101,6 +104,7 @@ export const mockWallets: UserWallet[] = [
     description: 'Business checking account',
     createdAt: new Date('2023-03-20'),
     updatedAt: new Date('2024-06-26'),
+    isPrimary: false,
     lastTransactionAt: new Date('2024-06-26T11:45:00Z')
   },
   {
@@ -114,6 +118,7 @@ export const mockWallets: UserWallet[] = [
     description: 'Bitcoin and Ethereum holdings',
     createdAt: new Date('2023-05-15'),
     updatedAt: new Date('2024-06-25'),
+    isPrimary: false,
     lastTransactionAt: new Date('2024-06-25T16:20:00Z')
   },
   {
@@ -127,6 +132,7 @@ export const mockWallets: UserWallet[] = [
     description: 'Closed checking account',
     createdAt: new Date('2022-01-01'),
     updatedAt: new Date('2023-12-01'),
+    isPrimary: false,
     lastTransactionAt: new Date('2023-11-30T10:00:00Z')
   }
 ];
@@ -473,6 +479,7 @@ export class MockDataGenerator {
       balance: Math.random() * 10000,
       currency: 'USD',
       status: Math.random() > 0.1 ? 'active' : 'inactive',
+       isPrimary: false,
       createdAt: new Date(Date.now() - Math.random() * 365 * 24 * 60 * 60 * 1000),
       updatedAt: new Date()
     };

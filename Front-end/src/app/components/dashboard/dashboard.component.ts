@@ -60,25 +60,27 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   // Data loading methods
   private loadUserData(): void {
+  
     this.authService.currentUser$
       .pipe(takeUntil(this.destroy$))
       .subscribe({
-        next: (user) => {
-          user = mockUsers[1];
+        next: (user: User | null) => {
+         
           this.user = user;
           if (user) {
-
+            console.log("xz   "+ JSON.stringify(user));
             this.userName = user.fullName || user.firstName || 'User';
             this.loadDashboardData(user);
             this.initializeSelectedWallet(user);
           }
           this.isLoadingData = false;
         },
-        error: (error) => {
+        error: (error: any) => {
           console.error('Error loading user data:', error);
           this.isLoadingData = false;
         }
       });
+      
   }
 
   private loadDashboardData(user: User): void {
@@ -137,7 +139,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
         || user.wallets.find(w => this.isWalletActive(w))
         || user.wallets[0];
     }
-    this.selectedWallet =mockWallets[0];
+   
   }
 
   // Computed properties (getters)
@@ -244,14 +246,14 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.walletService.updatePrimaryWallet(walletId)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
-        next: (response) => {
+        next: (response: any) => {
           console.log('Primary wallet updated successfully');
           if (this.user) {
             this.user.primaryWalletId = walletId;
           }
           this.isUpdatingWallet = false;
         },
-        error: (error) => {
+        error: (error: any) => {
           console.error('Error updating primary wallet:', error);
           this.isUpdatingWallet = false;
         }

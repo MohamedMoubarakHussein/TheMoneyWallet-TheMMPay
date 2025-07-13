@@ -3,7 +3,6 @@ import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
-import { AuthService } from '../../../services/auth/auth.service';
 import { NotificationService } from '../../../services/notification/notification-service.service';
 import { WalletService } from '../../../services/wallet/wallet-service.service';
 import { User, Notification,UserWallet } from '../../../entity/UnifiedResponse';
@@ -37,7 +36,7 @@ export class SubHeaderComponent implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();
 
   constructor(
-    private authService: AuthService,
+   // private authService: AuthService,
     private notificationService: NotificationService,
     private walletService: WalletService,
     private router: Router

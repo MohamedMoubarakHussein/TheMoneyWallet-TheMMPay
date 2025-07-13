@@ -9,7 +9,7 @@ import { AddFundsComponent } from './components/add-funds/add-funds.component';
 import { PayBillComponent } from './components/pay-bill/pay-bill.component';
 import { RequestMoneyComponent } from './components/request-money/request-money.component';
 import { NotificationsComponent } from './components/notifications/notifications.component';
-import { EmailVerifcationComponent } from './components/email-verifcation/email-verifcation.component';
+import { EmailVerificationComponent } from './components/email-verifcation/email-verifcation.component';
 import { CreateWalletComponent } from './components/create-wallet/create-wallet.component';
 import { DashboardComponent } from './components/dashboard/dashboard.component';
 export const routes: Routes = [  
@@ -24,6 +24,6 @@ export const routes: Routes = [
     { path: 'pay-bill', component: PayBillComponent },
     { path: 'request-money', component: RequestMoneyComponent },
     { path: 'notifications', component: NotificationsComponent },
-    { path: 'verification', component: EmailVerifcationComponent },
+    { path: 'verification', component: EmailVerificationComponent },
     { path: 'createwallet', component: CreateWalletComponent },
 ];

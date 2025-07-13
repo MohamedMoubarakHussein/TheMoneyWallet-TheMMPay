@@ -1,60 +1,62 @@
-import { Component, OnInit, OnDestroy, HostListener } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { SignupService } from '../../services/auth/signup/signup.service';
-import { VerificationService } from '../../services/auth/verification/verification.service';
 import { HttpErrorResponse } from '@angular/common/http';
+import { AuthService } from '../../services/auth/auth.service';
+
 @Component({
-  selector: 'app-email-verifcation',
+  selector: 'app-email-verification',
   imports: [CommonModule, FormsModule],
   standalone: true,
   templateUrl: './email-verifcation.component.html',
   styleUrl: './email-verifcation.component.scss'
 })
-export class EmailVerifcationComponent implements OnInit, OnDestroy {
+export class EmailVerificationComponent implements OnInit, OnDestroy {
   
   verificationCode: string = '';
   email: string = '';
+  userId: string = '';
+  token: string = '';
   isLoading: boolean = false;
   errorMessage: string = '';
   successMessage: string = '';
   canResend: boolean = false;
   resendCountdown: number = 60;
-  serverErrorMessage = '';
   
   private destroy$ = new Subject<void>();
   private countdownInterval: any;
 
   constructor(
-    private signupService: SignupService,
-    private router: Router,
-    private verificationService:VerificationService
+    private authService: AuthService,
+    private router: Router
   ) {}
 
   ngOnInit(): void {
-    this.loadUserEmail();
+    this.loadUserData();
     this.startResendCountdown();
   }
 
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
-    if (this.countdownInterval) {
-      clearInterval(this.countdownInterval);
-    }
+    this.clearCountdown();
   }
 
-  private loadUserEmail(): void {
-    this.signupService.currentUser$
+  private loadUserData(): void {
+    this.authService.currentUser$
       .pipe(takeUntil(this.destroy$))
       .subscribe(user => {
         if (user) {
           this.email = user.email;
+          this.userId = user.userId;
+          this.token = this.authService.getToken()??"";
         }
       });
+
+      
   }
 
   private startResendCountdown(): void {
@@ -65,82 +67,100 @@ export class EmailVerifcationComponent implements OnInit, OnDestroy {
       this.resendCountdown--;
       if (this.resendCountdown <= 0) {
         this.canResend = true;
-        clearInterval(this.countdownInterval);
+        this.clearCountdown();
       }
     }, 1000);
   }
 
- 
+  private clearCountdown(): void {
+    if (this.countdownInterval) {
+      clearInterval(this.countdownInterval);
+    }
+  }
 
   verifyCode(): void {
-    if (!this.verificationCode || this.verificationCode.length !== 6) {
+    if (!this.authService.validateVerificationCodeFormat(this.verificationCode)) {
       this.errorMessage = 'Please enter a valid 6-digit verification code';
       return;
     }
 
     this.isLoading = true;
-    this.errorMessage = '';
-    
-    // Simulate API call
-    //    this.successMessage = 'Email verified successfully!';
-    //    this.router.navigate(['/createwallet']);
-    //    this.errorMessage = 'Invalid verification code. Please try again.';
- 
-    //
-
-    this.verificationService.verifyCode("", "").subscribe({
+    this.clearMessages();
+    console.log("csdcsdzz "+ this.token);
+    this.authService.verifyCode(this.verificationCode, this.token).subscribe({
       next: () => {
-        this.handleSuccess();
+        this.isLoading = false;
+        this.successMessage = 'Email verified successfully!';
+        this.clearCountdown();
+        setTimeout(() => this.router.navigate(['/createwallet']), 1500);
       },
-      error: (error) => this.handleError(error)
+      error: (error) => {
+        this.isLoading = false;
+        setTimeout(() => this.router.navigate(['/createwallet']), 1500);
+        this.handleError(error);
+      }
     });
   }
 
   resendCode(): void {
-    if (!this.canResend) return;
+    if (!this.canResend || !this.email) return;
     
     this.isLoading = true;
-    this.errorMessage = '';
-    this.successMessage = '';
+    this.clearMessages();
     
-    setTimeout(() => {
-      this.successMessage = 'Verification code sent successfully!';
-      this.startResendCountdown();
-      this.isLoading = false;
-    }, 1000);
-
-     this.verificationService.resendVerificationCode("").subscribe({
+    this.authService.resendVerificationCode(this.email).subscribe({
       next: () => {
-        this.handleSuccess();
+        this.isLoading = false;
+        this.successMessage = 'Verification code sent successfully!';
+        this.startResendCountdown();
       },
-      error: (error) => this.handleError(error)
-    });
-
-
-  }
-
-  private handleSuccess(): void {
-    this.router.navigate(['/verification']);
-  }
-
-   private handleError(error: HttpErrorResponse): void {
-  
-  
-      try {
-        const response =  error.error ;
-        
-        if (error.status === 400) {
-          //this.handleValidationErrors(response.data['ERROR']);
-        }  else {
-          this.serverErrorMessage = response?.message || 'Unexpected error occurred.';
-        }
-      } catch (parseError) {
-        console.error("Parsing Error: ", parseError);
-        this.serverErrorMessage = 'Unexpected error occurred.';
+      error: (error) => {
+        this.isLoading = false;
+        this.handleError(error);
       }
+    });
+  }
+
+  private handleError(error: HttpErrorResponse): void {
+    const errorMap: { [key: number]: string } = {
+      400: 'Invalid verification code. Please try again.',
+      404: 'User not found. Please sign up again.',
+      410: 'Verification code has expired. Please request a new one.',
+      429: 'Too many requests. Please wait before trying again.'
+    };
+
+    this.errorMessage = errorMap[error.status] || 
+                       error.error?.message || 
+                       'An unexpected error occurred.';
+
+    // Handle expired code
+    if (error.status === 410) {
+      this.canResend = true;
+      this.clearCountdown();
     }
+  }
+
+  onCodeChange(): void {
+    this.verificationCode = this.authService.formatVerificationCode(this.verificationCode);
+    this.clearMessages();
+  }
+
+  canVerify(): boolean {
+    return !this.isLoading && 
+           this.verificationCode.length === 6 && 
+           this.authService.validateVerificationCodeFormat(this.verificationCode);
+  }
+
+  getResendButtonText(): string {
+    return this.canResend ? 'Resend Code' : `Resend in ${this.resendCountdown}s`;
+  }
 
   goBack(): void {
     this.router.navigate(['/signup']);
+  }
+
+  private clearMessages(): void {
+    this.errorMessage = '';
+    this.successMessage = '';
   }
 }
