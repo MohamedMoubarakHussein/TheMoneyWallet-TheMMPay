@@ -14,13 +14,13 @@ import com.themoneywallet.dashboardservice.event.eventDTO.WalletEventDTo;
 
 
 @Repository
-public interface UserWalletsRepository extends JpaRepository<UserWallet, Long> {
+public interface UserWalletsRepository extends JpaRepository<UserWallet, String> {
     
  
     List<UserWallet> findByUserId(String userId);
     
   
-    Optional<UserWallet> findByWalletId(String walletId);
+    Optional<UserWallet> findById(String walletId);
     
   
     Optional<UserWallet> findByUserIdAndIsPrimaryTrue(String userId);

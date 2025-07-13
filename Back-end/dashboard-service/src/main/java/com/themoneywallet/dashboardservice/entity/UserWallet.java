@@ -2,6 +2,7 @@ package com.themoneywallet.dashboardservice.entity;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -29,8 +30,11 @@ import lombok.NoArgsConstructor;
 
 import com.fasterxml.jackson.annotation.JsonUnwrapped;
 import  com.themoneywallet.dashboardservice.entity.fixed.CurrencyType;
+import com.themoneywallet.dashboardservice.entity.fixed.WalletStatus;
+import com.themoneywallet.dashboardservice.entity.fixed.WalletTypes;
 
 @Entity
+
 @Table(name = "user_wallets",
        indexes = {
            @Index(name = "idx_user_wallet", columnList = "userId"),
@@ -44,23 +48,16 @@ import  com.themoneywallet.dashboardservice.entity.fixed.CurrencyType;
 public class UserWallet {
     
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private String id;
     
     @NotBlank(message = "User ID is required")
     @Size(max = 255, message = "User ID cannot exceed 255 characters")
     @Column(name = "user_id", nullable = false)
     private String userId;
     
-    @NotBlank(message = "Wallet ID is required")
-    @Size(max = 255, message = "Wallet ID cannot exceed 255 characters")
-    @Column(name = "wallet_id", nullable = false, unique = true)
-    private String walletId;
+  
     
-    @NotBlank(message = "Wallet name is required")
-    @Size(max = 255, message = "Wallet name cannot exceed 255 characters")
-    @Column(name = "wallet_name", nullable = false)
-    private String walletName;
+ 
     
     @NotNull(message = "Balance is required")
     @DecimalMin(value = "0.0", inclusive = true, message = "Balance cannot be negative")
@@ -68,35 +65,45 @@ public class UserWallet {
     @Column(name = "balance", precision = 15, scale = 2, nullable = false)
     private BigDecimal balance;
     
-    @NotBlank(message = "Wallet type is required")
-    @Size(max = 50, message = "Wallet type cannot exceed 50 characters")
-    @Pattern(regexp = "^(SAVINGS|CHECKING|INVESTMENT|BUSINESS)$",
-             message = "Wallet type must be one of: SAVINGS, CHECKING, INVESTMENT, BUSINESS")
-    @Column(name = "wallet_type", nullable = false)
-    private String walletType;
+
     
     @Builder.Default
     @Column(name = "is_primary", nullable = false)
     private Boolean isPrimary = false;
     
-    @NotNull(message = "Last updated timestamp is required")
-    @Column(name = "last_updated", nullable = false)
-    private LocalDateTime lastUpdated;
+ 
 
-    @Enumerated(EnumType.STRING)
-    private CurrencyType CurrencyType;
+  
 
-        private LocalDateTime creationDate;
     
 
     @OneToOne(cascade = CascadeType.ALL)
     private WalletLimits limits;
-    private String status;
+    private WalletStatus status;
         private Integer transactionCount;
 
-    @PrePersist
     @PreUpdate
     protected void onUpdate() {
-        this.lastUpdated = LocalDateTime.now();
+        this.updatedAt = LocalDateTime.now();
+    }
+
+    private String name;
+
+    private WalletTypes type;
+
+
+    private CurrencyType currency;
+
+
+    private String description;
+    
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
+    private LocalDateTime lastTransactionAt;
+
+    @PrePersist
+    public void setup(){
+        if(this.id == null)
+            this.id = UUID.randomUUID().toString();
     }
 }

@@ -108,40 +108,44 @@ public class DashboardDataService {
   
 
     public void addUserWallet(Event event) {
-       Map<String, Map<String, String>> eventMap = event.getAdditionalData(); 
        event.getAdditionalData().get(ResponseKey.DATA.toString()); 
+        log.info("xxxaz  1");
 
        WalletEventDTo walletDTo ;
         try {
-            walletDTo = this.objectMapper.readValue(event.getAdditionalData().get(ResponseKey.DATA.toString()).get("profile"), WalletEventDTo.class);
+            log.info("cd  "+ event.getAdditionalData().get(ResponseKey.DATA.toString()).get("data"));
+            walletDTo = this.objectMapper.readValue(event.getAdditionalData().get(ResponseKey.DATA.toString()).get("data"), WalletEventDTo.class);
         } catch (Exception e) {
-
+            log.info(e.getMessage());
             return;
         } 
-      
+        log.info("xxxaz  2");
         // Prevent duplicate wallets
-        if (walletsRepository.findByWalletId(walletDTo.getId()).isPresent()) {
+        if (walletsRepository.findById(walletDTo.getId()).isPresent()) {
             log.warn("Wallet {} already exists, skipping creation", walletDTo.getId());
             return;
         }
-        
+                log.info("xxxaz  3");
+
         UserWallet  wallet = UserWallet.builder()
                 .userId(walletDTo.getUserId())
-                .walletId(walletDTo.getId())
+                .id(walletDTo.getId())
                 .balance(walletDTo.getBalance())
-                .walletType(walletDTo.getWalletType())
-                .lastUpdated(walletDTo.getUpdatedAt())
-                .CurrencyType(CurrencyType.valueOf(walletDTo.getCurrencyType()))
-                .creationDate(walletDTo.getCreationDate())
-                .limits(walletDTo.getLimits())
+                .type(walletDTo.getType())
+                .updatedAt(walletDTo.getUpdatedAt())
+                .currency(walletDTo.getCurrency())
+                .createdAt(walletDTo.getCreatedAt())
+//                .limits(walletDTo.getLimits())
                 .status(walletDTo.getStatus())
-                .transactionCount(walletDTo.getTransactionCount())
+  //              .transactionCount(walletDTo.getTransactionCount())
                 .build();
         
         walletsRepository.save(wallet);
-        
+                log.info("xxxaz  4");
+
         updateUserTotalBalance(wallet.getUserId());
-       
+               log.info("xxxaz  5");
+
         
     }
      
@@ -157,12 +161,12 @@ public class DashboardDataService {
             return;
         } 
 
-        Optional<UserWallet> walletOpt = walletsRepository.findByWalletId(walletDTo.getId());
+        Optional<UserWallet> walletOpt = walletsRepository.findById(walletDTo.getId());
         
         if (walletOpt.isPresent()) {
             UserWallet wallet = walletOpt.get();
             wallet.setBalance(walletDTo.getBalance());
-            wallet.setLastUpdated(LocalDateTime.now());
+            wallet.setUpdatedAt(LocalDateTime.now());
             
             walletsRepository.save(wallet);
             
@@ -182,7 +186,7 @@ public class DashboardDataService {
 
             return;
         } 
-        Optional<UserWallet> walletOpt = walletsRepository.findByWalletId(walletDTo.getId());
+        Optional<UserWallet> walletOpt = walletsRepository.findById(walletDTo.getId());
         
         if (walletOpt.isPresent()) {
             UserWallet wallet = walletOpt.get();
