@@ -57,14 +57,14 @@ For example this is how the gateway only allow the requests with the right permi
 
 This project uses [Spring Cloud Netflix Eureka](https://spring.io/projects/spring-cloud-netflix) for service discovery, allowing microservices to register and locate each other dynamically. It eliminates hardcoded service URLs, supports client-side load balancing, and improves scalability and fault tolerance in a distributed architecture.
 
-![discovery_service flow ](Requirements/Discovery_Service/discovery_service.png)
+![discovery_service flow ](Requirements/Discovery%20Service/discovery_service.png)
 
 
 # Config service
 
 This project uses  [Spring Cloud Config](https://docs.spring.io/spring-cloud-config/docs/current/reference/html/) To externalize and centralize configuration management across microservices, ensuring consistency, reducing duplication, and enabling dynamic updates without redeployments. This improves scalability, maintainability, and environment-specific flexibility.
 
-![config_service flow ](Requirements/Config_service/configService.png)
+![config_service flow ](Requirements/Config_Service/configService.png)
 
 # Authentication service 
 
