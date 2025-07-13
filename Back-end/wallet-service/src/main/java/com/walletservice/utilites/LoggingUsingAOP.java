@@ -38,10 +38,10 @@ public class LoggingUsingAOP {
     }
 
     @Around("controllerLayer()")
-    public void executionTime(ProceedingJoinPoint joinPoint) throws Throwable {
+    public Object executionTime(ProceedingJoinPoint joinPoint) throws Throwable {
         long start = System.currentTimeMillis();
 
-        joinPoint.proceed();
+       Object result =  joinPoint.proceed();
 
         long time = System.currentTimeMillis() - start;
         log.info(
@@ -49,5 +49,6 @@ public class LoggingUsingAOP {
             joinPoint.getSignature().getName(),
             time
         );
+        return result;
     }
 }

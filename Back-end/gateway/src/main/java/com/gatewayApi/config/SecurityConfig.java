@@ -58,6 +58,11 @@ public class SecurityConfig {
                     .path("/transaction/**")
                     .filters(f -> f.filter(this.filter))
                     .uri("lb://transaction-service")
+            ).route("dashboard-service", r ->
+                r
+                    .path("/dashboard/**")
+                    .filters(f -> f.filter(this.filter))
+                    .uri("lb://dashboard-service")
             )
             .build();
     }

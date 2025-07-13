@@ -13,9 +13,12 @@ import lombok.Data;
 
 @Data
 public class WalletCreationRequest {
-     @NotNull(message = "CurrencyType cannot be null.")
+    
+    @NotNull(message = "name cannot be null.")
+    private String name;
+    @NotNull(message = "CurrencyType cannot be null.")
     @Enumerated(EnumType.STRING)
-    private CurrencyType currencyType;
+    private CurrencyType currency;
     @NotNull(message = "walletType cannot be null.")
     @Enumerated(EnumType.STRING)
     private WalletTypes walletType; 

@@ -4,15 +4,20 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.walletservice.dto.request.WalletChangeFundReq;
 import com.walletservice.dto.request.WalletCreationRequest;
+import com.walletservice.dto.response.UnifiedResponse;
 import com.walletservice.entity.WalletLimits;
 import com.walletservice.entity.fixed.ResponseKey;
 import com.walletservice.service.WalletService;
 import com.walletservice.utilites.UnifidResponseHandler;
 import com.walletservice.utilites.ValidtionRequestHandler;
+
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
@@ -38,60 +43,20 @@ public class WalletController {
     private final UnifidResponseHandler uResponseHandler;
     private final ObjectMapper objectMapper;
 
+  
     @PostMapping("/create")
-    public ResponseEntity<String> createWallet(
-        @Valid @RequestBody(required = false) WalletCreationRequest wallet,
+    public ResponseEntity<UnifiedResponse> createWallet(
+        @Valid @RequestBody WalletCreationRequest wallet,
         BindingResult result,
         @RequestHeader("Authorization") String token
-    ) throws JsonProcessingException {
-        if (wallet == null) return ResponseEntity.badRequest()
-            .body(
-                this.objectMapper.writeValueAsString(
-                        this.uResponseHandler.makResponse(
-                                true,
-                                Map.of(
-                                    ResponseKey.ERROR.toString(),
-                                    Map.of(
-                                        "message",
-                                        "Required request body is missing"
-                                    )
-                                ),
-                                true,
-                                "WA003"
-                            )
-                    )
+    )  {
+         if (result.hasErrors()) {
+            return new ResponseEntity<>(
+                this.VErrorConverter.handle(result),
+                HttpStatus.BAD_REQUEST
             );
-
-        if (result.hasErrors()) return ResponseEntity.badRequest()
-            .body(
-                this.objectMapper.writeValueAsString(
-                        this.VErrorConverter.handle(result)
-                    )
-            );
-
-        String id;
-
-        try {
-            log.info("token before xascsa" + token);
-            id = this.walletService.getUserId(token);
-        } catch (Exception e) {
-            return ResponseEntity.badRequest()
-                .body(
-                    this.objectMapper.writeValueAsString(
-                            this.uResponseHandler.makResponse(
-                                    true,
-                                    Map.of(
-                                        ResponseKey.ERROR.toString(),
-                                        Map.of("message", "Internal error")
-                                    ),
-                                    true,
-                                    "WA003"
-                                )
-                        )
-                );
         }
-
-        return this.walletService.createWallet(wallet, id);
+        return this.walletService.createWallet(wallet, token);
     }
 
     @GetMapping("/wallets")

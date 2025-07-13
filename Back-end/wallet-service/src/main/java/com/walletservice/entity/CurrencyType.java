@@ -1,5 +1,5 @@
 package com.walletservice.entity;
 
 public enum CurrencyType {
-    POUND, DOLLAR , EURO
+    POUND, DOLLAR , EURO, USD
 }

@@ -7,9 +7,11 @@ import com.walletservice.Exception.CannotGetUserIdFromUserServiceException;
 import com.walletservice.dto.request.WalletChangeFundReq;
 import com.walletservice.dto.request.WalletCreationRequest;
 import com.walletservice.dto.response.UnifiedResponse;
+import com.walletservice.dto.response.UserWalletResponse;
 import com.walletservice.entity.Wallet;
 import com.walletservice.entity.WalletLimits;
 import com.walletservice.entity.WalletStatus;
+import com.walletservice.entity.WalletTypes;
 import com.walletservice.entity.fixed.ResponseKey;
 import com.walletservice.event.Event;
 import com.walletservice.event.EventType;
@@ -18,16 +20,20 @@ import com.walletservice.service.shared.EventProducer;
 import com.walletservice.service.shared.RedisService;
 import com.walletservice.utilites.EventHandler;
 import com.walletservice.utilites.HttpHelper;
+import com.walletservice.utilites.JwtValidator;
 import com.walletservice.utilites.UnifidResponseHandler;
 import io.jsonwebtoken.io.IOException;
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.redis.cache.RedisCacheManager;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -53,12 +59,15 @@ import org.springframework.stereotype.Service;
 @Slf4j
 public class WalletService {
 
+    private final RedisCacheManager cacheManager;
+
     private final EventProducer eventProducer;
     private final UnifidResponseHandler uResponseHandler;
     private final EventHandler eventHandler;
     private final HttpHelper httpHelper;
     private final RedisService redisService;
     private final ObjectMapper objectMapper;
+    private final JwtValidator jwtValidator;
 
     private final WalletRepository walletRepository;
     private final BigDecimal DALIY_TRANSCATION_LIMIT = new BigDecimal(0);
@@ -67,17 +76,20 @@ public class WalletService {
     private final BigDecimal MAX_TRANSCATION_AMOUNT = new BigDecimal(0);
     private final BigDecimal TEMP = new BigDecimal(0);
 
-    public ResponseEntity<String> createWallet(
+   
+
+    public ResponseEntity<UnifiedResponse> createWallet(
         WalletCreationRequest wallet,
-        String userId
-    ) throws JsonProcessingException {
+        String token
+    ) {
+        String userId = this.getUserId(token);
         Wallet userWallet = Wallet.builder()
             .userId(userId)
             .walletType(wallet.getWalletType())
             .status(WalletStatus.INACTIVE)
             .creationDate(LocalDateTime.now())
             .updatedAt(LocalDateTime.now())
-            .CurrencyType(wallet.getCurrencyType())
+            .CurrencyType(wallet.getCurrency())
             .transactionCount(0)
             .limits(
                 WalletLimits.builder()
@@ -92,47 +104,28 @@ public class WalletService {
 
         try {
             userWallet = this.walletRepository.save(userWallet);
-            this.eventProducer.publishWalletCreationEvent(
-                    this.eventHandler.makeEvent(
-                            EventType.CREATED_WALLET,
-                            String.valueOf(userId),
-                            Map.of(
-                                ResponseKey.DATA.toString(),
-                                Map.of(
-                                    "data",
-                                    this.objectMapper.writeValueAsString(
-                                            userWallet
-                                        )
-                                )
-                            )
-                        )
-                );
-            return ResponseEntity.ok()
-                .body(
-                    this.objectMapper.writeValueAsString(
-                            this.uResponseHandler.makResponse(
-                                    false,
-                                    null,
-                                    false,
-                                    null
-                                )
-                        )
-                );
+                    log.info("xzzz  2");
+            UserWalletResponse walletResponse = UserWalletResponse.builder()
+                .id(userWallet.getId())
+                .userId(userWallet.getUserId())
+                .name(userWallet.getName())
+                .type(userWallet.getWalletType())
+                .balance(userWallet.getBalance())
+                .currency(userWallet.getCurrencyType())
+                .status(userWallet.getStatus())
+                .createdAt(userWallet.getCreationDate())
+                .updatedAt(userWallet.getUpdatedAt())
+                .isPrimary(userWallet.isPrimary())
+                .description(userWallet.getDescription())
+                .build();
+          boolean isPublished = this.publishWalletCreationEvent(walletResponse);
+        
+          if(isPublished)      
+          return this.uResponseHandler.generateSuccessResponse("wallet", walletResponse, HttpStatus.OK); 
+          throw new Exception();
         } catch (Exception e) {
-            return ResponseEntity.badRequest()
-                .body(
-                    this.objectMapper.writeValueAsString(
-                            this.uResponseHandler.makResponse(
-                                    true,
-                                    Map.of(
-                                        ResponseKey.ERROR.toString(),
-                                        Map.of("details", e.getMessage())
-                                    ),
-                                    true,
-                                    "WA004"
-                                )
-                        )
-                );
+
+            return this.uResponseHandler.generateFailedResponse("error", "Contact the admin of the site with the following code #DRCR00001", "DRCR00001" , "String");
         }
     }
 
@@ -456,47 +449,38 @@ public class WalletService {
             );
     }
 
-    @Cacheable(value = "getUserId", key = "#refToken")
-    public String getUserId(String token ) {
-        ResponseEntity<String> req;
-        log.info("Trying to get user id from user");
-        req = this.httpHelper.sendDataToUserMangmentService(token);
-        log.info("Finished getting respo from user service");
-        if (
-            req == null ||
-            !req.getStatusCode().equals(HttpStatusCode.valueOf(200))
-        ) throw new CannotGetUserIdFromUserServiceException();
-        UnifiedResponse res;
-        try {
-            log.info("body   " + req.getBody());
-            res = this.objectMapper.readValue(
-                    req.getBody(),
-                    UnifiedResponse.class
-                );
-        } catch (JsonMappingException e) {
-            System.err.println("Mapping failed: " + e.getMessage());
-            e.printStackTrace();
-            throw new CannotGetUserIdFromUserServiceException();
-        } catch (JsonProcessingException e) {
-            System.err.println("Processing failed: " + e.getMessage());
-            e.printStackTrace();
-            throw new CannotGetUserIdFromUserServiceException();
-        } catch (IOException e) {
-            System.err.println("IO failed: " + e.getMessage());
-            e.printStackTrace();
-            throw new CannotGetUserIdFromUserServiceException();
-        } catch (Exception e) {
-            log.info("error convert into object");
-            throw new CannotGetUserIdFromUserServiceException();
-        }
-
-        String userId = res.getData().get("data").get("id");
-
-        return userId;
-    }
+    
 
     public void userLogin(Event event) {
         // TODO Auto-generated method stub Add in cash user wallets
         throw new UnsupportedOperationException("Unimplemented method 'userLogin'");
+    }
+
+   // @Cacheable(value = "getUserId", key = "#refToken")
+    public String getUserId(String token ) {
+        return this.jwtValidator.getUserId(token); 
+    }
+
+    public boolean publishWalletCreationEvent(UserWalletResponse userWallet ){
+                    try {
+                        this.eventProducer.publishWalletCreationEvent(
+                        this.eventHandler.makeEvent(
+                                EventType.CREATED_WALLET,
+                                userWallet.getUserId(),
+                                Map.of(
+                                    ResponseKey.DATA.toString(),
+                                    Map.of(
+                                        "data",
+                                        this.objectMapper.writeValueAsString(
+                                                userWallet
+                                            )
+                                    )
+                                )
+                            )
+            );
+            return true;
+                    } catch (JsonProcessingException e) {
+                    return false;
+                    }
     }
 }

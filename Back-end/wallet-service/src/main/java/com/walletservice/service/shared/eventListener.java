@@ -45,7 +45,7 @@ public class eventListener {
     public void handleEvents(Event event) {
         Wallet wallet = new Wallet();
         wallet.setUserId(event.getUserId());
-        wallet.setWalletType(WalletTypes.PRIMARY);
+        wallet.setWalletType(WalletTypes.personal);
         wallet.setStatus(WalletStatus.INACTIVE);
         wallet.setCreationDate(LocalDateTime.now());
         wallet.setUpdatedAt(LocalDateTime.now());

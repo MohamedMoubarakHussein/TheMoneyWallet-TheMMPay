@@ -1,13 +1,17 @@
 package com.walletservice.utilites;
 
-import com.walletservice.dto.response.UnifiedResponse;
-import com.walletservice.entity.fixed.ResponseKey;
+
+
+
 import java.util.HashMap;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
+
+import com.walletservice.dto.response.UnifiedResponse;
+import com.walletservice.entity.fixed.ResponseKey;
 
 /*
  * This class just showing and building
@@ -26,10 +30,12 @@ public class ValidtionRequestHandler {
         for (FieldError error : result.getFieldErrors()) {
             data.put(error.getField(), error.getDefaultMessage());
         }
+    Map<String, Map<String, String>> mp = this.uHandler.makeRespoData(ResponseKey.ERROR, data);
+    mp.put(ResponseKey.INFO.toString(), Map.of("structure" , "this is a message error so the structure is like  key(Name of the field that cause the error) -> value(The error details)"));
 
         return this.uHandler.makResponse(
                 true,
-                this.uHandler.makeRespoData(ResponseKey.ERROR, data),
+                mp,
                 true,
                 "AUVD11001"
             );

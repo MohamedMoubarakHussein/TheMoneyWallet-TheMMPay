@@ -1,5 +1,5 @@
 package com.walletservice.entity;
 
 public enum WalletTypes {
-        PRIMARY, SAVINGS
+        personal , business  , savings 
 }

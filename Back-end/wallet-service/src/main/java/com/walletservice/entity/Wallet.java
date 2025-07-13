@@ -35,7 +35,8 @@ public class Wallet {
 
     @NotNull(message = "userId cannot be null.")
     private String userId;
-
+    private String name;
+    private boolean isPrimary;
     @DecimalMin(
         value = "0",
         message = "balance value must be greater than or equal to 0$."
@@ -61,6 +62,8 @@ public class Wallet {
     private WalletLimits limits;
 
     private WalletStatus status;
+    private String description;
+    private LocalDateTime lastTransactionAt;
 
     @PrePersist
     public void setup() {
