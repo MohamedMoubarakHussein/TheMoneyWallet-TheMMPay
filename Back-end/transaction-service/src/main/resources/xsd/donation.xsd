@@ -1,0 +1,38 @@
+<xs:schema 
+    xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    xmlns:do="http://myapp.com"
+    targetNamespace="http://myapp.com"
+    elementFormDefault="qualified">
+
+    <!-- Reusable complex types -->
+
+    <xs:complexType name="DonationType">
+        <xs:sequence>
+            <xs:element name="id" type="xs:int" />
+            <xs:element name="wallet_id" type="xs:string" />
+            <xs:element name="amount" type="xs:decimal" />
+            <xs:element name="org_id" type="xs:string" />
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="DonationRequestType">
+        <xs:sequence>
+            <xs:element name="wallet_id" type="xs:string" />
+            <xs:element name="amount" type="xs:decimal" />
+            <xs:element name="org_id" type="xs:string" />
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="DonationResponseType">
+        <xs:sequence>
+            <xs:element name="id" type="xs:int" />
+        </xs:sequence>
+    </xs:complexType>
+
+    <!-- Element definitions using the reusable types -->
+
+    <xs:element name="donation" type="do:DonationType" />
+    <xs:element name="DonationRequest" type="do:DonationRequestType" />
+    <xs:element name="DonationResponse" type="do:DonationResponseType" />
+
+</xs:schema>
