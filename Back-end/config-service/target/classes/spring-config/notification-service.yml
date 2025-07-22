@@ -70,3 +70,8 @@ management:
       show-details: always
 
 
+springdoc:
+  api-docs:
+    path: /notification/v3/api-docs
+  swagger-ui:
+    path: /notification/swagger-ui.html

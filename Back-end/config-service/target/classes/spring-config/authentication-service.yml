@@ -14,6 +14,17 @@ spring:
         hibernate:
             ddl-auto: update
         show-sql: true
+        properties:
+          hibernate:
+           format_sql: true
+           use_sql_comments: true
+           generate_statistics: true
+           session_factory:
+             statement_inspector: com.themoneywallet.sharedUtilities.Interceptor.SQLInterceptor
+           session:
+              events:
+                log:
+                  LOG_QUERIES_SLOWER_THAN_MS: 100
     kafka:
         bootstrap-servers: localhost:9092
         producer:
@@ -26,13 +37,24 @@ spring:
                                 headers: false
             value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
     security:
-        oauth2:
-            client:
-                registration:
-                    google:
-                        client-id:  cd
-                        client-secret:  cs
-                        scope: openid,profile,email
+      oauth2:
+        client:
+          registration:
+            google:
+              client-id: 355776011156-4hstvaborfr6cbhqcsso9vr5k3fst23p.apps.googleusercontent.com
+              client-secret: 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
+              scope:
+                - email
+                - profile
+              authorization-grant-type: authorization_code
+          provider:
+            google:
+              authorization-uri: https://accounts.google.com/o/oauth2/v2/auth
+              token-uri: https://oauth2.googleapis.com/token
+              user-info-uri: https://www.googleapis.com/oauth2/v2/userinfo
+              jwk-set-uri: https://www.googleapis.com/oauth2/v3/certs
+              user-name-attribute: email
+ 
 
 # Discovery service
 eureka:
@@ -40,8 +62,22 @@ eureka:
         service-url:
             defaultZone: http://localhost:8888/eureka
 
+
+
+
+
+
+logging:
+  level:
+    org.hibernate.SQL: DEBUG
+    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
+    org.hibernate.stat: DEBUG
+    net.ttddyy.dsproxy.listener: DEBUG
+
+
+
 springdoc:
-    api-docs:
-        path: /auth/v3/api-docs
-    swagger-ui:
-        path: /auth/swagger-ui
+  api-docs:
+    path: /auth/v3/api-docs
+  swagger-ui:
+    path: /auth/swagger-ui.html

@@ -1,5 +1,4 @@
-server:
-    port: 8080
+
 spring:
     application:
         name: gateway-service
@@ -32,3 +31,26 @@ management:
     web:
       exposure:
         include: "*"
+
+
+
+
+server:
+    port: 8080
+springdoc:
+  swagger-ui:
+    urls:
+      - name: Auth Service
+        url: /auth/v3/api-docs
+      - name: Dashboard Service
+        url: /dashboard/v3/api-docs
+      - name: History Service
+        url: /history/v3/api-docs
+      - name: Notification Service
+        url: /notification/v3/api-docs
+      - name: Transaction Service
+        url: /transaction/v3/api-docs
+      - name: User Management Service
+        url: /user/v3/api-docs
+      - name: Wallet Service
+        url: /wallet/v3/api-docs
