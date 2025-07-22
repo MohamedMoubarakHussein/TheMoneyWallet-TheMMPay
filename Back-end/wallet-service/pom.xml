@@ -19,6 +19,11 @@
   </properties>
 
   <dependencies>
+    <dependency>
+  <groupId>org.springframework.cloud</groupId>
+  <artifactId>spring-cloud-starter-bootstrap</artifactId>
+</dependency>
+
     <!-- Spring Boot Starters (versions managed by parent) -->
     <dependency>
       <groupId>org.springframework.boot</groupId>
