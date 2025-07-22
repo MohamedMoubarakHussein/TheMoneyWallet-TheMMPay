@@ -13,11 +13,11 @@ public class OpenedAndSecuredPathsService {
         "/auth/logout",
         "/auth/refreshtoken",
         "/auth/v3/api-docs",
-        "/auth/v3/api-docs/**",
-        "/auth/swagger-ui.html",
-        "/auth/swagger-ui/index.html",
-        "/auth/swagger-ui/**",
-        "/auth/webjars/**"
+        "/user/v3/api-docs",
+        "/auth/oauth2/**",
+        "/auth/oauth2/google",
+        "/transaction/ws",
+        "/transaction/ws/**"
     );
 
     public Boolean isSecuredEndPoint(ServerHttpRequest request) {

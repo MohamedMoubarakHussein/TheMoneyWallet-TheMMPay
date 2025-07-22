@@ -17,9 +17,11 @@ public class NotificationResponse {
     private String id;
     private String title;
     private String message;
+    @Builder.Default
     private boolean read = false;
-
+    @Builder.Default
     private LocalDateTime createdDate = LocalDateTime.now();
+    @Builder.Default
     private LocalDateTime readAt = LocalDateTime.now();
 
     private NotificationType type;        

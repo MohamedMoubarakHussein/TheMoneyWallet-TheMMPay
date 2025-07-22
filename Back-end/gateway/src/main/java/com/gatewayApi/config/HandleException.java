@@ -11,7 +11,7 @@ public class HandleException {
     @ExceptionHandler(Exception.class)
     public ResponseEntity<String> handleException(Exception ex) {
         return new ResponseEntity<>(
-            "Error has occured :\n" + ex.getMessage(),
+            "Error2 has occured :\n" + ex.getMessage(),
             HttpStatus.BAD_REQUEST
         );
     }
