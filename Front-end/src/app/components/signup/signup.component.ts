@@ -51,6 +51,8 @@ export class SignupComponent implements OnInit, OnDestroy {
       .subscribe((user: any) => {
         if (user) this.handleAuthSuccess(user);
       });
+      // STEP 1: Listen for OAuth2 callback parameters
+    this.handleOAuth2Callback();
   }
 
   private initializeForm(): void {
@@ -153,7 +155,6 @@ export class SignupComponent implements OnInit, OnDestroy {
     return '';
   }
   
-  btnGoogle = () => this.toggleComingSoon();
   btnApple = () => this.toggleComingSoon();
   toggleComingSoon = () => this.showComingSoon = !this.showComingSoon;
   
@@ -170,4 +171,49 @@ export class SignupComponent implements OnInit, OnDestroy {
     this.destroy$.next();
     this.destroy$.complete();
   }
+
+
+
+    // STEP 2: Handle OAuth2 callback from URL parameters
+  private handleOAuth2Callback(): void {
+    const urlParams = new URLSearchParams(window.location.search);
+    const token = urlParams.get('token');
+    
+    if (token) {
+      // Clear the URL parameters to clean up the browser history
+      window.history.replaceState({}, document.title, window.location.pathname);
+      
+      // Process the OAuth2 token
+      this.processOAuth2Token(token);
+    }
+  }
+
+  // STEP 3: Process OAuth2 token received from backend
+  public processOAuth2Token(token: string): void {
+    this.isSubmitting = true;
+    this.authService.processOAuth2Token(token).subscribe({
+      next: (user) => {
+        this.handleAuthSuccess(user);
+      },
+      error: (error) => this.handleError(error)
+    });
+  }
+
+  // STEP 4: Updated Google button to redirect to OAuth2 endpoint
+  btnGoogle = () => {
+    this.isSubmitting = true;
+    // First-time generation (store in localStorage or secure storage)
+const device_id = localStorage.getItem("device_id") || crypto.randomUUID();
+localStorage.setItem("device_id", device_id);
+
+const device_name = `${navigator.platform} ${navigator.userAgent}`;
+
+// Send these during OAuth flow
+const params = new URLSearchParams({
+  device_id: device_id,
+  device_name: device_name,
+});
+
+window.location.href = `http://192.168.1.9:8099/login/oauth2/code/google?${params}`;
+  };
 }

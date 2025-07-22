@@ -34,6 +34,10 @@ export class AuthService {
     return this.signupService.signup(signupData);
   }
 
+   processOAuth2Token(token: string): Observable<User> {
+    return this.signupService.processOAuth2Token(token);
+  }
+
   
   logout(): void {
     this.logoutService.logout();

@@ -83,4 +83,26 @@ export class SignupService {
       })
     );
   }
+
+
+  // STEP 1: New method to process OAuth2 token received from callback
+  processOAuth2Token(token: string): Observable<User> {
+    return this.extractUserFromResponse(token).pipe(
+      map(user => {
+        // Set token expiration to 1 hour (3600 seconds) - same as regular signup
+        this.tokenService.updateSession(user, token, 3600);
+        
+        // Add provider information to user object for identification
+        //user.provider = 'google';
+        
+        return user;
+      }),
+      catchError(err => {
+        console.error('OAuth2 token processing failed:', err);
+        return throwError(() => new Error('OAuth2 authentication failed: ' + err.message));
+      })
+    );
+  }
+
+  
 }
