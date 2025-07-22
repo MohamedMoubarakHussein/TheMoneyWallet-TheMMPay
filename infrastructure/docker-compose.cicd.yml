@@ -1,0 +1,18 @@
+version: '3.9'
+services:
+  ${JENKINS_NAME}:
+    image: jenkins/jenkins:lts
+    ports:
+      - "${JENKINS_PORT_OUTSIDE}:${JENKINS_PORT_INSIDE}"
+    volumes:
+      - jenkins_home:/var/jenkins_home
+    networks:
+      - ${NETWORK_NAME}
+
+volumes:
+  jenkins_home:
+
+networks:
+  ${NETWORK_NAME}:
+    driver: bridge
+

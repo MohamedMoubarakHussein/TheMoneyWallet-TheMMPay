@@ -1,0 +1,35 @@
+version: "3.9"
+
+services:
+  sonarqube:
+    image: ${SONARQUBE_IMAGE}
+    container_name: ${SONARQUBE_CONTAINER_NAME}
+    depends_on:
+      - db
+    ports:
+      - "${SONARQUBE_PORT}:${SONARQUBE_PORT}"
+    environment:
+      SONAR_JDBC_URL: ${SONAR_JDBC_URL}
+      SONAR_JDBC_USERNAME: ${SONAR_JDBC_USERNAME}
+      SONAR_JDBC_PASSWORD: ${SONAR_JDBC_PASSWORD}
+    volumes:
+      - ${SONARQUBE_DATA_VOLUME}:/opt/sonarqube/data
+      - ${SONARQUBE_LOGS_VOLUME}:/opt/sonarqube/logs
+      - ${SONARQUBE_EXTENSIONS_VOLUME}:/opt/sonarqube/extensions
+
+  db:
+    image: ${POSTGRES_IMAGE}
+    container_name: ${POSTGRES_CONTAINER_NAME}
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    volumes:
+      - ${POSTGRES_VOLUME}:/var/lib/postgresql/data
+
+volumes:
+  ${SONARQUBE_DATA_VOLUME}:
+  ${SONARQUBE_LOGS_VOLUME}:
+  ${SONARQUBE_EXTENSIONS_VOLUME}:
+  ${POSTGRES_VOLUME}:
+
