@@ -11,13 +11,10 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class AuthRequest {
-
-    @NotNull(message = "username cannot be null.")
-    @Size(min = 4,max = 32,message = "username should be between 4 and 32 characters.")
-    private String userName;
-
+public class ResetPassword {
     @NotNull(message = "password cannot be null.")
-    @Size(min = 8,max = 100,message = "password should be at least 8 characters.")
+    @Size(min=8,max=100,message = "password should  at least  be 8 characters.")
     private String password;
+
+    private String forgetPasswordToken;
 }
