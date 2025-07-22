@@ -1,7 +1,8 @@
 *.class
 .vscode/
-/target/
+target/
 node_modules/
 package.json
 package-lock.json
 .prettierrc
+.env.secret
