@@ -5,7 +5,6 @@ import java.math.BigDecimal;
 
 import java.time.LocalDateTime;
 
-import com.themoneywallet.dashboardservice.entity.WalletLimits;
 import com.themoneywallet.dashboardservice.entity.fixed.CurrencyType;
 import com.themoneywallet.dashboardservice.entity.fixed.WalletStatus;
 import com.themoneywallet.dashboardservice.entity.fixed.WalletTypes;

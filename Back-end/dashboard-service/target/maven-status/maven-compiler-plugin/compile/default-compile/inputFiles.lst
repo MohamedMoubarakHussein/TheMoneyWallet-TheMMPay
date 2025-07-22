@@ -1,3 +1,4 @@
+/home/mohamed/Desktop/TheMoneyWallet-TheMMPay/Back-end/dashboard-service/src/main/java/com/themoneywallet/dashboardservice/entity/fixed/WalletTypes.java
 /home/mohamed/Desktop/TheMoneyWallet-TheMMPay/Back-end/dashboard-service/src/main/java/com/themoneywallet/dashboardservice/dto/response/UserDashboardResponse.java
 /home/mohamed/Desktop/TheMoneyWallet-TheMMPay/Back-end/dashboard-service/src/main/java/com/themoneywallet/dashboardservice/service/shared/eventListener.java
 /home/mohamed/Desktop/TheMoneyWallet-TheMMPay/Back-end/dashboard-service/src/main/java/com/themoneywallet/dashboardservice/entity/UserWallet.java
@@ -13,6 +14,7 @@
 /home/mohamed/Desktop/TheMoneyWallet-TheMMPay/Back-end/dashboard-service/src/main/java/com/themoneywallet/dashboardservice/repository/UserDashboardRepository.java
 /home/mohamed/Desktop/TheMoneyWallet-TheMMPay/Back-end/dashboard-service/src/main/java/com/themoneywallet/dashboardservice/event/eventDTO/WalletEventDTo.java
 /home/mohamed/Desktop/TheMoneyWallet-TheMMPay/Back-end/dashboard-service/src/main/java/com/themoneywallet/dashboardservice/event/eventDTO/UserEventDto.java
+/home/mohamed/Desktop/TheMoneyWallet-TheMMPay/Back-end/dashboard-service/src/main/java/com/themoneywallet/dashboardservice/entity/fixed/WalletStatus.java
 /home/mohamed/Desktop/TheMoneyWallet-TheMMPay/Back-end/dashboard-service/src/main/java/com/themoneywallet/dashboardservice/entity/UserDashboardSummary.java
 /home/mohamed/Desktop/TheMoneyWallet-TheMMPay/Back-end/dashboard-service/src/main/java/com/themoneywallet/dashboardservice/repository/UserWalletsRepository.java
 /home/mohamed/Desktop/TheMoneyWallet-TheMMPay/Back-end/dashboard-service/src/main/java/com/themoneywallet/dashboardservice/entity/UserNotification.java

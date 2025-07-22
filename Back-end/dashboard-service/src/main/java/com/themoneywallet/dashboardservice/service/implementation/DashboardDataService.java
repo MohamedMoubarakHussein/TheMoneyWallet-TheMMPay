@@ -5,18 +5,14 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Map.Entry;
 import java.util.Objects;
 
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.themoneywallet.dashboardservice.entity.UserDashboardSummary;
 import com.themoneywallet.dashboardservice.entity.UserWallet;
-import com.themoneywallet.dashboardservice.entity.fixed.CurrencyType;
 import com.themoneywallet.dashboardservice.entity.fixed.ResponseKey;
 import com.themoneywallet.dashboardservice.event.Event;
 import com.themoneywallet.dashboardservice.event.eventDTO.UserEventDto;

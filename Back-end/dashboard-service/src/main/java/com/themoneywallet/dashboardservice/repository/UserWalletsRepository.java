@@ -10,7 +10,6 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import com.themoneywallet.dashboardservice.entity.UserWallet;
-import com.themoneywallet.dashboardservice.event.eventDTO.WalletEventDTo;
 
 
 @Repository
