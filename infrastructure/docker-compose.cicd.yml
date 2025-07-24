@@ -1,20 +1,21 @@
 version: '3.9'
 
 services:
-  ${JENKINS_NAME}:
+  JENKINS:
     image: jenkins/jenkins:lts
+    user: root
     ports:
       - "${JENKINS_PORT_OUTSIDE}:${JENKINS_PORT_INSIDE}"
     volumes:
       - jenkins_home:/var/jenkins_home
       - /home/mohamed/Desktop/TheMoneyWallet-TheMMPay:/projects/TheMoneyWallet-TheMMPay
     networks:
-      - ${NETWORK_NAME}
+      - shared-net
 
 volumes:
   jenkins_home:
 
 networks:
-  ${NETWORK_NAME}:
+  shared-net:
     driver: bridge
 
