@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema 
+    xmlns:xs="http://www.w3.org/2001/XMLSchema" 
+    targetNamespace="http://example.com/transactions"
+    xmlns="http://example.com/transactions"
+    elementFormDefault="qualified">
+
+  <!-- ChargeTransaction Request -->
+  <xs:element name="ChargeRequest">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="Id" type="xs:string"/>
+        <xs:element name="customerId" type="xs:string"/>
+        <xs:element name="amount" type="xs:decimal"/>
+        <xs:element name="currency" type="xs:string"/>
+        <xs:element name="paymentMethodId" type="xs:string"/>
+        <xs:element name="description" type="xs:string" minOccurs="0"/>
+        <xs:element name="capture" type="xs:boolean" default="true"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+  <!-- ChargeTransaction Response -->
+  <xs:element name="ChargeResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="transactionId" type="xs:string"/>
+        <xs:element name="status" type="xs:string"/>
+        <xs:element name="amount" type="xs:decimal"/>
+        <xs:element name="currency" type="xs:string"/>
+        <xs:element name="chargedAt" type="xs:dateTime"/>
+        <xs:element name="receiptUrl" type="xs:string" minOccurs="0"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+</xs:schema>
