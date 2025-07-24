@@ -1,4 +1,4 @@
-package com.themoneywallet.authenticationservice.Exception;
+package com.themoneywallet.authenticationservice.exception;
 
 import com.themoneywallet.sharedUtilities.dto.response.UnifiedResponse;
 import com.themoneywallet.sharedUtilities.utilities.UnifidResponseHandler;
@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 @RestControllerAdvice
 @RequiredArgsConstructor
-public class HandleException {
+public class HandleGloabalException {
     @Value("${spring.profiles.active:default}")
     private String activeProfile;
     private final UnifidResponseHandler uHandler;

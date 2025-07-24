@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.UUID;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 import com.themoneywallet.authenticationservice.service.defintion.JwtServiceDefintion;
 import com.themoneywallet.sharedUtilities.enums.UserRole;
@@ -26,6 +27,8 @@ public class JwtService implements JwtServiceDefintion {
     private  long JWT_TOKEN_EXPIRATION ; 
     private  String JWT_SECRET;
     
+
+
     private Key getKey() {
         byte[] key = Decoders.BASE64.decode(JWT_SECRET);
         return Keys.hmacShaKeyFor(key);

@@ -61,12 +61,12 @@ public class AuthService implements  AuthServiceInterface {
     private final SerializationDeHalper serializationDeHelper;
     private final EventProducer eventProducer;
 
-    private final Integer COOKIE_MAX_AGE_H = 7;
-    private final String COOKIE_PATH = "/";
-    private final boolean IS_COOKIE_SECURE = false;
-    private final String COOKIE_SAME_SITE = "Lax";
-    private final boolean IS_COOKIE_HTTP_ONLY = true;
-    private final Integer EMAIL_TOKEN_VALID_TILL_M = 3 ;
+    private final static Integer COOKIE_MAX_AGE_H = 7;
+    private final static String COOKIE_PATH = "/";
+    private final static boolean IS_COOKIE_SECURE = false;
+    private final static String COOKIE_SAME_SITE = "Lax";
+    private final static boolean IS_COOKIE_HTTP_ONLY = true;
+    private final static Integer EMAIL_TOKEN_VALID_TILL_M = 3 ;
 
     @Override
     @Transactional

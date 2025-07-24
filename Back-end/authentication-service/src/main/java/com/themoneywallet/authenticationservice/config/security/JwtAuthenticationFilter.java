@@ -1,4 +1,4 @@
-package com.themoneywallet.authenticationservice.config.Security;
+package com.themoneywallet.authenticationservice.config.security;
 
 import com.themoneywallet.authenticationservice.service.implementation.JwtService;
 import com.themoneywallet.authenticationservice.service.implementation.MyUserDetailsService;

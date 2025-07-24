@@ -1,4 +1,4 @@
-package com.themoneywallet.authenticationservice.controllerSoap;
+package com.themoneywallet.authenticationservice.controllersoap;
 
 import org.springframework.ws.server.endpoint.annotation.Endpoint;
 import org.springframework.ws.server.endpoint.annotation.PayloadRoot;

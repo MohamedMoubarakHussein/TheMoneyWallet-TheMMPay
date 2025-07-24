@@ -28,6 +28,11 @@ import org.springframework.web.bind.annotation.RestController;
 import com.themoneywallet.sharedUtilities.dto.response.UnifiedResponse;
 import com.themoneywallet.sharedUtilities.utilities.ValidtionRequestHandler;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+
 @RestController
 @RequestMapping(value = "/auth", produces = MediaType.APPLICATION_JSON_VALUE)
 @RequiredArgsConstructor
@@ -69,9 +74,12 @@ public class AuthController {
         return this.authService.logout(request);
     }
 
-
+    @Operation(summary = "verfiy user Email ",description = "Retrieve a user's details")
+    @ApiResponse(responseCode = "200", description = "Done")
+    @ApiResponse(responseCode = "400", description = "Wrong password")
+    @ApiResponse(responseCode = "500", description = "Server error")
     @PostMapping("/verfiy")
-    public ResponseEntity<UnifiedResponse> verfiyEmail(@RequestHeader("Authorization") String token,@RequestParam("Usercode") String code){
+    public ResponseEntity<UnifiedResponse> verfiyEmail(@RequestHeader("Authorization") String token, @Parameter(description = "user recived code ", required = true)@RequestParam("Usercode") String code){
         return this.authService.verfiyEmail(code , token);
     }
 

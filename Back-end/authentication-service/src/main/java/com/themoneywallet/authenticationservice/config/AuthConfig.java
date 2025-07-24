@@ -13,12 +13,10 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-import com.themoneywallet.authenticationservice.config.Security.JwtAuthenticationFilter;
+import com.themoneywallet.authenticationservice.config.security.JwtAuthenticationFilter;
 import com.themoneywallet.authenticationservice.service.implementation.CustomOAuth2UserService;
 import com.themoneywallet.authenticationservice.service.implementation.MyUserDetailsService;
-import com.themoneywallet.authenticationservice.utility.LoggingAccessDeniedHandler;
 
 @EnableWebSecurity
 @Configuration
