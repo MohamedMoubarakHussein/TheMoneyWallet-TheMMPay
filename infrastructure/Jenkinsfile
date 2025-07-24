@@ -26,7 +26,7 @@ pipeline {
 
                     for (svc in services) {
                         echo "Building ${svc}..."
-                        dir(svc) {
+                        dir('/projects/TheMoneyWallet-TheMMPay/Back-end' +svc) {
                             sh 'mvn clean package -DskipTests=true'
                         }
                     }
@@ -43,7 +43,7 @@ pipeline {
 
                     for (svc in services) {
                         echo "Running tests for ${svc}..."
-                        dir(svc) {
+                        dir('/projects/TheMoneyWallet-TheMMPay/Back-end' +svc) {
                             sh 'mvn test'
                             publishTestResults testResultsPattern: 'target/surefire-reports/*.xml'
                             sh 'mvn jacoco:report'
@@ -74,7 +74,7 @@ pipeline {
 
                     for (svc in services) {
                         echo "Running SonarQube for ${svc.name}..."
-                        dir(svc.name) {
+                        dir('/projects/TheMoneyWallet-TheMMPay/Back-end' +svc.name) {
                             withSonarQubeEnv('SonarQube-Server') {
                                 sh """
                                     mvn sonar:sonar \
@@ -154,7 +154,7 @@ networks:
                     echo 'Running integration tests for all services...'
                  def services = ['authentication-service', 'config-service', 'discovery-service' , 'gateway' ]
                     for (svc in services) {
-                        dir(svc) {
+                        dir('/projects/TheMoneyWallet-TheMMPay/Back-end' +svc) {
                             sh """
                                 mvn test -Dtest=**/*IntegrationTest \\
                                     -Dspring.profiles.active=integration \\
