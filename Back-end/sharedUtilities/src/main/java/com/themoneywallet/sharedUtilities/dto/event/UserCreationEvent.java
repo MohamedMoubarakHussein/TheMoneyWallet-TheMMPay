@@ -1,6 +1,8 @@
 package com.themoneywallet.sharedUtilities.dto.event;
 
 
+import com.themoneywallet.sharedUtilities.enums.UserRole;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -23,7 +25,7 @@ public class UserCreationEvent {
 
     private String email;
 
-    private String userRole;
+    private UserRole userRole;
 
     private boolean locked;
     private boolean enabled;
