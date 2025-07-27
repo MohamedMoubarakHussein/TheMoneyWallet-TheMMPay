@@ -74,7 +74,7 @@ Example of auth flow.
 ![Auth flow](Requirements/Authentication%20service/sys%20arch%20diagram.png)
 
 # User Managment service 
-Developed a User Management microservice in Spring Boot with REST endpoints for complete user lifecycle operations (/signup, /updateuser, /getbyemail, etc.). Implemented event-driven architecture using Kafka for consuming UserSignUpEvent and producing events to other services. Built with a layered architecture (Controller, Service, Repository) following microservices best practices for scalability and maintainability.
+This User Management Service is built with Java and Spring Boot, providing essential user profile operations such as retrieving, updating, and deleting the authenticated user’s profile, along with fetching other users’ profiles by username. It leverages Spring Data JPA with MySQL for persistence, Spring Security with JWT for secure authentication and authorization, and Kafka for event-driven messaging. The service incorporates Spring Cloud Config for centralized configuration, Eureka Client for service discovery, and ModelMapper for efficient DTO mapping. Development is streamlined with Lombok, DevTools, and Actuator for monitoring, while OpenAPI (Swagger) ensures comprehensive API documentation. Designed for microservices environments and containerized via Docker, this service emphasizes scalability, security, and extensibility to support future feature additions.
 ![Requirements/User%20Management%20service/arch%20diagram.png](https://github.com/MohamedMoubarakHussein/TheMoneyWallet-TheMMPay/blob/main/Requirements/User%20Management%20%20service/arch%20diagram.png)
 
 # Wallet service 
