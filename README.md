@@ -96,7 +96,7 @@ This service handles authentication and authorization for the microservices ecos
 Example of auth flow.
 ![Auth flow](Requirements/Authentication%20service/sys%20arch%20diagram.png)
 
-# User Managment service
+# User Management service
 This **User Management Service** is built with [Java](https://www.oracle.com/java/) and [Spring Boot](https://spring.io/projects/spring-boot), providing essential user profile operations such as retrieving, updating, and deleting the authenticated user’s profile, along with fetching other users’ profiles by username (`/profile`, `/user/userName`).
 
 It leverages [Spring Data JPA](https://spring.io/projects/spring-data-jpa) with [MySQL](https://www.mysql.com/) for persistence, [Spring Security](https://spring.io/projects/spring-security) with [JWT](https://en.wikipedia.org/wiki/JSON_Web_Token) for secure authentication and authorization, and [Apache Kafka](https://kafka.apache.org/) for event-driven messaging.
