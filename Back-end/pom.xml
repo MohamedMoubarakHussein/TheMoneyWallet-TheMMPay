@@ -8,7 +8,7 @@
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
         <version>3.2.3</version>
-        <relativePath/> <!-- lookup parent from repository -->
+        <relativePath/> <!--  lookup parent from repository -->
     </parent>
 
     <groupId>com.themoneywallet</groupId>
@@ -42,6 +42,8 @@
         <otel.version>1.26.0</otel.version>
         <jackson.version>2.15.3</jackson.version>
         <mysql.version>8.0.33</mysql.version>
+        <junit.version>5.10.0</junit.version>
+        <guava.version>31.1-jre</guava.version>
     </properties>
 
     <dependencies>
@@ -147,6 +149,16 @@
                 <groupId>io.opentelemetry.instrumentation</groupId>
                 <artifactId>opentelemetry-instrumentation-api</artifactId>
                 <version>${otel.version}</version>
+            </dependency>
+            <dependency>
+				<groupId>org.junit.jupiter</groupId>
+				<artifactId>junit-jupiter</artifactId>
+				<version>${junit.version}</version>
+			</dependency>
+            <dependency>
+                <groupId>com.google.guava</groupId>
+                <artifactId>guava</artifactId>
+                <version>${guava.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
