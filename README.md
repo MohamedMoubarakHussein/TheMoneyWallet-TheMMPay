@@ -13,38 +13,61 @@ The Money wallet is an app that lets you pay, send,accept payments and keep trac
 This project implements a microservices-based, cloud-native architecture with event-driven communication.
 It is designed to be scalable, maintainable, and resilient for enterprise-grade backends.
 
-**Microservices**:<ins> [Gateway service ,Discovery service ,Config service ,Authentication service ,User Managment service ,Wallet service ,Transaction service ,History service ,Notification service ,Dashboard service]</ins>.
+**Microservices**: [Gateway Service](#gateway-service) · [Discovery Service](#discovery-service) · [Config Service](#config-service) · [Authentication Service](#authentication-service) · [User Management Service](#user-management-service) · [Wallet Service](#wallet-service) · [Transaction Service](#transaction-service) · [History Service](#history-service) · [Notification Service](#notification-service) · [Dashboard Service](#dashboard-service)
 
-**Service Discovery**: Managed via Eureka to enable dynamic service registration.
 
-**API Gateway**: A single entry point using Spring Cloud Gateway for routing and load balancing.
+**Service Discovery**: Managed using [Eureka](https://spring.io/projects/spring-cloud-netflix) to enable dynamic service registration.
 
-**Event-Driven**: Apache Kafka enables asynchronous messaging and decoupled service communication. 
+**API Gateway**: A single entry point is provided by [Spring Cloud Gateway](https://spring.io/projects/spring-cloud-gateway) for routing and load balancing.
 
-**Centralized Configuration**: Managed through Spring Cloud Config for environment consistency. 
+**Event-Driven Architecture**: [Apache Kafka](https://kafka.apache.org/) is used to enable asynchronous messaging and decoupled service communication.
 
-**Security**: Implemented with JWT and Spring Security OAuth2. 
+**Centralized Configuration**: Handled through [Spring Cloud Config](https://spring.io/projects/spring-cloud-config) to ensure environment consistency.
 
-**Persistence Layer**: MySQL for transactional data, Redis for caching, ClickHouse for analytics. 
+**Security**: Implemented using [JWT](https://jwt.io/introduction) and [Spring Security OAuth2](https://docs.spring.io/spring-security/reference/servlet/oauth2/login/index.html).
 
-**Containerization**: All services are containerized using Docker.
+**Persistence Layer**:  
+- [MySQL](https://dev.mysql.com/doc/) for transactional data ,[Redis](https://redis.io/docs/) for caching ,[ClickHouse](https://clickhouse.com/docs/en/) for analytics
 
-**Tech Stack**
+**Containerization**: All services are containerized using [Docker](https://docs.docker.com/).
+
+
+## Tech Stack
 ---
-**Frameworks**:  Spring Boot ,Spring Web ,Spring Security(Authentication and authorization using JWT and OAuth2) , Spring Data JPA ,Spring Boot Actuator.
 
-**Microservices & Cloud**:  Native Spring Cloud Config Server / Client , Spring Cloud Netflix Eureka, Spring Cloud Gateway, Spring Cloud LoadBalancer. 
+**Frameworks**:  
+- [Spring Boot](https://spring.io/projects/spring-boot)  
+- [Spring Web](https://docs.spring.io/spring-framework/docs/current/reference/html/web.html)  
+- [Spring Security](https://spring.io/projects/spring-security) 
+- [Spring Data JPA](https://spring.io/projects/spring-data-jpa)  
+- [Spring Boot Actuator](https://docs.spring.io/spring-boot/docs/current/actuator-api/html/)  
 
-**Asynchronous Messaging**:  Apache Kafka , Spring Kafka.
+**Microservices & Cloud**:  
+- [Spring Cloud Config](https://spring.io/projects/spring-cloud-config) (Native Config Server / Client)  
+- [Spring Cloud Netflix Eureka](https://spring.io/projects/spring-cloud-netflix)  
+- [Spring Cloud Gateway](https://spring.io/projects/spring-cloud-gateway)  
+- [Spring Cloud LoadBalancer](https://docs.spring.io/spring-cloud-commons/docs/current/reference/html/#spring-cloud-loadbalancer)  
 
-**Authentication & Authorization**:  JWT, Spring OAuth2 Client.
+**Asynchronous Messaging**:  
+- [Apache Kafka](https://kafka.apache.org/)  
+- [Spring for Apache Kafka](https://spring.io/projects/spring-kafka)  
 
-**Persistence & Caching**:  MySQL, Redis , ClickHouse 
+**Authentication & Authorization**:  
+- [JWT (JSON Web Token)](https://jwt.io/introduction)  
+- [Spring Security OAuth2 Client](https://docs.spring.io/spring-security/reference/servlet/oauth2/login/index.html)  
 
-**Development & Testing Tools**: Spring Boot DevTools, Spring Boot Starter Test.
+**Persistence & Caching**:  
+- [MySQL](https://dev.mysql.com/doc/)  
+- [Redis](https://redis.io/docs/)  
+- [ClickHouse](https://clickhouse.com/docs/en/)  
+
+**Development & Testing Tools**:  
+- [Spring Boot DevTools](https://docs.spring.io/spring-boot/docs/current/reference/html/using.html#using.devtools)  
+- [Spring Boot Starter Test](https://docs.spring.io/spring-boot/docs/current/reference/html/features.html#features.testing)
 
 
-# Gateway service
+
+## Gateway service
 This project uses [Spring Cloud Gateway](https://spring.io/projects/spring-cloud-gateway) It creates a single entry point for the application, streamlining API routing, ensuring robust security, monitoring performance, and enhancing resiliency.
 ![routing](Requirements/Gateway/routing.png)
 
@@ -73,8 +96,17 @@ This service handles authentication and authorization for the microservices ecos
 Example of auth flow.
 ![Auth flow](Requirements/Authentication%20service/sys%20arch%20diagram.png)
 
-# User Managment service 
-This User Management Service is built with Java and Spring Boot, providing essential user profile operations such as retrieving, updating, and deleting the authenticated user’s profile, along with fetching other users’ profiles by username. It leverages Spring Data JPA with MySQL for persistence, Spring Security with JWT for secure authentication and authorization, and Kafka for event-driven messaging. The service incorporates Spring Cloud Config for centralized configuration, Eureka Client for service discovery, and ModelMapper for efficient DTO mapping. Development is streamlined with Lombok, DevTools, and Actuator for monitoring, while OpenAPI (Swagger) ensures comprehensive API documentation. Designed for microservices environments and containerized via Docker, this service emphasizes scalability, security, and extensibility to support future feature additions.
+# User Managment service
+This **User Management Service** is built with [Java](https://www.oracle.com/java/) and [Spring Boot](https://spring.io/projects/spring-boot), providing essential user profile operations such as retrieving, updating, and deleting the authenticated user’s profile, along with fetching other users’ profiles by username (`/profile`, `/user/userName`).
+
+It leverages [Spring Data JPA](https://spring.io/projects/spring-data-jpa) with [MySQL](https://www.mysql.com/) for persistence, [Spring Security](https://spring.io/projects/spring-security) with [JWT](https://en.wikipedia.org/wiki/JSON_Web_Token) for secure authentication and authorization, and [Apache Kafka](https://kafka.apache.org/) for event-driven messaging.
+
+The service incorporates [Spring Cloud Config](https://spring.io/projects/spring-cloud-config) for centralized configuration, [Eureka Client](https://spring.io/projects/spring-cloud-netflix) for service discovery, and [ModelMapper](https://modelmapper.org/) for efficient DTO mapping.
+
+Development is streamlined with [Lombok](https://projectlombok.org/), [Spring Boot DevTools](https://docs.spring.io/spring-boot/docs/current/reference/html/using.html#using.devtools), and [Spring Boot Actuator](https://docs.spring.io/spring-boot/docs/current/reference/html/actuator.html) for monitoring, while [OpenAPI (Swagger)](https://swagger.io/specification/) ensures comprehensive API documentation.
+
+This service emphasizes **scalability**, **security**, and **extensibility** to support future feature additions.
+
 ![Requirements/User%20Management%20service/arch%20diagram.png](https://github.com/MohamedMoubarakHussein/TheMoneyWallet-TheMMPay/blob/main/Requirements/User%20Management%20%20service/arch%20diagram.png)
 
 # Wallet service 
