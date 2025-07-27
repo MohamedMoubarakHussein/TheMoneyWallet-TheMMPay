@@ -130,12 +130,10 @@
 				<groupId>com.github.f4b6a3</groupId>
 				<artifactId>uuid-creator</artifactId>
 			</dependency>
-		
 			<dependency>
 				<groupId>org.glassfish.jaxb</groupId>
 				<artifactId>jaxb-runtime</artifactId>
 			</dependency>
-
 			<dependency>
 				<groupId>wsdl4j</groupId>
 				<artifactId>wsdl4j</artifactId>
@@ -144,26 +142,22 @@
             	<groupId>org.springframework.boot</groupId>
             	<artifactId>spring-boot-starter-web-services</artifactId>
         	</dependency>
-
 			<dependency>
 				<groupId>org.junit.jupiter</groupId>
 				<artifactId>junit-jupiter</artifactId>
-				<version>5.10.0</version>
 				<scope>test</scope>
 			</dependency>
-
 			<dependency>
-  <groupId>com.google.guava</groupId>
-  <artifactId>guava</artifactId>
-  <version>31.1-jre</version>
-  <scope>compile</scope>
-</dependency>
-
+				<groupId>com.google.guava</groupId>
+				<artifactId>guava</artifactId>
+				<scope>compile</scope>
+			</dependency>
 	</dependencies>
 
 
 
 	<build>
+	<finalName>authentication-service</finalName>
     <plugins>
 
 		<plugin>

@@ -8,7 +8,6 @@ import com.themoneywallet.sharedUtilities.utilities.SerializationDeHalper;
 import com.themoneywallet.sharedUtilities.utilities.UnifidResponseHandler;
 import com.themoneywallet.sharedUtilities.utilities.ValidtionRequestHandler;
 
-import org.springdoc.core.models.GroupedOpenApi;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
@@ -51,11 +50,4 @@ public class CustomBean {
         return new EventHandler(objectMapper);
     }
 
-    @Bean
-    public GroupedOpenApi customSwaggerGroup() {
-    return GroupedOpenApi.builder()
-        .group("default")
-        .pathsToMatch("/**")
-        .build();
-    }
 }

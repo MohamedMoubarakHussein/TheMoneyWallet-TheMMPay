@@ -115,7 +115,7 @@ public class AuthService implements  AuthServiceInterface {
         
         UserCreationEvent info = UserCreationEvent.builder()
                           .email(request.getEmail())
-                          .userRole(user.getUserRole().toString())
+                          .userRole(user.getUserRole())
                           .userName(request.getUserName())
                           .firstName(request.getFirstName())
                           .lastName(request.getLastName())

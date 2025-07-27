@@ -13,10 +13,12 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import com.themoneywallet.authenticationservice.config.security.JwtAuthenticationFilter;
 import com.themoneywallet.authenticationservice.service.implementation.CustomOAuth2UserService;
 import com.themoneywallet.authenticationservice.service.implementation.MyUserDetailsService;
+import com.themoneywallet.authenticationservice.utility.LoggingAccessDeniedHandler;
 
 @EnableWebSecurity
 @Configuration
@@ -31,16 +33,15 @@ public class AuthConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
-       
             .csrf(csrf -> csrf.disable())
             .sessionManagement(session -> 
                 session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
             )
             .authorizeHttpRequests(req -> req.anyRequest().permitAll()
-              //  .requestMatchers("/error","/ws/**","/auth/signup", "/auth/signin", "/oauth2/**", "/login/oauth2/**" , "/actuator/**" , "/swagger-ui.html","/swagger-ui/**","/v3/api-docs/**","/swagger-ui.html", "/swagger-resources/**", "/webjars/**").permitAll()
-               // .anyRequest().authenticated()
+                .requestMatchers("/error","/ws/**","/auth/signup", "/auth/signin", "/oauth2/**", "/login/oauth2/**" , "/actuator/**" ,"/auth/v3/api-docs").permitAll()
+                .anyRequest().authenticated()
             )
-          /*   .oauth2Login(oauth2 -> oauth2
+             .oauth2Login(oauth2 -> oauth2
                 .userInfoEndpoint(userInfo -> userInfo
                     .userService(customOAuth2UserService)
                 )
@@ -50,7 +51,7 @@ public class AuthConfig {
             .addFilterBefore(
                 this.authenticationFilter,
                 UsernamePasswordAuthenticationFilter.class
-            ) .exceptionHandling( i ->  i.accessDeniedHandler(new LoggingAccessDeniedHandler()))*/
+            ) .exceptionHandling( i ->  i.accessDeniedHandler(new LoggingAccessDeniedHandler()))
             .build();
     }
 
