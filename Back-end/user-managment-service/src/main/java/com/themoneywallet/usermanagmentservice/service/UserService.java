@@ -1,32 +1,29 @@
 package com.themoneywallet.usermanagmentservice.service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.themoneywallet.usermanagmentservice.dto.request.UserRequest;
+import com.themoneywallet.sharedUtilities.dto.event.Event;
+import com.themoneywallet.sharedUtilities.dto.event.UserCreationEvent;
+import com.themoneywallet.sharedUtilities.dto.response.UnifiedResponse;
+import com.themoneywallet.sharedUtilities.enums.EventType;
+import com.themoneywallet.sharedUtilities.enums.FixedInternalValues;
+import com.themoneywallet.sharedUtilities.enums.ResponseKey;
+import com.themoneywallet.sharedUtilities.enums.UserRole;
+import com.themoneywallet.sharedUtilities.utilities.EventHandler;
+import com.themoneywallet.sharedUtilities.utilities.JwtValidator;
+import com.themoneywallet.sharedUtilities.utilities.SerializationDeHalper;
+import com.themoneywallet.sharedUtilities.utilities.UnifidResponseHandler;
 import com.themoneywallet.usermanagmentservice.dto.request.UserUpdateRequest;
-import com.themoneywallet.usermanagmentservice.dto.response.UnifiedResponse;
-import com.themoneywallet.usermanagmentservice.dto.response.UserInformation;
+import com.themoneywallet.usermanagmentservice.dto.response.UserPublicProfile;
 import com.themoneywallet.usermanagmentservice.entity.User;
-import com.themoneywallet.usermanagmentservice.entity.fixed.ResponseKey;
-import com.themoneywallet.usermanagmentservice.entity.fixed.UserRole;
-import com.themoneywallet.usermanagmentservice.event.Event;
 import com.themoneywallet.usermanagmentservice.repository.UserRepository;
-import com.themoneywallet.usermanagmentservice.utilite.DatabaseVaildation;
-import com.themoneywallet.usermanagmentservice.utilite.MyObjectMapper;
-import com.themoneywallet.usermanagmentservice.utilite.UnifidResponseHandler;
-import com.themoneywallet.usermanagmentservice.utilite.shared.JwtValidator;
-import jakarta.transaction.Transactional;
+
 
 import java.time.LocalDateTime;
-import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+
+import org.springframework.beans.BeanUtils;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -36,400 +33,91 @@ import org.springframework.stereotype.Service;
 public class UserService {
 
     private final UserRepository userRepository;
-    private final MyObjectMapper objectMapper;
-    private final ObjectMapper originalObjectMapper;
-    private final DatabaseVaildation dataVaildation;
-    private final JwtValidator jwtValidator;
-    private final UnifidResponseHandler uResponseHandler;
+    private final JwtValidator jwtService;
+    private final EventHandler eventHandler;
+    private final UnifidResponseHandler unifidHandler;
+    private final SerializationDeHalper serializationDeHelper;
+    private final EventProducer eventProducer;
 
-    public ResponseEntity<String> signUp(UserRequest userRequest) {
-        User user = new User();
-        this.objectMapper.map(userRequest, user);
-        user.setUserRole(UserRole.ROLE_USER);
-        if (dataVaildation.isEmailExist(user.getEmail())) {
-            return ResponseEntity.badRequest().body("Email already exists");
-        }
-        if (dataVaildation.isUserNameExist(user.getUserName())) {
-            return ResponseEntity.badRequest().body("userName already exists");
-        }
-
-        user = this.userRepository.save(user);
-        UserInformation userInformation = new UserInformation();
-        this.objectMapper.map(user, userInformation);
-        return ResponseEntity.status(HttpStatusCode.valueOf(201)).body(
-            userInformation.toString()
-        );
-    }
-
-    public ResponseEntity<String> deleteUser(String token) {
-        String email = this.jwtValidator.extractUserName(token);
+    public ResponseEntity<UnifiedResponse> deleteUser(String token) {
+        String email = this.jwtService.extractUserName(token);
         Optional<User> usr = this.userRepository.findByEmail(email);
         if (usr.isPresent()) {
-            return ResponseEntity.ok(
-                this.uResponseHandler.makResponse(
-                        true,
-                        Map.of("data", Map.of("info", "User deleted")),
-                        false,
-                        null
-                    ).toString()
-            );
+            this.userRepository.delete(usr.get());
+            this.publishDeleteEvent(usr.get());
+            return this.unifidHandler.generateSuccessResponseNoBody("data", HttpStatus.OK);
         }
-        return ResponseEntity.badRequest()
-            .body(
-                this.uResponseHandler.makResponse(
-                        true,
-                        Map.of("error", Map.of("message", "User Not Found")),
-                        true,
-                        "USR"
-                    ).toString()
-            );
+        return this.unifidHandler.generateFailedResponse("error", "Something goes wrong while deleting.", "AUVD1003", "String" , HttpStatus.BAD_REQUEST);
     }
 
-    public ResponseEntity<String> getUserByUserName(String userName) {
-        Optional<User> usr = this.userRepository.findByUserName(userName);
-
-        if (usr.isPresent()) {
-            User user = usr.get();
-            String userInfo = UserInformation.builder()
-                .userName(user.getUserName())
-                .firstName(user.getFirstName())
-                .lastName(user.getLastName())
-                .email(user.getEmail())
-                .role(user.getUserRole().toString())
-                .build()
-                .toString();
-            return ResponseEntity.ok(
-                this.uResponseHandler.makResponse(
-                        true,
-                        Map.of("data", Map.of("profile", userInfo)),
-                        false,
-                        null
-                    ).toString()
-            );
-        }
-        return ResponseEntity.badRequest()
-            .body(
-                this.uResponseHandler.makResponse(
-                        true,
-                        Map.of("error", Map.of("message", "User not found")),
-                        true,
-                        "USR"
-                    ).toString()
-            );
-    }
-
-    public ResponseEntity<String> getUserByEmail(String email)
-        throws JsonProcessingException {
+    public ResponseEntity<UnifiedResponse> getProfile(String token) {
+        String email = this.jwtService.extractUserName(token);
         Optional<User> usr = this.userRepository.findByEmail(email);
         if (usr.isPresent()) {
-            String data =
-                this.originalObjectMapper.writeValueAsString(
-                        this.uResponseHandler.makResponse(
-                                true,
-                                Map.of(
-                                    "data",
-                                    Map.of("profile", usr.get().toString())
-                                ),
-                                false,
-                                null
-                            )
-                    );
-            return ResponseEntity.ok(data);
+            return this.unifidHandler.generateSuccessResponse("data", usr.get(),HttpStatus.OK);
         }
-        String data =
-            this.originalObjectMapper.writeValueAsString(
-                    this.uResponseHandler.makResponse(
-                            true,
-                            Map.of(
-                                "error",
-                                Map.of("message", "Token Not Valid")
-                            ),
-                            true,
-                            "USR"
-                        )
-                );
-
-        return ResponseEntity.badRequest().body(data);
+        return this.unifidHandler.generateFailedResponse("error", "User not found.", "URUD0001", "String" , HttpStatus.BAD_REQUEST);
     }
 
-    public ResponseEntity<String> getIdByToken(String token)
-        throws JsonProcessingException {
-        String email = this.jwtValidator.extractUserName(token);
-        log.info(email + "  emailss");
-        Optional<User> usr = this.userRepository.findByEmail(email);
-        log.info(usr.isPresent() + "  sads");
-        if (usr.isPresent()) {
-            return ResponseEntity.ok(usr.get().getId());
-          /*  String data = 
-                this.originalObjectMapper.writeValueAsString(
-                        this.uResponseHandler.makResponse(
-                                true,
-                                Map.of(
-                                    "data",
-                                    Map.of(
-                                        "id",
-                                        String.valueOf(usr.get().getId())
-                                    )
-                                ),
-                                false,
-                                null
-                            )
-                    );
-            return ResponseEntity.ok(data);
-            */
-        }
-        String data =
-            this.originalObjectMapper.writeValueAsString(
-                    this.uResponseHandler.makResponse(
-                            true,
-                            Map.of(
-                                "error",
-                                Map.of("message", "Token Not Valid")
-                            ),
-                            true,
-                            "USR"
-                        )
-                );
-        return ResponseEntity.badRequest().body(data);
-    }
-
-    @Transactional
-    public ResponseEntity<String> updateUser(
-        String token,
-        UserUpdateRequest user
-    ) {
-        String email = this.jwtValidator.extractUserName(token);
-        Optional<User> usr = this.userRepository.findByEmail(email);
-        if (usr.isPresent()) {
-            this.objectMapper.map2(user, usr.get());
-            this.userRepository.save(usr.get());
-            return ResponseEntity.ok(
-                this.uResponseHandler.makResponse(
-                        false,
-                        null,
-                        false,
-                        null
-                    ).toString()
-            );
-        }
-        return ResponseEntity.badRequest()
-            .body(
-                this.uResponseHandler.makResponse(
-                        true,
-                        Map.of("error", Map.of("message", "Token Not Valid")),
-                        true,
-                        "USR"
-                    ).toString()
-            );
-    }
-
-    @Transactional
-    public ResponseEntity<String> updateUserPrfernce(
-        String token,
-        UserUpdateRequest user
-    ) {
-        String email = this.jwtValidator.extractUserName(token);
-        Optional<User> usr = this.userRepository.findByEmail(email);
-        if (usr.isPresent()) {
-            // usr.get().setPreferences(user.getPreferences());
-            this.userRepository.save(usr.get());
-            return ResponseEntity.ok(
-                this.uResponseHandler.makResponse(
-                        false,
-                        null,
-                        false,
-                        null
-                    ).toString()
-            );
-        }
-        return ResponseEntity.badRequest()
-            .body(
-                this.uResponseHandler.makResponse(
-                        true,
-                        Map.of("error", Map.of("message", "Token Not Valid")),
-                        true,
-                        "USR"
-                    ).toString()
-            );
-    }
-
-    @Transactional
-    public ResponseEntity<String> updateUserRole(
-        String token,
-        UserUpdateRequest user
-    ) {
-        String email = this.jwtValidator.extractUserName(token);
-        Optional<User> usr = this.userRepository.findByEmail(email);
-        if (usr.isPresent()) {
-            // usr.get().setRole(user.get);
-            this.userRepository.save(usr.get());
-            return ResponseEntity.ok(
-                this.uResponseHandler.makResponse(
-                        false,
-                        null,
-                        false,
-                        null
-                    ).toString()
-            );
-        }
-        return ResponseEntity.badRequest()
-            .body(
-                this.uResponseHandler.makResponse(
-                        true,
-                        Map.of("error", Map.of("message", "Token Not Valid")),
-                        true,
-                        "USR"
-                    ).toString()
-            );
-    }
-
-    public ResponseEntity<String> returnAll() {
-        Iterable<User> users = this.userRepository.findAll();
-        String allUsers = StreamSupport.stream(users.spliterator(), false)
-            .map(User::toString)
-            .collect(Collectors.joining(", "));
-        return ResponseEntity.ok(
-            this.uResponseHandler.makResponse(
-                    true,
-                    Map.of("data", Map.of("all", allUsers)),
-                    false,
-                    null
-                ).toString()
-        );
-    }
-
-    public ResponseEntity<String> handleResponse(
-        Map<String, Map<String, String>> data,
-        boolean hData,
-        boolean error,
-        String statusInternal,
-        HttpStatus status
-    ) {
-        UnifiedResponse unifiedResponse = new UnifiedResponse();
-        unifiedResponse.setData(data);
-        unifiedResponse.setHaveError(error);
-        unifiedResponse.setHaveData(hData);
-        unifiedResponse.setStatusInternalCode(statusInternal);
-        return new ResponseEntity<>(unifiedResponse.toString(), status);
-    }
-
-    public ResponseEntity<String> getUserPrefernce(String token) {
-        String email = this.jwtValidator.extractUserName(token);
-        Optional<User> usr = this.userRepository.findByEmail(email);
-        if (usr.isPresent()) {
-            return ResponseEntity.ok(
-                this.uResponseHandler.makResponse(
-                        true,
-                        Map.of(
-                            "data",
-                            Map.of(
-                                "prefernce",
-                                usr.get().getPreferences().toString()
-                            )
-                        ),
-                        false,
-                        null
-                    ).toString()
-            );
-        }
-        return ResponseEntity.badRequest()
-            .body(
-                this.uResponseHandler.makResponse(
-                        true,
-                        Map.of("error", Map.of("message", "User Not found")),
-                        true,
-                        "USR"
-                    ).toString()
-            );
-    }
-
-    public ResponseEntity<String> getUserProfile(String token) {
-        String email = this.jwtValidator.extractUserName(token);
+    public ResponseEntity<UnifiedResponse> updateProfile(UserUpdateRequest newUserData, String token) {
+        String email = this.jwtService.extractUserName(token);
         Optional<User> usr = this.userRepository.findByEmail(email);
         if (usr.isPresent()) {
             User user = usr.get();
-            String userInfo = UserInformation.builder()
-                .userName(user.getUserName())
-                .firstName(user.getFirstName())
-                .lastName(user.getLastName())
-                .email(user.getEmail())
-                .role(user.getUserRole().toString())
-                .build()
-                .toString();
-            return ResponseEntity.ok(
-                this.uResponseHandler.makResponse(
-                        true,
-                        Map.of("data", Map.of("profile", userInfo)),
-                        false,
-                        null
-                    ).toString()
-            );
+            BeanUtils.copyProperties(newUserData, user);
+            user.setUpdatedAt(LocalDateTime.now());
+            this.userRepository.save(user);
+            this.publishUpdateEvent(user);
+            return this.unifidHandler.generateSuccessResponse("data", user,HttpStatus.OK);
         }
-        return ResponseEntity.badRequest()
-            .body(
-                this.uResponseHandler.makResponse(
-                        true,
-                        Map.of("error", Map.of("message", "User Not found")),
-                        true,
-                        "USR"
-                    ).toString()
-            );
+        return this.unifidHandler.generateFailedResponse("error", "User not found.", "URUD0002", "String" , HttpStatus.BAD_REQUEST);
     }
 
-    public ResponseEntity<String> getUserRole(String token) {
-        String email = this.jwtValidator.extractUserName(token);
-        Optional<User> usr = this.userRepository.findByEmail(email);
+    public ResponseEntity<UnifiedResponse> getAnotherProfile(String userName) {
+      Optional<User> usr = this.userRepository.findByUserName(userName);
         if (usr.isPresent()) {
-            return ResponseEntity.ok(
-                this.uResponseHandler.makResponse(
-                        true,
-                        Map.of(
-                            "data",
-                            Map.of("role", usr.get().getUserRole().toString())
-                        ),
-                        false,
-                        null
-                    ).toString()
-            );
+            User user = usr.get();
+            UserPublicProfile userPublicProfile = new UserPublicProfile();
+            BeanUtils.copyProperties(user, userPublicProfile);
+            return this.unifidHandler.generateSuccessResponse("data", userPublicProfile,HttpStatus.OK);
         }
-        return ResponseEntity.badRequest()
-            .body(
-                this.uResponseHandler.makResponse(
-                        true,
-                        Map.of("error", Map.of("message", "User Not found")),
-                        true,
-                        "USR"
-                    ).toString()
-            );
+        return this.unifidHandler.generateFailedResponse("error", "User not found.", "URUD0003", "String" , HttpStatus.BAD_REQUEST);
     }
 
-    public void userLogin(Event event) {
-        // TODO prepare user profile in cashe 
-        throw new UnsupportedOperationException("Unimplemented method 'userLogin'");
-    }
 
-    public void handleSignup(Event event) {
-      User profile;
-        try {
-            profile = this.originalObjectMapper.readValue(
-                event
-            .getAdditionalData()
-            .get(ResponseKey.DATA.toString()).get("data"),
-                User.class
-            );
-        } catch (JsonMappingException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-            return;
-        } catch (JsonProcessingException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-            return;
+    public boolean publishDeleteEvent(User user){
+        String data = this.serializationDeHelper.serailization(user);
+        if (data.equals(FixedInternalValues.ERROR_HAS_OCCURED.toString())) {
+            return false;
         }
-        profile.setUserRole(UserRole.ROLE_USER);
-        profile.setCreatedAt(LocalDateTime.now());
-        profile.setUpdatedAt(LocalDateTime.now());
-
-        this.userRepository.save(profile);
+        try{
+            Event event = this.eventHandler.makeEvent(EventType.AUTH_USER_LOGIN_SUCCESSED,user.getUserId(), "data", data);
+            this.eventProducer.publishProfileDeleted(event);
+        }catch(Exception e){
+            return false;
+        }
+        return true;
     }
+
+    public boolean publishUpdateEvent(User user){
+        String data = this.serializationDeHelper.serailization(user);
+        if (data.equals(FixedInternalValues.ERROR_HAS_OCCURED.toString())) {
+            return false;
+        }
+        try{
+            Event event = this.eventHandler.makeEvent(EventType.USER_PROFILE_UPDATED,user.getUserId(), "data", data);
+            this.eventProducer.publishProfileUpdated(event);
+        }catch(Exception e){
+            return false;
+        }
+        return true;
+    }
+
+    public void createProfile(Event event) {
+        UserCreationEvent user = new UserCreationEvent();
+        BeanUtils.copyProperties(event.getAdditionalData().get(ResponseKey.DATA.toString()).get("data"), user);
+        this.userRepository.save(User.builder().userId(user.getUserId()).userName(user.getUserName()).firstName(user.getFirstName()).lastName(user.getLastName()).email(user.getEmail()).userRole(UserRole.ROLE_USER).locked(user.isLocked()).createdAt(LocalDateTime.now()).updatedAt(LocalDateTime.now()).build());
+    }
+ 
+
 }

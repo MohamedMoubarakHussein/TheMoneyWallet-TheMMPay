@@ -1,31 +1,45 @@
 package com.themoneywallet.usermanagmentservice.dto.request;
 
+import com.fasterxml.jackson.annotation.JsonUnwrapped;
+import com.themoneywallet.usermanagmentservice.entity.UserPreferences;
 
-import java.util.HashMap;
-
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.OneToOne;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+
+import java.time.LocalDate;
+import org.springframework.boot.autoconfigure.amqp.RabbitConnectionDetails.Address;
+
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
-@Builder
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
 public class UserUpdateRequest {
-  
-    @Size(min=4,max=16,message = "user name should be between 4 and 16 characters.")
-    private String userName;
-
-    @Size(min=4,max=16,message = "first name should be between 4 and 16 characters.")
+    @NotNull(message = "first name cannot be null.")
+    @Size(min = 4,max = 16,message = "first name should be between 4 and 16 characters.")
     private String firstName;
 
-    @Size(min=4,max=16,message = "last name should be between 4 and 16 characters.")
+    @NotNull(message = "last name cannot be null.")
+    @Size(min = 4,max = 16,message = "last name should be between 4 and 16 characters.")
     private String lastName;
-    
 
-
-    @Size(min=8,max=32,message = "password should be between 8 and 32 characters.")
-    private String password;
-
-    @Builder.Default
-    private HashMap<String , String> preferences = new HashMap<>();
-
+    @OneToOne(cascade = CascadeType.ALL)
+    @JsonUnwrapped
+    private UserPreferences preferences;
+    private LocalDate dateOfBirth;
+    private String profilePictureUrl;
+    private String bio;
+    private Address address;
+    private String preferredLanguage;
+    private String timezone;
+    @Override
+    public String toString() {
+        return "String:firstName;String:lastName;UserPreferences:preferences;LocalDate:dateOfBirth;String:profilePictureUrl;String:bio;Address:address;String:preferredLanguage;String:timezone;";
+    }
 }

@@ -9,10 +9,10 @@ import org.springframework.stereotype.Repository;
 import com.themoneywallet.usermanagmentservice.entity.User;
 
 @Repository
-public interface UserRepository extends CrudRepository<User , String> {
+public interface UserRepository extends CrudRepository<User , Integer> {
     Optional<User> findByUserName(String username);
     Optional<User> findByEmail(String email);
     Iterable<User> findAll();
-    Optional<User> findById(String id);
+    Optional<User> findByUserId(String id);
     boolean existsByEmail(String email);
 }
