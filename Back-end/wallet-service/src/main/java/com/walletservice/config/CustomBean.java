@@ -3,6 +3,12 @@ package com.walletservice.config;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.themoneywallet.sharedUtilities.utilities.EventHandler;
+import com.themoneywallet.sharedUtilities.utilities.SerializationDeHalper;
+import com.themoneywallet.sharedUtilities.utilities.UnifidResponseHandler;
+import com.themoneywallet.sharedUtilities.utilities.ValidtionRequestHandler;
+
+import org.modelmapper.ModelMapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.cache.RedisCacheManager;
@@ -56,5 +62,31 @@ public class CustomBean {
         RedisConnectionFactory connectionFactory
     ) {
         return RedisCacheManager.builder(connectionFactory).build();
+    }
+
+
+     @Bean
+    public ModelMapper modelMapper() {
+        return new ModelMapper();
+    }
+
+
+    @Bean
+    public UnifidResponseHandler unifidResponseHandler(ObjectMapper objectMapper){
+        return new UnifidResponseHandler(objectMapper);
+    }
+
+    @Bean
+    public SerializationDeHalper serializationDeHalper(ObjectMapper objectMapper){
+        return new SerializationDeHalper(objectMapper);
+    }
+
+    @Bean 
+    public ValidtionRequestHandler validtionRequestHandler(UnifidResponseHandler unifidResponseHandler){
+        return new ValidtionRequestHandler(unifidResponseHandler);
+    }
+    @Bean
+    public EventHandler eventHandler(ObjectMapper objectMapper){
+        return new EventHandler(objectMapper);
     }
 }

@@ -1,19 +1,21 @@
 package com.walletservice.repository;
 
+import com.themoneywallet.sharedUtilities.enums.CurrencyType;
+import com.themoneywallet.sharedUtilities.enums.WalletTypes;
 import com.walletservice.entity.Wallet;
+
 import java.util.List;
-import org.springframework.data.jpa.repository.Query;
+import java.util.Optional;
+import java.util.UUID;
+
 import org.springframework.data.repository.CrudRepository;
-import org.springframework.data.repository.query.Param;
 
-public interface WalletRepository extends CrudRepository<Wallet, String> {
-    List<Wallet> findAllByUserId(String id);
+public interface WalletRepository extends CrudRepository<Wallet, Long> {
+    boolean existsByUserIdAndWalletTypeAndCurrency(UUID userId, WalletTypes walletType, CurrencyType currency);
+    long countByUserId(UUID userId);
+    Optional<Wallet> findByUserIdAndWalletId(UUID userId, UUID walletId);
+    List<Wallet> findAllByUserId(UUID userId);
 
-    @Query(
-        "SELECT w FROM Wallet w WHERE w.id = :walletId AND w.userId = :userId"
-    )
-    Wallet findByUserIdAndId(
-        @Param("userId") String userId,
-        @Param("walletId") String walletId
-    );
+
+
 }
