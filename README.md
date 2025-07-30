@@ -109,8 +109,19 @@ This service emphasizes **scalability**, **security**, and **extensibility** to 
 
 ![Requirements/User%20Management%20service/arch%20diagram.png](https://github.com/MohamedMoubarakHussein/TheMoneyWallet-TheMMPay/blob/main/Requirements/User%20Management%20%20service/arch%20diagram.png)
 
-# Wallet service 
-Implemented Wallet microservice in Spring Boot providing financial account management with secure transaction endpoints (/deposit, /withdraw, /balance, /transfer). Integrated event consumption from Kafka for real-time balance updates. Built with transactional integrity guarantees, optimistic locking, and idempotency controls to prevent duplicate transactions and ensure data consistency.
+
+# Wallet Service
+
+**Wallet Service** is a microservice built using [Spring Boot](https://spring.io/projects/spring-boot) for managing user wallets. It provides RESTful APIs to create, retrieve, and update wallet information and balances. The service leverages [Spring Data JPA](https://spring.io/projects/spring-data-jpa) for persistence, [MySQL](https://www.mysql.com/) as the relational database, and [Redis](https://redis.io/) for caching. 
+
+It is integrated with [Kafka](https://kafka.apache.org/) to publish and consume wallet-related events (e.g., creation, balance update, reservation result) and supports asynchronous processing with [Spring WebFlux](https://docs.spring.io/spring-framework/reference/web/webflux.html). Security is handled by [Spring Security](https://spring.io/projects/spring-security), and configuration is centralized via [Spring Cloud Config](https://spring.io/projects/spring-cloud-config). The service registers with [Eureka](https://spring.io/projects/spring-cloud-netflix) for service discovery.
+
+Key endpoints include: [`POST /create` — Create a new wallet ,`GET /{walletId}` — Get wallet by ID,`GET /user/{userId}` — Get all wallets for a user,`PUT /{walletId}/balance` — Update wallet balance,`PUT /{walletId}` — Update wallet details]
+
+![Requirements/Wallet%20service/arch.png](https://github.com/MohamedMoubarakHussein/TheMoneyWallet-TheMMPay/blob/main/Requirements/Wallet%20service/arch.png)
+
+---
+
 
 # Transaction service 
 Created Transaction microservice in Spring Boot handling complex financial operations with atomicity guarantees through endpoints (/process, /verify, /reverse). Implemented event-driven architecture using Kafka for transaction event propagation across services. Built with distributed transaction patterns, compensating actions for rollbacks, and comprehensive audit logging for financial compliance.
