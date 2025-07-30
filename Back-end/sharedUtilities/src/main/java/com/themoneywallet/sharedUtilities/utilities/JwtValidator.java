@@ -6,6 +6,7 @@ import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import java.security.Key;
 import java.util.Date;
+import java.util.UUID;
 
 import lombok.Data;
 
@@ -51,10 +52,10 @@ public class JwtValidator {
     }
 
 
-    public String getUserId(String token) {
+    public UUID getUserId(String token) {
         if(this.isTokenValid(token)){
             Claims claims = this.extractInfoFromToken(token);
-            return  (String)claims.get("id");
+            return  (UUID)claims.get("id");
         }
         return null;
     }
