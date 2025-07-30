@@ -1,28 +1,18 @@
-A wallet service:
-    As a user, I want to create a digital wallet and linked to my account so that I can manage my funds.
-    As a user, I want to easily check my wallet balance so that I can monitor my funds.
+Step 1: Transaction Initiation Flow
+1. User initiates transaction via Gateway
+2. Transaction Service receives request
+3. Transaction Service publishes "transaction.initiated" event
+4. Wallet Service consumes event and reserves funds
+5. If successful, Wallet Service publishes "transaction.validation.result" (valid=true)
+6. If insufficient funds, publishes "transaction.validation.result" (valid=false)
 
-Certainly! Designing the requirements for a microservices project like this involves both functional and non-functional aspects. Here's an outline for the wallet service:
-
-
-
-Transaction History:
-   - The service should maintain a record of all transactions made by the user.
-
-Fund Transfer:
-   - Users should be able to transfer funds from their wallet to another user's wallet.
-
-Deposit and Withdrawal:
-   - Allow users to deposit money into their wallet.
-   - Enable users to withdraw money from their wallet.
-
-Currency Support:
-   - Support multiple currencies for transactions.
-
-Transaction Verification:
-   - Implement a secure verification process for each transaction.
-
-
-Integration with Transaction Service:
-    - Ensure seamless integration with the transaction service for recording financial transactions.
-
+Step 2: Transaction Completion Flow
+1. Transaction Service processes the transaction
+2. On success, publishes "transaction.completed" event
+3. Wallet Service consumes event and finalizes balance updates:
+   - Releases reserved amount
+   - Debits actual amount from sender
+   - Credits amount to receiver
+4. Wallet Service publishes "wallet.balance.updated" events
+5. History Service consumes balance update events for audit trail
+6. Notification Service sends balance update notifications
