@@ -1,0 +1,19 @@
+Transaction Service Responsibilities
+The Transaction Service should handle:
+
+Processing financial transactions (transfers, payments, deposits, withdrawals)
+Transaction validation and authorization
+Balance checks and updates
+Transaction state management
+Integration with external payment gateways
+Transaction rollback and compensation
+
+Processing money transfers between wallets
+Validating transaction requests
+Ensuring atomic operations
+Managing transaction states
+Coordinating with other services
+
+
+
+transaction service 

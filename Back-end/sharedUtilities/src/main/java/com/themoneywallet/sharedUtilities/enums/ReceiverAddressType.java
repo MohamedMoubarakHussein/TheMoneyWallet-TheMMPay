@@ -1,4 +1,4 @@
-package com.themoneywallet.transcationservice.entity;
+package com.themoneywallet.sharedUtilities.enums;
 
 public enum ReceiverAddressType {
     WALLET_ID,
