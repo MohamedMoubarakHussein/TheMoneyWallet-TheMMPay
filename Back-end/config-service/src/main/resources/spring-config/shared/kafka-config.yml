@@ -1,0 +1,25 @@
+spring:
+  kafka:
+    bootstrap-servers: ${KAFKA_SERVERS}
+    consumer:
+      enable-auto-commit: true
+      session-timeout-ms: 15000
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring:
+          json:
+            trusted:
+              packages: "*"
+    producer:
+      retries: 3
+      batch-size: 16384
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      properties:
+        spring:
+          json:
+            add:
+              type:
+                headers: false

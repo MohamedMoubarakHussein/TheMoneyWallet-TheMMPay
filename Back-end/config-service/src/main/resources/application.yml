@@ -1,14 +1,29 @@
 server:
-    port: 8109
+  port: ${CONFIG_SERVER_PORT}
 
 spring:
-    application:
-        name: config-server
-    cloud:
-        config:
-            server:
-                native:
-                    search-locations: classpath:/spring-config/
+  application:
+    name: config-server
+  cloud:
+    config:
+      server:
+        native:
+          search-locations: classpath:/spring-config/
+          add-label-locations: true
+        bootstrap: true
+  profiles:
+    active: native
+  
+ 
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,env,metrics
+  endpoint:
+    health:
+      show-details: always
 
-    profiles:
-        active: native
+logging:
+  level:
+    root: INFO

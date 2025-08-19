@@ -1,8 +1,0 @@
-spring:
-  kafka:
-    consumer:
-      enable-auto-commit: true
-      session-timeout-ms: 15000
-    producer:
-      retries: 3
-      batch-size: 16384

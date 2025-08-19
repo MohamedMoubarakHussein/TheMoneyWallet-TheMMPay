@@ -1,0 +1,22 @@
+spring:
+  profiles: prod
+  
+  datasource:
+    url: jdbc:mysql://${DB_HOST}:${DB_PORT}/authentication_service
+    hikari:
+      maximum-pool-size: 30
+      minimum-idle: 10
+      
+logging:
+  level:
+    root: WARN
+    org.springframework.web: INFO
+    org.hibernate.SQL: INFO
+    
+# Include shared configurations
+include:
+  - shared/datasource-config.yml
+  - shared/kafka-config.yml
+  - shared/security-config.yml
+  - shared/logging-config.yml
+  - shared/eureka-client.yml

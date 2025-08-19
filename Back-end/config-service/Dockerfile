@@ -1,3 +1,3 @@
-FROM openjdk:17
-COPY target/config-service.jar config-service.jar
+FROM openjdk:21-jdk-slim
+COPY target/config-service.jar app.jar
 ENTRYPOINT ["java", "-jar", "app.jar"]

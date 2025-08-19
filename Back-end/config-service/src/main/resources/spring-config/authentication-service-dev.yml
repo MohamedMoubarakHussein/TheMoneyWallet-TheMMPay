@@ -1,0 +1,21 @@
+spring:
+  profiles: dev
+  
+  datasource:
+    url: jdbc:mysql://localhost:3306/authentication_service
+    
+logging:
+  level:
+    org.hibernate.SQL: DEBUG
+    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
+    org.hibernate.stat: DEBUG
+    net.ttddyy.dsproxy.listener: DEBUG
+    org.springframework.security: DEBUG
+    
+# Include shared configurations
+include:
+  - shared/datasource-config.yml
+  - shared/kafka-config.yml
+  - shared/security-config.yml
+  - shared/logging-config.yml
+  - shared/eureka-client.yml

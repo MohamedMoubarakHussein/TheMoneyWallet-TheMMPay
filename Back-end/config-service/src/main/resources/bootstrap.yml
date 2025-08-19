@@ -1,0 +1,17 @@
+spring:
+  application:
+    name: config-server
+  cloud:
+    config:
+      server:
+        bootstrap: true
+
+eureka:
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+      defaultZone: ${EUREKA_SERVER_URL}
+  instance:
+    prefer-ip-address: true
+    hostname: ${HOSTNAME}

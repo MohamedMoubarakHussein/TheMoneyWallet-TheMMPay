@@ -1,83 +1,41 @@
 server:
-    port: 8099
+  port: ${AUTH_SERVICE_PORT}
 
 spring:
-    application:
-        name: authentication-service
-    datasource:
-        driver-class-name: com.mysql.cj.jdbc.Driver
-        password: 123456789
-        url: jdbc:mysql://localhost:3306/authentication_service
-        username: root
-    jpa:
-        database-platform: org.hibernate.dialect.MySQLDialect
-        hibernate:
-            ddl-auto: update
-        show-sql: true
-        properties:
-          hibernate:
-           format_sql: true
-           use_sql_comments: true
-           generate_statistics: true
-           session_factory:
-             statement_inspector: com.themoneywallet.sharedUtilities.Interceptor.SQLInterceptor
-           session:
-              events:
-                log:
-                  LOG_QUERIES_SLOWER_THAN_MS: 100
-    kafka:
-        bootstrap-servers: localhost:9092
-        producer:
-            key-serializer: org.apache.kafka.common.serialization.StringSerializer
-            properties:
-                spring:
-                    json:
-                        add:
-                            type:
-                                headers: false
-            value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
-    security:
-      oauth2:
-        client:
-          registration:
-            google:
-              client-id: 355776011156-4hstvaborfr6cbhqcsso9vr5k3fst23p.apps.googleusercontent.com
-              client-secret: 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
-              scope:
-                - email
-                - profile
-              authorization-grant-type: authorization_code
-          provider:
-            google:
-              authorization-uri: https://accounts.google.com/o/oauth2/v2/auth
-              token-uri: https://oauth2.googleapis.com/token
-              user-info-uri: https://www.googleapis.com/oauth2/v2/userinfo
-              jwk-set-uri: https://www.googleapis.com/oauth2/v3/certs
-              user-name-attribute: email
- 
+  application:
+    name: authentication-service
+  
+  # OAuth2 Configuration
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: ${GOOGLE_CLIENT_ID}
+            client-secret: ${GOOGLE_CLIENT_SECRET}
+            scope:
+              - email
+              - profile
+            authorization-grant-type: authorization_code
+        provider:
+          google:
+            authorization-uri: https://accounts.google.com/o/oauth2/v2/auth
+            token-uri: https://oauth2.googleapis.com/token
+            user-info-uri: https://www.googleapis.com/oauth2/v2/userinfo
+            jwk-set-uri: https://www.googleapis.com/oauth2/v3/certs
+            user-name-attribute: email
 
-# Discovery service
-eureka:
-    client:
-        service-url:
-            defaultZone: http://localhost:8888/eureka
-
-
-
-
-
-
-logging:
-  level:
-    org.hibernate.SQL: DEBUG
-    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
-    org.hibernate.stat: DEBUG
-    net.ttddyy.dsproxy.listener: DEBUG
-
-
-
+# Swagger configuration
 springdoc:
   api-docs:
     path: /auth/v3/api-docs
   swagger-ui:
     path: /auth/swagger-ui.html
+
+# Include shared configurations
+include:
+  - shared/datasource-config.yml
+  - shared/kafka-config.yml
+  - shared/security-config.yml
+  - shared/logging-config.yml
+  - shared/eureka-client.yml

@@ -1,0 +1,16 @@
+spring:
+  profiles: prod
+
+eureka:
+  server:
+    enable-self-preservation: true
+
+logging:
+  level:
+    root: WARN
+    com.netflix.eureka: INFO
+    com.netflix.discovery: INFO
+
+# Include shared logging configuration
+include:
+  - shared/logging-config.yml

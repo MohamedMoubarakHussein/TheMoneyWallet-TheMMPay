@@ -1,0 +1,11 @@
+spring:
+  profiles: dev
+
+logging:
+  level:
+    com.netflix.eureka: DEBUG
+    com.netflix.discovery: DEBUG
+
+# Include shared logging configuration
+include:
+  - shared/logging-config.yml
