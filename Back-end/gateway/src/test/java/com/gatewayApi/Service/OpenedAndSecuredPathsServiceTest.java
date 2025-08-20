@@ -1,6 +1,7 @@
 package com.gatewayApi.Service;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.mock.http.server.reactive.MockServerHttpRequest;
@@ -26,16 +27,15 @@ public class OpenedAndSecuredPathsServiceTest {
         );
     }
 
-    // see the behavior
     @Test
     void requestToSecureEndPoint() {
         MockServerHttpRequest req = MockServerHttpRequest.get(
             "/cs/signupxd/c"
         ).build();
 
-        assertFalse(
+        assertTrue(
             this.openedAndSecuredPathsService.isSecuredEndPoint(req),
-            "Excpected secured end point to return true"
+            "Expected secured endpoint to return true"
         );
     }
 }

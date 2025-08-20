@@ -60,19 +60,22 @@ public class AuthenticationFilter implements GatewayFilter {
 
           
             Map<Integer, Object> isValid =
-                this.jwtValidator.isTokenValid(token);
+                this.jwtValidator.isTokenValidVerbose(token);
             if (!Boolean.valueOf((String) isValid.get(1))) {
                 ServerHttpResponse re = exchange.getResponse();
                 re.setStatusCode(HttpStatus.UNAUTHORIZED);
                 re.getHeaders().setContentType(MediaType.APPLICATION_JSON);
 
-                String body = "{\"error\": \"" + this.jwtValidator.msg + "\"}";
+                String errorMessage = this.jwtValidator.msg != null ? 
+                    this.jwtValidator.msg : "Authentication failed";
+                String body = "{\"error\": \"" + errorMessage + "\", \"timestamp\": \"" + 
+                    java.time.Instant.now() + "\"}";
 
                 DataBuffer buffer = re.bufferFactory().wrap(body.getBytes());
 
                 return re.writeWith(Mono.just(buffer));
             } else {
-                log.info("tiktok  "+oldTok);
+                log.debug("Authentication successful with token: {}", token);
                 ServerHttpRequest mutatedRequest = request
                     .mutate()
                     .header("x-Authorization", token)

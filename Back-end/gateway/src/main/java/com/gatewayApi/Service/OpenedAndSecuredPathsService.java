@@ -28,9 +28,23 @@ public class OpenedAndSecuredPathsService {
         "/transaction/ws/**"
     );
 
+    /**
+     * Determines if a request is targeting a secured endpoint.
+     * 
+     * @param request The incoming HTTP request
+     * @return true if the endpoint requires authentication, false otherwise
+     */
     public Boolean isSecuredEndPoint(ServerHttpRequest request) {
+        String path = request.getURI().getPath();
         return OpenedAndSecuredPathsService.openEndPoints
             .stream()
-            .noneMatch(url -> request.getURI().getPath().contains(url));
+            .noneMatch(url -> {
+                if (url.endsWith("/**")) {
+                    String basePattern = url.substring(0, url.length() - 2);
+                    return path.startsWith(basePattern);
+                } else {
+                    return path.equals(url) || path.startsWith(url + "/");
+                }
+            });
     }
 }

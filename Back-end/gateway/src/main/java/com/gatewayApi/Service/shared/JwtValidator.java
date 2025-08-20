@@ -5,10 +5,10 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-
 import org.springframework.stereotype.Component;
 
-
+import com.gatewayApi.config.JwtConfig;
+import com.themoneywallet.sharedUtilities.utilities.TokenValidator;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -21,28 +21,36 @@ import lombok.extern.slf4j.Slf4j;
 @Component
 @RequiredArgsConstructor
 @Slf4j
-public class JwtValidator   {
+public class JwtValidator implements TokenValidator {
 
-    private static final String SECRET = "b2phbHpsdU54Z3htb2NSanBCK3ErWkxOeFNmeTdiZk9XNkR2NEt0Mkhraz0=";
-    public String msg ;
-    private Integer status ;
+    private final JwtConfig jwtConfig;
+    public String msg;
     private String newToken;
 
-  
     private Key getKey() {
-        byte[] key = Decoders.BASE64.decode(SECRET);
+        byte[] key = Decoders.BASE64.decode(jwtConfig.getSecretKey());
         return Keys.hmacShaKeyFor(key);
     }
 
 
-    public Map<Integer, Object> isTokenValid(String token) {
-   
+    @Override
+    public boolean isTokenValid(String token) {
+        return handleClamisSimple(token);
+    }
 
-             return handleClamis(token);
-           
-           
-   
+    private boolean handleClamisSimple(String token){
+        try{
+            Claims claims = extractInfoFromToken(token);
+            return claims.getExpiration().after(new Date());
+        }catch(Exception e){
+            return false;
         }
+    }
+
+   
+    public Map<Integer, Object> isTokenValidVerbose(String token) {
+        return handleClamisVerbose(token);
+    }
     
   
     public String whyNotValid(){
@@ -52,34 +60,54 @@ public class JwtValidator   {
 
 
     public Claims extractInfoFromToken(String token) {
-        
         try {
-             return Jwts.parserBuilder().setSigningKey(getKey())
+            return Jwts.parserBuilder()
+                .setSigningKey(getKey())
                 .build()
-                .parseClaimsJws(token).getBody();
+                .parseClaimsJws(token)
+                .getBody();
         } catch (ExpiredJwtException e) {
-                log.info("exiptred token   ");
-                throw e;
-            
+            log.info("Token expired");
+            this.msg = "Token expired";
+            throw e;
+        } catch (Exception e) {
+            log.error("Error parsing token", e);
+            this.msg = "Invalid token";
+            throw e;
         }
-       
     }
 
-    public Map<Integer, Object> handleClamis(String token)  {
- 
-        Claims claim = this.extractInfoFromToken(token );
-       
-       
-       
-       
-       boolean fact1 =  claim.getExpiration().after(new Date());
-      
-       Map<Integer , Object> mp =  new HashMap<>();
-       mp.put(1, String.valueOf(fact1));
-       mp.put(2, status);
-       mp.put(3 , this.newToken);
-      return mp;
+    public Map<Integer, Object> handleClamisVerbose(String token) {
+        try {
+            Claims claim = this.extractInfoFromToken(token);
+            boolean isValid = claim.getExpiration().after(new Date());
+            
+            Map<Integer, Object> result = new HashMap<>();
+            result.put(1, String.valueOf(isValid));
+            result.put(2, isValid ? 200 : 401);
+            result.put(3, this.newToken);
+            return result;
+        } catch (Exception e) {
+            Map<Integer, Object> result = new HashMap<>();
+            result.put(1, "false");
+            result.put(2, 401);
+            result.put(3, null);
+            return result;
+        }
     }
 
     
+    @Override
+    public java.util.UUID getUserId(String token) {
+        try{
+            Claims c = extractInfoFromToken(token);
+            Object idObj = c.get("id");
+            if(idObj instanceof String str){
+                return java.util.UUID.fromString(str);
+            }
+        }catch(Exception e){
+            // ignore
+        }
+        return null;
+    }
 }
