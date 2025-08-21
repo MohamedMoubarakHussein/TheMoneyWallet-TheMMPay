@@ -1,77 +1,86 @@
-<div class="pay-bill-container">
-    <div class="header">
-      <h2>Pay a Bill</h2>
-      <button class="back-button" routerLink="/dashboard">
+<div class="max-w-4xl mx-auto my-8 p-8">
+    <div class="flex justify-between items-center mb-8">
+      <h2 class="text-2xl font-bold text-gray-900">Pay a Bill</h2>
+      <button class="bg-gray-100 border-none py-3 px-6 rounded-lg cursor-pointer flex items-center gap-2 transition-all duration-300 hover:bg-gray-200" routerLink="/dashboard">
         <i class="fas fa-arrow-left"></i>
         Back to Dashboard
       </button>
     </div>
   
-    <div class="pay-bill-card">
-      <div class="progress-steps">
-        <div class="step" [class.active]="currentStep === 1">1. Select Biller</div>
-        <div class="step" [class.active]="currentStep === 2">2. Payment Details</div>
-        <div class="step" [class.active]="currentStep === 3">3. Confirm</div>
+    <div class="bg-white p-8 rounded-2xl shadow-sm">
+      <div class="flex justify-between mb-8 py-4 border-b-2 border-gray-100">
+        <div class="text-gray-500 font-medium relative flex-1 text-center" [class.text-blue-900]="currentStep === 1" [class.font-semibold]="currentStep === 1">1. Select Biller</div>
+        <div class="text-gray-500 font-medium relative flex-1 text-center" [class.text-blue-900]="currentStep === 2" [class.font-semibold]="currentStep === 2">2. Payment Details</div>
+        <div class="text-gray-500 font-medium relative flex-1 text-center" [class.text-blue-900]="currentStep === 3" [class.font-semibold]="currentStep === 3">3. Confirm</div>
       </div>
   
       <!-- Step 1: Select Biller -->
-      <div *ngIf="currentStep === 1" class="biller-selection">
-        <div class="search-bar">
-          <input type="text" [(ngModel)]="searchQuery" placeholder="Search billers...">
+      <div *ngIf="currentStep === 1">
+        <div class="mb-6">
+          <input type="text" [(ngModel)]="searchQuery" placeholder="Search billers..." class="w-full p-3 border-2 border-gray-200 rounded-lg text-base transition-all duration-300 focus:outline-none focus:border-blue-500">
         </div>
         
-        <div class="biller-categories">
+        <div class="flex gap-2 mb-6">
           <button *ngFor="let category of categories" 
-                  [class.active]="selectedCategory === category"
+                  class="px-4 py-2 rounded-lg border-2 border-gray-200 cursor-pointer transition-all duration-300 hover:border-blue-500"
+                  [class.border-blue-500]="selectedCategory === category"
+                  [class.bg-blue-50]="selectedCategory === category"
                   (click)="selectCategory(category)">
             {{ category }}
           </button>
         </div>
   
-        <div class="biller-list">
-          <div class="biller-card" *ngFor="let biller of filteredBillers" 
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+          <div class="p-4 border-2 border-gray-200 rounded-lg cursor-pointer transition-all duration-300 hover:border-blue-500" 
+               *ngFor="let biller of filteredBillers" 
                (click)="selectBiller(biller)"
-               [class.selected]="selectedBiller?.id === biller.id">
-            <img [src]="biller.logo" alt="logo" class="biller-logo">
-            <div class="biller-info">
-              <h4>{{ biller.name }}</h4>
-              <p>Account: {{ biller.accountNumber }}</p>
+               [class.border-blue-500]="selectedBiller?.id === biller.id"
+               [class.bg-blue-50]="selectedBiller?.id === biller.id">
+            <div class="flex items-center gap-4">
+              <img [src]="biller.logo" alt="logo" class="w-12 h-12 rounded-lg">
+              <div>
+                <h4 class="font-semibold text-gray-900">{{ biller.name }}</h4>
+                <p class="text-gray-600 text-sm">Account: {{ biller.accountNumber }}</p>
+              </div>
             </div>
           </div>
         </div>
   
-        <div class="form-actions">
-          <button class="continue-btn" (click)="nextStep()">Continue</button>
+        <div class="flex justify-end">
+          <button class="py-3 px-8 border-none rounded-lg font-medium cursor-pointer transition-all duration-300 bg-blue-900 text-white hover:bg-blue-800" (click)="nextStep()">Continue</button>
         </div>
       </div>
   
       <!-- Step 2: Payment Details -->
-      <form *ngIf="currentStep === 2" (ngSubmit)="nextStep()" class="payment-details">
-        <div class="form-group">
-          <label>Amount Due</label>
-          <div class="amount-display">
-            <span class="currency">{{ selectedBiller?.currency || 'USD' }}</span>
-            <h3>{{ selectedBiller?.amountDue | currency:selectedBiller?.currency }}</h3>
+      <form *ngIf="currentStep === 2" (ngSubmit)="nextStep()">
+        <div class="mb-6">
+          <label class="block mb-2 text-blue-900 font-medium">Amount Due</label>
+          <div class="bg-gray-100 p-4 rounded-lg">
+            <span class="text-gray-600 text-sm">{{ selectedBiller?.currency || 'USD' }}</span>
+            <h3 class="text-2xl font-bold text-blue-900">{{ selectedBiller?.amountDue | currency:selectedBiller?.currency }}</h3>
           </div>
         </div>
   
-        <div class="form-group">
-          <label>Payment Amount</label>
-          <div class="amount-input">
-            <span class="currency-symbol"> currencySymbol *</span>
+        <div class="mb-6">
+          <label class="block mb-2 text-blue-900 font-medium">Payment Amount</label>
+          <div class="relative">
+            <span class="absolute left-3 top-1/2 transform -translate-y-1/2 font-semibold text-blue-900">{{ selectedBiller?.currency || 'USD' }}</span>
             <input type="number" [(ngModel)]="paymentAmount" 
-                   name="paymentAmount" required min="0.01" step="0.01">
+                   name="paymentAmount" required min="0.01" step="0.01"
+                   class="w-full p-3 border-2 border-gray-200 rounded-lg text-base transition-all duration-300 focus:outline-none focus:border-blue-500 pl-12">
           </div>
         </div>
   
-        <div class="form-row">
-          <div class="form-group">
-            <label>Payment Date</label>
-            <input type="date" [(ngModel)]="paymentDate" name="paymentDate" required>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+          <div>
+            <label class="block mb-2 text-blue-900 font-medium">Payment Date</label>
+            <input type="date" [(ngModel)]="paymentDate" name="paymentDate" required
+                   class="w-full p-3 border-2 border-gray-200 rounded-lg text-base transition-all duration-300 focus:outline-none focus:border-blue-500">
           </div>
-          <div class="form-group">
-            <label>Payment Method</label>
-            <select [(ngModel)]="selectedPaymentMethod" name="paymentMethod" required>
+          <div>
+            <label class="block mb-2 text-blue-900 font-medium">Payment Method</label>
+            <select [(ngModel)]="selectedPaymentMethod" name="paymentMethod" required
+                    class="w-full p-3 border-2 border-gray-200 rounded-lg text-base transition-all duration-300 focus:outline-none focus:border-blue-500">
               <option *ngFor="let method of paymentMethods" [value]="method.id">
                 {{ method.name }} (****{{ method.last4 }})
               </option>
@@ -79,59 +88,59 @@
           </div>
         </div>
   
-        <div class="form-group checkbox-group">
-          <label>
-            <input type="checkbox" [(ngModel)]="saveBiller" name="saveBiller">
+        <div class="mb-6">
+          <label class="flex items-center gap-2 cursor-pointer">
+            <input type="checkbox" [(ngModel)]="saveBiller" name="saveBiller" class="w-auto">
             Save this biller for future payments
           </label>
         </div>
   
-        <div class="form-actions">
-          <button type="button" class="back-btn" (click)="previousStep()">Back</button>
-          <button type="submit" class="continue-btn">Continue</button>
+        <div class="flex justify-end gap-4">
+          <button type="button" class="py-3 px-8 border-none rounded-lg font-medium cursor-pointer transition-all duration-300 bg-gray-100 text-gray-600 hover:bg-gray-200" (click)="previousStep()">Back</button>
+          <button type="submit" class="py-3 px-8 border-none rounded-lg font-medium cursor-pointer transition-all duration-300 bg-blue-900 text-white hover:bg-blue-800">Continue</button>
         </div>
       </form>
   
       <!-- Step 3: Confirmation -->
-      <div *ngIf="currentStep === 3" class="confirmation-step">
-        <div class="confirmation-details">
-          <h3>Confirm Payment</h3>
+      <div *ngIf="currentStep === 3">
+        <div>
+          <h3 class="text-blue-900 mt-0 mb-6 font-semibold">Confirm Payment</h3>
           
-          <div class="detail-item">
-            <span>Biller:</span>
-            <div class="biller-info">
-              <img [src]="selectedBiller?.logo" alt="logo" class="biller-logo">
+          <div class="mb-6">
+            <span class="text-gray-600 block mb-2 text-sm">Biller:</span>
+            <div class="flex items-center gap-4 p-4 bg-gray-100 rounded-lg">
+              <img [src]="selectedBiller?.logo" alt="logo" class="w-12 h-12 rounded-lg">
               <div>
-                <h4>{{ selectedBiller?.name }}</h4>
-                <p>{{ selectedBiller?.accountNumber }}</p>
+                <h4 class="font-semibold text-gray-900">{{ selectedBiller?.name }}</h4>
+                <p class="text-gray-600 text-sm">{{ selectedBiller?.accountNumber }}</p>
               </div>
             </div>
           </div>
   
-          <div class="detail-item">
-            <span>Amount:</span>
-            <h4>{{ paymentAmount | currency:selectedBiller?.currency }}</h4>
+          <div class="mb-6">
+            <span class="text-gray-600 block mb-2 text-sm">Amount:</span>
+            <h4 class="text-xl font-semibold text-blue-900">{{ paymentAmount | currency:selectedBiller?.currency }}</h4>
           </div>
   
-          <div class="detail-item">
-            <span>Payment Date:</span>
-            <p>{{ paymentDate | date: 'MMM d, y' }}</p>
+          <div class="mb-6">
+            <span class="text-gray-600 block mb-2 text-sm">Payment Date:</span>
+            <p class="text-gray-900">{{ paymentDate | date: 'MMM d, y' }}</p>
           </div>
   
-          <div class="detail-item">
-            <span>Payment Method:</span>
-            <p>{{ getPaymentMethod() }}</p>
+          <div class="mb-6">
+            <span class="text-gray-600 block mb-2 text-sm">Payment Method:</span>
+            <p class="text-gray-900">{{ getPaymentMethod() }}</p>
           </div>
   
-          <div class="fee-warning">
+          <div class="bg-blue-50 text-blue-800 p-4 rounded-lg my-8 flex items-center gap-2">
             <i class="fas fa-info-circle"></i>
             Payment will be processed on {{ paymentDate | date: 'MMM d, y' }}
           </div>
         </div>
   
-        <div class="form-actions">
-          <button type="button" class="back-btn" (click)="previousStep()">Back</button>
-          <button type="button" class="confirm-btn" 
+        <div class="flex justify-end gap-4">
+          <button type="button" class="py-3 px-8 border-none rounded-lg font-medium cursor-pointer transition-all duration-300 bg-gray-100 text-gray-600 hover:bg-gray-200" (click)="previousStep()">Back</button>
+          <button type="button" class="py-3 px-8 border-none rounded-lg font-medium cursor-pointer transition-all duration-300 bg-blue-900 text-white hover:bg-blue-800 disabled:bg-gray-400 disabled:cursor-not-allowed" 
                   (click)="processPayment()"
                   [disabled]="processing">
             <span *ngIf="!processing">Confirm Payment</span>
@@ -141,11 +150,11 @@
       </div>
   
       <!-- Success Message -->
-      <div *ngIf="transactionComplete" class="success-message">
-        <i class="fas fa-check-circle"></i>
-        <h3>Payment Successful!</h3>
-        <p>{{ paymentAmount | currency:selectedBiller?.currency }} paid to {{ selectedBiller?.name }}</p>
-        <button class="done-btn" routerLink="/dashboard">Back to Dashboard</button>
+      <div *ngIf="transactionComplete" class="text-center p-8">
+        <i class="fas fa-check-circle text-6xl text-green-500 mb-4"></i>
+        <h3 class="text-green-500 mb-2 font-semibold">Payment Successful!</h3>
+        <p class="text-gray-600 mb-8">{{ paymentAmount | currency:selectedBiller?.currency }} paid to {{ selectedBiller?.name }}</p>
+        <button class="bg-green-500 text-white border-none py-3 px-8 rounded-lg cursor-pointer transition-all duration-300 hover:bg-green-600" routerLink="/dashboard">Back to Dashboard</button>
       </div>
     </div>
   </div>

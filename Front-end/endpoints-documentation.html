@@ -1,0 +1,874 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TheMMPay - API Endpoints Documentation</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        .header h1 {
+            color: #2c3e50;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .header p {
+            color: #7f8c8d;
+            font-size: 1.1em;
+        }
+
+        .section {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        }
+
+        .section h2 {
+            color: #2c3e50;
+            font-size: 1.8em;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #667eea;
+        }
+
+        .endpoint-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .endpoint-card {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 20px;
+            border-left: 5px solid #667eea;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            cursor: pointer;
+            text-decoration: none;
+            color: inherit;
+            display: block;
+        }
+
+        .endpoint-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+            background: #e9ecef;
+        }
+
+        .endpoint-path {
+            font-family: 'Courier New', monospace;
+            background: #2c3e50;
+            color: #ecf0f1;
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 0.9em;
+            margin-bottom: 10px;
+            display: inline-block;
+        }
+
+        .endpoint-title {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 8px;
+        }
+
+        .endpoint-description {
+            color: #7f8c8d;
+            margin-bottom: 12px;
+            font-size: 0.95em;
+        }
+
+        .permission-badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 0.8em;
+            font-weight: bold;
+            margin-right: 8px;
+            margin-bottom: 8px;
+        }
+
+        .permission-public {
+            background: #27ae60;
+            color: white;
+        }
+
+        .permission-auth {
+            background: #e74c3c;
+            color: white;
+        }
+
+        .permission-verified {
+            background: #f39c12;
+            color: white;
+        }
+
+        .permission-admin {
+            background: #8e44ad;
+            color: white;
+        }
+
+        .hierarchy-indicator {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #667eea;
+            color: white;
+            text-align: center;
+            line-height: 20px;
+            font-size: 0.8em;
+            margin-right: 10px;
+        }
+
+        .method-badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 0.8em;
+            font-weight: bold;
+            margin-left: 10px;
+        }
+
+        .method-get { background: #61affe; color: white; }
+        .method-post { background: #49cc90; color: white; }
+        .method-put { background: #fca130; color: white; }
+        .method-delete { background: #f93e3e; color: white; }
+
+        .legend {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .legend h3 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+        }
+
+        .legend-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .legend-item span {
+            margin-left: 10px;
+            font-size: 0.9em;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .stat-number {
+            font-size: 2.5em;
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            color: #7f8c8d;
+            font-size: 0.9em;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+            
+            .header h1 {
+                font-size: 2em;
+            }
+            
+            .endpoint-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        .clickable {
+            cursor: pointer;
+        }
+
+        .clickable:hover {
+            background: #e9ecef !important;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🏦 TheMMPay</h1>
+            <p>Complete API Endpoints Documentation with Hierarchy and Permissions</p>
+        </div>
+
+        <div class="stats">
+            <div class="stat-card">
+                <div class="stat-number">25</div>
+                <div class="stat-label">Total Endpoints</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">4</div>
+                <div class="stat-label">Permission Levels</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">5</div>
+                <div class="stat-label">Main Categories</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">3</div>
+                <div class="stat-label">API Base URLs</div>
+            </div>
+        </div>
+
+        <div class="legend">
+            <h3>📋 Legend</h3>
+            <div class="legend-grid">
+                <div class="legend-item">
+                    <span class="permission-badge permission-public">Public</span>
+                    <span>No authentication required</span>
+                </div>
+                <div class="legend-item">
+                    <span class="permission-badge permission-auth">Authenticated</span>
+                    <span>User must be logged in</span>
+                </div>
+                <div class="legend-item">
+                    <span class="permission-badge permission-verified">Verified</span>
+                    <span>Email verification required</span>
+                </div>
+                <div class="legend-item">
+                    <span class="permission-badge permission-admin">Admin</span>
+                    <span>Administrator access only</span>
+                </div>
+            </div>
+            <div style="margin-top: 15px;">
+                <strong>Base URLs:</strong><br>
+                • Development: <code>http://localhost:8080</code><br>
+                • Production: <code>https://api.themmpay.com</code><br>
+                • Dashboard: <code>http://localhost:8095</code>
+            </div>
+        </div>
+
+        <!-- Authentication Endpoints -->
+        <div class="section">
+            <h2>🔐 Authentication Endpoints</h2>
+            <div class="endpoint-grid">
+                <div class="endpoint-card">
+                    <div class="endpoint-path">POST /auth/signin</div>
+                    <div class="endpoint-title">User Sign In</div>
+                    <div class="endpoint-description">Authenticate user with email and password</div>
+                    <span class="permission-badge permission-public">Public</span>
+                    <span class="method-badge method-post">POST</span>
+                </div>
+
+                <div class="endpoint-card">
+                    <div class="endpoint-path">POST /auth/signup</div>
+                    <div class="endpoint-title">User Registration</div>
+                    <div class="endpoint-description">Create new user account</div>
+                    <span class="permission-badge permission-public">Public</span>
+                    <span class="method-badge method-post">POST</span>
+                </div>
+
+                <div class="endpoint-card">
+                    <div class="endpoint-path">POST /auth/refresh</div>
+                    <div class="endpoint-title">Refresh Token</div>
+                    <div class="endpoint-description">Refresh authentication token</div>
+                    <span class="permission-badge permission-auth">Authenticated</span>
+                    <span class="method-badge method-post">POST</span>
+                </div>
+
+                <div class="endpoint-card">
+                    <div class="endpoint-path">POST /auth/verify</div>
+                    <div class="endpoint-title">Email Verification</div>
+                    <div class="endpoint-description">Verify email with verification code</div>
+                    <span class="permission-badge permission-auth">Authenticated</span>
+                    <span class="method-badge method-post">POST</span>
+                </div>
+
+                <div class="endpoint-card">
+                    <div class="endpoint-path">POST /auth/resend-code</div>
+                    <div class="endpoint-title">Resend Verification Code</div>
+                    <div class="endpoint-description">Resend email verification code</div>
+                    <span class="permission-badge permission-auth">Authenticated</span>
+                    <span class="method-badge method-post">POST</span>
+                </div>
+
+                <div class="endpoint-card">
+                    <div class="endpoint-path">POST /auth/logout</div>
+                    <div class="endpoint-title">User Logout</div>
+                    <div class="endpoint-description">Logout and invalidate session</div>
+                    <span class="permission-badge permission-auth">Authenticated</span>
+                    <span class="method-badge method-post">POST</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- User Management Endpoints -->
+        <div class="section">
+            <h2>👤 User Management Endpoints</h2>
+            <div class="endpoint-grid">
+                <div class="endpoint-card">
+                    <div class="endpoint-path">GET /api/users/me</div>
+                    <div class="endpoint-title">Get Current User</div>
+                    <div class="endpoint-description">Retrieve current user profile information</div>
+                    <span class="permission-badge permission-auth">Authenticated</span>
+                    <span class="method-badge method-get">GET</span>
+                </div>
+
+                <div class="endpoint-card">
+                    <div class="endpoint-path">PUT /api/users/profile</div>
+                    <div class="endpoint-title">Update User Profile</div>
+                    <div class="endpoint-description">Update user profile information</div>
+                    <span class="permission-badge permission-auth">Authenticated</span>
+                    <span class="method-badge method-put">PUT</span>
+                </div>
+
+                <div class="endpoint-card">
+                    <div class="endpoint-path">GET /dashboard/user</div>
+                    <div class="endpoint-title">Dashboard User Data</div>
+                    <div class="endpoint-description">Get user data for dashboard display</div>
+                    <span class="permission-badge permission-auth">Authenticated</span>
+                    <span class="method-badge method-get">GET</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Wallet Management Endpoints -->
+        <div class="section">
+            <h2>💰 Wallet Management Endpoints</h2>
+            <div class="endpoint-grid">
+                <div class="endpoint-card">
+                    <div class="endpoint-path">GET /wallet</div>
+                    <div class="endpoint-title">Get User Wallets</div>
+                    <div class="endpoint-description">Retrieve all wallets for current user</div>
+                    <span class="permission-badge permission-verified">Verified</span>
+                    <span class="method-badge method-get">GET</span>
+                </div>
+
+                <div class="endpoint-card">
+                    <div class="endpoint-path">POST /wallet</div>
+                    <div class="endpoint-title">Create Wallet</div>
+                    <div class="endpoint-description">Create a new wallet for the user</div>
+                    <span class="permission-badge permission-verified">Verified</span>
+                    <span class="method-badge method-post">POST</span>
+                </div>
+
+                <div class="endpoint-card">
+                    <div class="endpoint-path">GET /wallet/{id}</div>
+                    <div class="endpoint-title">Get Wallet Details</div>
+                    <div class="endpoint-description">Get specific wallet information</div>
+                    <span class="permission-badge permission-verified">Verified</span>
+                    <span class="method-badge method-get">GET</span>
+                </div>
+
+                <div class="endpoint-card">
+                    <div class="endpoint-path">PUT /wallet/{id}</div>
+                    <div class="endpoint-title">Update Wallet</div>
+                    <div class="endpoint-description">Update wallet settings and information</div>
+                    <span class="permission-badge permission-verified">Verified</span>
+                    <span class="method-badge method-put">PUT</span>
+                </div>
+
+                <div class="endpoint-card">
+                    <div class="endpoint-path">DELETE /wallet/{id}</div>
+                    <div class="endpoint-title">Delete Wallet</div>
+                    <div class="endpoint-description">Delete a wallet (if allowed)</div>
+                    <span class="permission-badge permission-verified">Verified</span>
+                    <span class="method-badge method-delete">DELETE</span>
+                </div>
+
+                <div class="endpoint-card">
+                    <div class="endpoint-path">POST /wallet/transfer</div>
+                    <div class="endpoint-title">Transfer Between Wallets</div>
+                    <div class="endpoint-description">Transfer funds between user's wallets</div>
+                    <span class="permission-badge permission-verified">Verified</span>
+                    <span class="method-badge method-post">POST</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Transaction Endpoints -->
+        <div class="section">
+            <h2>💳 Transaction Endpoints</h2>
+            <div class="endpoint-grid">
+                <div class="endpoint-card">
+                    <div class="endpoint-path">GET /transactions</div>
+                    <div class="endpoint-title">Get Transactions</div>
+                    <div class="endpoint-description">Retrieve transaction history with filters</div>
+                    <span class="permission-badge permission-verified">Verified</span>
+                    <span class="method-badge method-get">GET</span>
+                </div>
+
+                <div class="endpoint-card">
+                    <div class="endpoint-path">GET /transactions/{id}</div>
+                    <div class="endpoint-title">Get Transaction Details</div>
+                    <div class="endpoint-description">Get specific transaction information</div>
+                    <span class="permission-badge permission-verified">Verified</span>
+                    <span class="method-badge method-get">GET</span>
+                </div>
+
+                <div class="endpoint-card">
+                    <div class="endpoint-path">POST /transactions/send</div>
+                    <div class="endpoint-title">Send Money</div>
+                    <div class="endpoint-description">Send money to another user</div>
+                    <span class="permission-badge permission-verified">Verified</span>
+                    <span class="method-badge method-post">POST</span>
+                </div>
+
+                <div class="endpoint-card">
+                    <div class="endpoint-path">POST /transactions/request</div>
+                    <div class="endpoint-title">Request Money</div>
+                    <div class="endpoint-description">Request money from another user</div>
+                    <span class="permission-badge permission-verified">Verified</span>
+                    <span class="method-badge method-post">POST</span>
+                </div>
+
+                <div class="endpoint-card">
+                    <div class="endpoint-path">POST /transactions/add-funds</div>
+                    <div class="endpoint-title">Add Funds</div>
+                    <div class="endpoint-description">Add funds to wallet via payment method</div>
+                    <span class="permission-badge permission-verified">Verified</span>
+                    <span class="method-badge method-post">POST</span>
+                </div>
+
+                <div class="endpoint-card">
+                    <div class="endpoint-path">POST /transactions/pay-bill</div>
+                    <div class="endpoint-title">Pay Bill</div>
+                    <div class="endpoint-description">Pay utility bills and services</div>
+                    <span class="permission-badge permission-verified">Verified</span>
+                    <span class="method-badge method-post">POST</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Invoice Endpoints -->
+        <div class="section">
+            <h2>📄 Invoice Endpoints</h2>
+            <div class="endpoint-grid">
+                <div class="endpoint-card">
+                    <div class="endpoint-path">GET /invoices</div>
+                    <div class="endpoint-title">Get Invoices</div>
+                    <div class="endpoint-description">Retrieve user's invoices</div>
+                    <span class="permission-badge permission-verified">Verified</span>
+                    <span class="method-badge method-get">GET</span>
+                </div>
+
+                <div class="endpoint-card">
+                    <div class="endpoint-path">POST /invoices</div>
+                    <div class="endpoint-title">Create Invoice</div>
+                    <div class="endpoint-description">Create a new invoice</div>
+                    <span class="permission-badge permission-verified">Verified</span>
+                    <span class="method-badge method-post">POST</span>
+                </div>
+
+                <div class="endpoint-card">
+                    <div class="endpoint-path">GET /invoices/{id}</div>
+                    <div class="endpoint-title">Get Invoice Details</div>
+                    <div class="endpoint-description">Get specific invoice information</div>
+                    <span class="permission-badge permission-verified">Verified</span>
+                    <span class="method-badge method-get">GET</span>
+                </div>
+
+                <div class="endpoint-card">
+                    <div class="endpoint-path">PUT /invoices/{id}</div>
+                    <div class="endpoint-title">Update Invoice</div>
+                    <div class="endpoint-description">Update invoice details</div>
+                    <span class="permission-badge permission-verified">Verified</span>
+                    <span class="method-badge method-put">PUT</span>
+                </div>
+
+                <div class="endpoint-card">
+                    <div class="endpoint-path">DELETE /invoices/{id}</div>
+                    <div class="endpoint-title">Delete Invoice</div>
+                    <div class="endpoint-description">Delete an invoice</div>
+                    <span class="permission-badge permission-verified">Verified</span>
+                    <span class="method-badge method-delete">DELETE</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Additional Service Endpoints -->
+        <div class="section">
+            <h2>🔧 Additional Service Endpoints</h2>
+            <div class="endpoint-grid">
+                <div class="endpoint-card">
+                    <div class="endpoint-path">GET /contacts</div>
+                    <div class="endpoint-title">Get Contacts</div>
+                    <div class="endpoint-description">Retrieve user's saved contacts</div>
+                    <span class="permission-badge permission-auth">Authenticated</span>
+                    <span class="method-badge method-get">GET</span>
+                </div>
+
+                <div class="endpoint-card">
+                    <div class="endpoint-path">GET /notifications</div>
+                    <div class="endpoint-title">Get Notifications</div>
+                    <div class="endpoint-description">Retrieve user notifications</div>
+                    <span class="permission-badge permission-auth">Authenticated</span>
+                    <span class="method-badge method-get">GET</span>
+                </div>
+
+                <div class="endpoint-card">
+                    <div class="endpoint-path">GET /budgets</div>
+                    <div class="endpoint-title">Get Budgets</div>
+                    <div class="endpoint-description">Retrieve user's budget information</div>
+                    <span class="permission-badge permission-verified">Verified</span>
+                    <span class="method-badge method-get">GET</span>
+                </div>
+
+                <div class="endpoint-card">
+                    <div class="endpoint-path">GET /analytics</div>
+                    <div class="endpoint-title">Get Analytics</div>
+                    <div class="endpoint-description">Retrieve financial analytics data</div>
+                    <span class="permission-badge permission-verified">Verified</span>
+                    <span class="method-badge method-get">GET</span>
+                </div>
+
+                <div class="endpoint-card">
+                    <div class="endpoint-path">GET /recurring-payments</div>
+                    <div class="endpoint-title">Get Recurring Payments</div>
+                    <div class="endpoint-description">Retrieve scheduled recurring payments</div>
+                    <span class="permission-badge permission-verified">Verified</span>
+                    <span class="method-badge method-get">GET</span>
+                </div>
+
+                <div class="endpoint-card">
+                    <div class="endpoint-path">GET /security</div>
+                    <div class="endpoint-title">Get Security Settings</div>
+                    <div class="endpoint-description">Retrieve user security settings</div>
+                    <span class="permission-badge permission-auth">Authenticated</span>
+                    <span class="method-badge method-get">GET</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Frontend Routes -->
+        <div class="section">
+            <h2>🌐 Frontend Routes</h2>
+            <div class="endpoint-grid">
+                <div class="endpoint-card">
+                    <div class="endpoint-path">/ (Home)</div>
+                    <div class="endpoint-title">Home Page</div>
+                    <div class="endpoint-description">Landing page for the application</div>
+                    <span class="permission-badge permission-public">Public</span>
+                </div>
+
+                <div class="endpoint-card">
+                    <div class="endpoint-path">/signin</div>
+                    <div class="endpoint-title">Sign In Page</div>
+                    <div class="endpoint-description">User authentication page</div>
+                    <span class="permission-badge permission-public">Public</span>
+                </div>
+
+                <div class="endpoint-card">
+                    <div class="endpoint-path">/signup</div>
+                    <div class="endpoint-title">Sign Up Page</div>
+                    <div class="endpoint-description">User registration page</div>
+                    <span class="permission-badge permission-public">Public</span>
+                </div>
+
+                <div class="endpoint-card">
+                    <div class="endpoint-path">/dashboard</div>
+                    <div class="endpoint-title">Dashboard</div>
+                    <div class="endpoint-description">Main user dashboard</div>
+                    <span class="permission-badge permission-auth">Authenticated</span>
+                </div>
+
+                <div class="endpoint-card">
+                    <div class="endpoint-path">/profile</div>
+                    <div class="endpoint-title">Profile Management</div>
+                    <div class="endpoint-description">User profile editing page</div>
+                    <span class="permission-badge permission-auth">Authenticated</span>
+                </div>
+
+                <div class="endpoint-card">
+                    <div class="endpoint-path">/transactions</div>
+                    <div class="endpoint-title">Transaction History</div>
+                    <div class="endpoint-description">View transaction history</div>
+                    <span class="permission-badge permission-verified">Verified</span>
+                </div>
+
+                <div class="endpoint-card">
+                    <div class="endpoint-path">/send-money</div>
+                    <div class="endpoint-title">Send Money</div>
+                    <div class="endpoint-description">Send money to other users</div>
+                    <span class="permission-badge permission-verified">Verified</span>
+                </div>
+
+                <div class="endpoint-card">
+                    <div class="endpoint-path">/add-funds</div>
+                    <div class="endpoint-title">Add Funds</div>
+                    <div class="endpoint-description">Add money to wallet</div>
+                    <span class="permission-badge permission-verified">Verified</span>
+                </div>
+
+                <div class="endpoint-card">
+                    <div class="endpoint-path">/pay-bill</div>
+                    <div class="endpoint-title">Pay Bills</div>
+                    <div class="endpoint-description">Pay utility bills</div>
+                    <span class="permission-badge permission-verified">Verified</span>
+                </div>
+
+                <div class="endpoint-card">
+                    <div class="endpoint-path">/request-money</div>
+                    <div class="endpoint-title">Request Money</div>
+                    <div class="endpoint-description">Request money from others</div>
+                    <span class="permission-badge permission-verified">Verified</span>
+                </div>
+
+                <div class="endpoint-card">
+                    <div class="endpoint-path">/notifications</div>
+                    <div class="endpoint-title">Notifications</div>
+                    <div class="endpoint-description">View user notifications</div>
+                    <span class="permission-badge permission-auth">Authenticated</span>
+                </div>
+
+                <div class="endpoint-card">
+                    <div class="endpoint-path">/verification</div>
+                    <div class="endpoint-title">Email Verification</div>
+                    <div class="endpoint-description">Email verification page</div>
+                    <span class="permission-badge permission-auth">Authenticated</span>
+                </div>
+
+                <div class="endpoint-card">
+                    <div class="endpoint-path">/createwallet</div>
+                    <div class="endpoint-title">Create Wallet</div>
+                    <div class="endpoint-description">Create new wallet</div>
+                    <span class="permission-badge permission-verified">Verified</span>
+                </div>
+
+                <div class="endpoint-card">
+                    <div class="endpoint-path">/invoices</div>
+                    <div class="endpoint-title">Invoices</div>
+                    <div class="endpoint-description">Manage invoices</div>
+                    <span class="permission-badge permission-verified">Verified</span>
+                </div>
+
+                <div class="endpoint-card">
+                    <div class="endpoint-path">/budgets</div>
+                    <div class="endpoint-title">Budgets</div>
+                    <div class="endpoint-description">Budget management</div>
+                    <span class="permission-badge permission-verified">Verified</span>
+                </div>
+
+                <div class="endpoint-card">
+                    <div class="endpoint-path">/analytics</div>
+                    <div class="endpoint-title">Analytics</div>
+                    <div class="endpoint-description">Financial analytics</div>
+                    <span class="permission-badge permission-verified">Verified</span>
+                </div>
+
+                <div class="endpoint-card">
+                    <div class="endpoint-path">/recurring-payments</div>
+                    <div class="endpoint-title">Recurring Payments</div>
+                    <div class="endpoint-description">Manage recurring payments</div>
+                    <span class="permission-badge permission-verified">Verified</span>
+                </div>
+
+                <div class="endpoint-card">
+                    <div class="endpoint-path">/security</div>
+                    <div class="endpoint-title">Security Settings</div>
+                    <div class="endpoint-description">Security configuration</div>
+                    <span class="permission-badge permission-auth">Authenticated</span>
+                </div>
+
+                <div class="endpoint-card">
+                    <div class="endpoint-path">/contacts</div>
+                    <div class="endpoint-title">Contacts</div>
+                    <div class="endpoint-description">Manage contacts</div>
+                    <span class="permission-badge permission-auth">Authenticated</span>
+                </div>
+
+                <div class="endpoint-card">
+                    <div class="endpoint-path">/settings</div>
+                    <div class="endpoint-title">Settings</div>
+                    <div class="endpoint-description">Application settings</div>
+                    <span class="permission-badge permission-auth">Authenticated</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Security Notes -->
+        <div class="section">
+            <h2>🔒 Security Implementation Notes</h2>
+            <div style="background: #f8f9fa; padding: 20px; border-radius: 10px; border-left: 5px solid #e74c3c;">
+                <h3 style="color: #e74c3c; margin-bottom: 15px;">Authentication & Authorization</h3>
+                <ul style="list-style: none; padding-left: 0;">
+                    <li style="margin-bottom: 10px; padding-left: 20px; position: relative;">
+                        <span style="position: absolute; left: 0; color: #e74c3c;">•</span>
+                        <strong>Token-based Authentication:</strong> JWT tokens with automatic refresh mechanism
+                    </li>
+                    <li style="margin-bottom: 10px; padding-left: 20px; position: relative;">
+                        <span style="position: absolute; left: 0; color: #e74c3c;">•</span>
+                        <strong>HTTP Interceptor:</strong> Automatically adds authentication headers to all requests
+                    </li>
+                    <li style="margin-bottom: 10px; padding-left: 20px; position: relative;">
+                        <span style="position: absolute; left: 0; color: #e74c3c;">•</span>
+                        <strong>Route Guards:</strong> AuthGuard protects authenticated routes
+                    </li>
+                    <li style="margin-bottom: 10px; padding-left: 20px; position: relative;">
+                        <span style="position: absolute; left: 0; color: #e74c3c;">•</span>
+                        <strong>Email Verification:</strong> Required for financial transactions
+                    </li>
+                    <li style="margin-bottom: 10px; padding-left: 20px; position: relative;">
+                        <span style="position: absolute; left: 0; color: #e74c3c;">•</span>
+                        <strong>Session Management:</strong> Automatic token refresh and logout on expiration
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>📊 Permission Hierarchy</h2>
+            <div style="background: #f8f9fa; padding: 20px; border-radius: 10px;">
+                <div style="display: flex; align-items: center; margin-bottom: 15px;">
+                    <span class="hierarchy-indicator">1</span>
+                    <span><strong>Public:</strong> No authentication required (Home, Sign In, Sign Up)</span>
+                </div>
+                <div style="display: flex; align-items: center; margin-bottom: 15px;">
+                    <span class="hierarchy-indicator">2</span>
+                    <span><strong>Authenticated:</strong> User must be logged in (Profile, Settings, Security)</span>
+                </div>
+                <div style="display: flex; align-items: center; margin-bottom: 15px;">
+                    <span class="hierarchy-indicator">3</span>
+                    <span><strong>Verified:</strong> Email verification required (Transactions, Wallets, Financial Operations)</span>
+                </div>
+                <div style="display: flex; align-items: center;">
+                    <span class="hierarchy-indicator">4</span>
+                    <span><strong>Admin:</strong> Administrator access only (System Management)</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Get all endpoint cards
+            const endpointCards = document.querySelectorAll('.endpoint-card');
+            
+            endpointCards.forEach(card => {
+                card.addEventListener('click', function() {
+                    // Get the endpoint path from the card
+                    const pathElement = this.querySelector('.endpoint-path');
+                    if (pathElement) {
+                        let path = pathElement.textContent.trim();
+                        
+                        // Clean up the path - remove HTTP method and extract just the path
+                        path = path.replace(/^(GET|POST|PUT|DELETE)\s+/, '');
+                        
+                        // For API endpoints, we'll navigate to the frontend equivalent
+                        // or show a message for API-only endpoints
+                        if (path.startsWith('/auth/') || path.startsWith('/api/') || 
+                            path.startsWith('/wallet') || path.startsWith('/transactions') || 
+                            path.startsWith('/invoices') || path.startsWith('/contacts') || 
+                            path.startsWith('/notifications') || path.startsWith('/budgets') || 
+                            path.startsWith('/analytics') || path.startsWith('/recurring-payments') || 
+                            path.startsWith('/security')) {
+                            
+                            // Map API endpoints to frontend routes
+                            const apiToFrontendMap = {
+                                '/auth/signin': '/signin',
+                                '/auth/signup': '/signup',
+                                '/auth/verify': '/verification',
+                                '/api/users/me': '/profile',
+                                '/wallet': '/createwallet',
+                                '/transactions': '/transactions',
+                                '/invoices': '/invoices',
+                                '/contacts': '/contacts',
+                                '/notifications': '/notifications',
+                                '/budgets': '/budgets',
+                                '/analytics': '/analytics',
+                                '/recurring-payments': '/recurring-payments',
+                                '/security': '/security'
+                            };
+                            
+                            // Find the matching frontend route
+                            let frontendPath = path;
+                            for (const [apiPath, frontendRoute] of Object.entries(apiToFrontendMap)) {
+                                if (path.startsWith(apiPath)) {
+                                    frontendPath = frontendRoute;
+                                    break;
+                                }
+                            }
+                            
+                            // Navigate to the frontend route
+                            const url = `http://localhost:4200${frontendPath}`;
+                            window.open(url, '_blank');
+                        } else {
+                            // For frontend routes, navigate directly
+                            const url = `http://localhost:4200${path}`;
+                            window.open(url, '_blank');
+                        }
+                    }
+                });
+                
+                // Add clickable class for visual feedback
+                card.classList.add('clickable');
+            });
+        });
+    </script>
+</body>
+</html>

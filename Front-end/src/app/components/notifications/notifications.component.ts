@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 
@@ -14,9 +14,10 @@ interface Notification {
 @Component({
   selector: 'app-notifications',
   standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [CommonModule, RouterModule],
   templateUrl: './notifications.component.html',
-  styleUrls: ['./notifications.component.scss']
+
 })
 export class NotificationsComponent {
   notifications: Notification[] = [

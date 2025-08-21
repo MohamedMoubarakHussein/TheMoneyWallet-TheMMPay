@@ -21,7 +21,7 @@ interface Currency {
   standalone: true,
   imports: [CommonModule, FormsModule, RouterModule],
   templateUrl: './send-money.component.html',
-  styleUrls: ['./send-money.component.scss']
+
 })
 export class SendMoneyComponent {
   currentStep = 1;

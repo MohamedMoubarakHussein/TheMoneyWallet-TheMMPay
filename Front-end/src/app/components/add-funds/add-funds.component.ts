@@ -8,7 +8,7 @@ import { RouterModule } from '@angular/router';
   standalone: true,
   imports: [CommonModule, FormsModule, RouterModule],
   templateUrl: './add-funds.component.html',
-  styleUrls: ['./add-funds.component.scss']
+
 })
 export class AddFundsComponent {
   currentStep = 1;

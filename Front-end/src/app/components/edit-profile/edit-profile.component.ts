@@ -7,7 +7,7 @@ import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angula
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './edit-profile.component.html',
-  styleUrls: ['./edit-profile.component.scss']
+
 })
 export class EditProfileComponent {
   profileForm: FormGroup;

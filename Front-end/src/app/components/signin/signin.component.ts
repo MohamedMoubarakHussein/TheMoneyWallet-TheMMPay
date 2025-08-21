@@ -14,7 +14,7 @@ import { ComingSoonComponent } from '../coming-soon/coming-soon.component';
   standalone: true,
   imports: [CommonModule, FormsModule , ComingSoonComponent,HeaderComponent,ReactiveFormsModule],
   templateUrl: './signin.component.html',
-  styleUrls: ['./signin.component.scss']
+  styleUrls: ['./signin.component.css']
 })
 
 export class SigninComponent {

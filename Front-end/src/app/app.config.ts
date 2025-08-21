@@ -3,20 +3,28 @@ import { provideRouter } from '@angular/router';
 import { RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { routes } from './app.routes';
-import { provideClientHydration, withEventReplay } from '@angular/platform-browser';
 import { provideAnimations } from '@angular/platform-browser/animations';
-import { HTTP_INTERCEPTORS, provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
+import { HTTP_INTERCEPTORS, provideHttpClient, withInterceptorsFromDi, withFetch } from '@angular/common/http';
 import { AuthService } from './services/auth/auth.service';
 import { AuthInterceptor } from './utilities/Interceptor';
+import { provideServiceWorker } from '@angular/service-worker';
+import { environment } from './environments/environment';
 
 export const appConfig: ApplicationConfig = {
-  providers: [provideZoneChangeDetection({ eventCoalescing: true }), provideRouter(routes), provideClientHydration(withEventReplay()),    provideAnimations() , provideHttpClient(
-    withInterceptorsFromDi() // Add this if using DI interceptors
-  ),  AuthService, 
+  providers: [
+    provideZoneChangeDetection({ eventCoalescing: true }),
+    provideRouter(routes),
+    provideAnimations(),
+    provideHttpClient(
+      withInterceptorsFromDi(),
+      withFetch()
+    ),
+    AuthService,
     {
       provide: HTTP_INTERCEPTORS,
       useClass: AuthInterceptor,
       multi: true
-    }
+    },
+    provideServiceWorker('ngsw-worker.js', { enabled: environment.production })
   ]
 };

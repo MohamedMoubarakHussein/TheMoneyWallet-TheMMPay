@@ -1,0 +1,537 @@
+/* Invoice Container */
+.invoice-container {
+  @apply min-h-screen bg-gray-50 p-6;
+  animation: fadeIn 0.6s ease-out;
+}
+
+/* Header Section */
+.invoice-header {
+  @apply bg-white rounded-2xl shadow-lg p-8 mb-8;
+  background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
+  color: white;
+}
+
+.header-content {
+  @apply flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6;
+}
+
+.header-left {
+  @apply flex-1;
+}
+
+.page-title {
+  @apply text-3xl lg:text-4xl font-bold mb-2 flex items-center gap-3;
+}
+
+.title-icon {
+  @apply text-4xl;
+  animation: bounce 2s infinite;
+}
+
+.page-subtitle {
+  @apply text-cyan-100 text-lg;
+}
+
+.header-actions {
+  @apply flex flex-col sm:flex-row gap-4 items-stretch sm:items-center;
+}
+
+.filter-controls {
+  @apply flex flex-col sm:flex-row gap-3;
+}
+
+.status-filter,
+.period-filter {
+  @apply bg-white/20 backdrop-blur-sm border border-white/30 rounded-lg px-4 py-2 text-white font-medium;
+  transition: all 0.3s ease;
+}
+
+.status-filter:hover,
+.period-filter:hover {
+  @apply bg-white/30 border-white/50;
+  transform: translateY(-2px);
+}
+
+.status-filter option,
+.period-filter option {
+  @apply bg-gray-800 text-white;
+}
+
+.create-btn {
+  @apply bg-white text-cyan-900 px-6 py-3 rounded-lg font-semibold flex items-center;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.create-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+/* Loading State */
+.loading-overlay {
+  @apply fixed inset-0 bg-black/50 flex items-center justify-center z-50;
+  backdrop-filter: blur(5px);
+}
+
+.loading-spinner {
+  @apply bg-white rounded-2xl p-8 text-center;
+}
+
+.spinner {
+  @apply w-12 h-12 border-4 border-cyan-200 border-t-cyan-600 rounded-full mx-auto mb-4;
+  animation: spin 1s linear infinite;
+}
+
+/* Invoice Content */
+.invoice-content {
+  @apply space-y-8;
+}
+
+/* Summary Grid */
+.summary-grid {
+  @apply grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6;
+}
+
+.summary-card {
+  @apply bg-white rounded-2xl p-6 shadow-lg border border-gray-100;
+  transition: all 0.4s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.summary-card::before {
+  content: '';
+  @apply absolute inset-0 opacity-0;
+  transition: opacity 0.3s ease;
+}
+
+.summary-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+}
+
+.summary-card:hover::before {
+  opacity: 1;
+}
+
+.summary-card.total-invoices::before {
+  @apply bg-gradient-to-br from-blue-50 to-indigo-50;
+}
+
+.summary-card.paid-invoices::before {
+  @apply bg-gradient-to-br from-green-50 to-emerald-50;
+}
+
+.summary-card.pending-amount::before {
+  @apply bg-gradient-to-br from-yellow-50 to-orange-50;
+}
+
+.summary-card.overdue-invoices::before {
+  @apply bg-gradient-to-br from-red-50 to-pink-50;
+}
+
+.card-icon {
+  @apply w-12 h-12 rounded-xl flex items-center justify-center text-white mb-4;
+  transition: all 0.3s ease;
+}
+
+.summary-card.total-invoices .card-icon {
+  @apply bg-gradient-to-br from-blue-500 to-indigo-600;
+}
+
+.summary-card.paid-invoices .card-icon {
+  @apply bg-gradient-to-br from-green-500 to-emerald-600;
+}
+
+.summary-card.pending-amount .card-icon {
+  @apply bg-gradient-to-br from-yellow-500 to-orange-600;
+}
+
+.summary-card.overdue-invoices .card-icon {
+  @apply bg-gradient-to-br from-red-500 to-pink-600;
+}
+
+.summary-card:hover .card-icon {
+  transform: scale(1.1) rotate(5deg);
+}
+
+.card-content h3 {
+  @apply text-sm font-medium text-gray-600 mb-1;
+}
+
+.card-value {
+  @apply text-2xl font-bold text-gray-900 mb-1;
+}
+
+.card-change {
+  @apply text-sm font-medium;
+}
+
+.card-change.positive {
+  @apply text-green-600;
+}
+
+.card-change.negative {
+  @apply text-red-600;
+}
+
+/* Search and Filters */
+.search-filters {
+  @apply bg-white rounded-2xl shadow-lg border border-gray-100 p-6;
+}
+
+.search-box {
+  @apply relative mb-6;
+}
+
+.search-icon {
+  @apply absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400;
+}
+
+.search-input {
+  @apply w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent;
+  transition: all 0.3s ease;
+}
+
+.search-input:focus {
+  @apply outline-none;
+  transform: translateY(-1px);
+}
+
+.filter-actions {
+  @apply flex flex-wrap gap-2;
+}
+
+.filter-btn {
+  @apply px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300;
+  @apply bg-gray-100 text-gray-600 hover:bg-gray-200;
+}
+
+.filter-btn.active {
+  @apply bg-cyan-600 text-white;
+}
+
+/* Invoices List */
+.invoices-list {
+  @apply space-y-6;
+}
+
+.invoice-card {
+  @apply bg-white rounded-2xl shadow-lg border border-gray-100 p-6;
+  transition: all 0.4s ease;
+}
+
+.invoice-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+}
+
+.invoice-header {
+  @apply flex justify-between items-start mb-6;
+}
+
+.invoice-info {
+  @apply flex-1;
+}
+
+.invoice-number h3 {
+  @apply text-xl font-bold text-gray-900 mb-1;
+}
+
+.invoice-date {
+  @apply text-sm text-gray-500;
+}
+
+.invoice-client h4 {
+  @apply text-lg font-semibold text-gray-900 mb-1;
+}
+
+.invoice-client p {
+  @apply text-sm text-gray-600;
+}
+
+.invoice-status {
+  @apply flex-shrink-0;
+}
+
+.status-badge {
+  @apply px-3 py-1 rounded-full text-xs font-semibold;
+}
+
+.status-badge.draft {
+  @apply bg-gray-100 text-gray-700;
+}
+
+.status-badge.sent {
+  @apply bg-blue-100 text-blue-700;
+}
+
+.status-badge.paid {
+  @apply bg-green-100 text-green-700;
+}
+
+.status-badge.overdue {
+  @apply bg-red-100 text-red-700;
+}
+
+/* Invoice Details */
+.invoice-details {
+  @apply grid grid-cols-1 md:grid-cols-3 gap-4 mb-6 p-4 bg-gray-50 rounded-lg;
+}
+
+.detail-item {
+  @apply flex justify-between items-center;
+}
+
+.detail-item .label {
+  @apply text-sm font-medium text-gray-600;
+}
+
+.detail-item .value {
+  @apply text-sm font-semibold text-gray-900;
+}
+
+/* Invoice Actions */
+.invoice-actions {
+  @apply flex justify-end gap-2;
+}
+
+.action-btn {
+  @apply p-2 rounded-lg transition-all duration-300;
+}
+
+.action-btn.view {
+  @apply bg-blue-100 text-blue-600 hover:bg-blue-200;
+}
+
+.action-btn.edit {
+  @apply bg-gray-100 text-gray-600 hover:bg-gray-200;
+}
+
+.action-btn.send {
+  @apply bg-green-100 text-green-600 hover:bg-green-200;
+}
+
+.action-btn.download {
+  @apply bg-purple-100 text-purple-600 hover:bg-purple-200;
+}
+
+.action-btn.delete {
+  @apply bg-red-100 text-red-600 hover:bg-red-200;
+}
+
+/* Pagination */
+.pagination {
+  @apply flex justify-between items-center bg-white rounded-2xl shadow-lg border border-gray-100 p-6;
+}
+
+.pagination-btn {
+  @apply flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed;
+  transition: all 0.3s ease;
+}
+
+.pagination-btn:hover:not(:disabled) {
+  transform: translateY(-1px);
+}
+
+.page-numbers {
+  @apply flex gap-2;
+}
+
+.page-btn {
+  @apply w-10 h-10 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-50 transition-all duration-300;
+}
+
+.page-btn.active {
+  @apply bg-cyan-600 text-white border-cyan-600;
+}
+
+/* Empty State */
+.empty-state {
+  @apply text-center py-16;
+}
+
+.empty-icon {
+  @apply text-6xl mb-6;
+  animation: bounce 2s infinite;
+}
+
+.empty-state h3 {
+  @apply text-2xl font-bold text-gray-900 mb-2;
+}
+
+.empty-state p {
+  @apply text-gray-600 mb-8;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes bounceIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.3);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.05);
+  }
+  70% {
+    transform: scale(0.9);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes staggerIn {
+  0% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes bounce {
+  0%, 20%, 50%, 80%, 100% {
+    transform: translateY(0);
+  }
+  40% {
+    transform: translateY(-10px);
+  }
+  60% {
+    transform: translateY(-5px);
+  }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .invoice-container {
+    @apply p-4;
+  }
+  
+  .invoice-header {
+    @apply p-6;
+  }
+  
+  .page-title {
+    @apply text-2xl;
+  }
+  
+  .summary-grid {
+    @apply grid-cols-1;
+  }
+  
+  .invoice-header {
+    @apply flex-col items-start gap-4;
+  }
+  
+  .invoice-details {
+    @apply grid-cols-1;
+  }
+  
+  .invoice-actions {
+    @apply w-full justify-center;
+  }
+  
+  .pagination {
+    @apply flex-col gap-4;
+  }
+}
+
+/* Dark Mode Support */
+@media (prefers-color-scheme: dark) {
+  .invoice-container {
+    @apply bg-gray-900;
+  }
+  
+  .summary-card,
+  .search-filters,
+  .invoice-card,
+  .pagination {
+    @apply bg-gray-800 border-gray-700;
+  }
+  
+  .card-content h3 {
+    @apply text-gray-400;
+  }
+  
+  .card-value {
+    @apply text-white;
+  }
+  
+  .invoice-number h3 {
+    @apply text-white;
+  }
+  
+  .invoice-client h4 {
+    @apply text-white;
+  }
+  
+  .invoice-client p {
+    @apply text-gray-400;
+  }
+  
+  .detail-item .label {
+    @apply text-gray-400;
+  }
+  
+  .detail-item .value {
+    @apply text-white;
+  }
+  
+  .invoice-details {
+    @apply bg-gray-700;
+  }
+  
+  .search-input {
+    @apply bg-gray-700 border-gray-600 text-white;
+  }
+  
+  .search-input:focus {
+    @apply border-cyan-500;
+  }
+}

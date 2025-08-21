@@ -21,7 +21,7 @@ interface Currency {
   standalone: true,
   imports: [CommonModule, FormsModule, RouterModule],
   templateUrl: './request-money.component.html',
-  styleUrls: ['./request-money.component.scss']
+
 })
 export class RequestMoneyComponent {
   currentStep = 1;

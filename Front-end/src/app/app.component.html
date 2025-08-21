@@ -1,2 +1,19 @@
-<app-loading *ngIf="isLoading"></app-loading>
-<router-outlet></router-outlet>
+<!-- Loading Overlay -->
+<div *ngIf="isLoading" class="loading-overlay" [@fadeIn]>
+  <div class="loading-spinner"></div>
+  <div class="loading-message">Loading...</div>
+</div>
+
+<!-- Main App Container -->
+<div class="min-h-screen bg-gray-100 flex flex-col" [@fadeIn]>
+  <!-- Mobile Navigation Component -->
+  <app-mobile-navigation></app-mobile-navigation>
+  
+  <!-- Main Content Area -->
+  <main class="flex-1">
+    <!-- Router outlet container with animation binding -->
+    <div class="route-container" [@routeAnimations]="prepareRoute(outlet)">
+      <router-outlet #outlet="outlet"></router-outlet>
+    </div>
+  </main>
+</div>

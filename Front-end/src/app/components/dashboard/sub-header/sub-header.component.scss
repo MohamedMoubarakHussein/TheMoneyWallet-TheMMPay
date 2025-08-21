@@ -1,6 +1,4 @@
-// Colors
-$primary: #2a2a72;
-$secondary: #009ffd;
+/* Component Styles */
 $background: #f8f9fa;
 $success: #4CAF50;
 $danger: #e91e63;
@@ -10,7 +8,7 @@ $light: #f8f9fa;
 $dark: #343a40;
 
 
-// Header Styles
+/* Component Styles */
 .dashboard-header {
   display: flex;
   justify-content: space-between;
@@ -23,7 +21,7 @@ $dark: #343a40;
 
   .header-left {
     .app-title {
-      color: $primary;
+      color: #2a2a72;
       font-size: 1.8rem;
       margin: 0;
       font-weight: 700;
@@ -37,7 +35,7 @@ $dark: #343a40;
   }
 }
 
-// Notifications
+/* Component Styles */
 .notification-wrapper {
   position: relative;
 
@@ -96,14 +94,14 @@ $dark: #343a40;
 
       h3 {
         margin: 0;
-        color: $primary;
+        color: #2a2a72;
         font-size: 1.1rem;
       }
 
       .clear-all-btn {
         background: none;
         border: none;
-        color: $secondary;
+        color: #009ffd;
         cursor: pointer;
         font-size: 0.9rem;
         font-weight: 500;
@@ -130,7 +128,7 @@ $dark: #343a40;
 
         &.unread {
           background: linear-gradient(90deg, rgba(0,159,253,0.05) 0%, transparent 100%);
-          border-left: 3px solid $secondary;
+          border-left: 3px solid #009ffd;
         }
 
         &:last-child {
@@ -141,7 +139,7 @@ $dark: #343a40;
           h4 {
             margin: 0 0 0.25rem;
             font-size: 0.95rem;
-            color: $primary;
+            color: #2a2a72;
           }
 
           p {
@@ -178,7 +176,7 @@ $dark: #343a40;
   }
 }
 
-// User Menu
+/* Component Styles */
 .user-menu-wrapper {
   position: relative;
 
@@ -186,7 +184,7 @@ $dark: #343a40;
     width: 40px;
     height: 40px;
     border-radius: 50%;
-    background: linear-gradient(135deg, $primary, $secondary);
+    background: linear-gradient(135deg, #2a2a72, #009ffd);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -221,7 +219,7 @@ $dark: #343a40;
 
       h4 {
         margin: 0 0 0.25rem;
-        color: $primary;
+        color: #2a2a72;
         font-size: 1rem;
       }
 
@@ -248,7 +246,7 @@ $dark: #343a40;
       width: 100%;
       text-align: left;
       cursor: pointer;
-      color: $primary;
+      color: #2a2a72;
       font-size: 0.9rem;
 
       &:hover {

@@ -1,8 +1,6 @@
 /* recent-transactions.component.scss */
 
-// Color Variables
-$primary: #2a2a72;
-$secondary: #009ffd;
+/* Component Styles */
 $background: #f8f9fa;
 $success: #4CAF50;
 $danger: #e91e63;
@@ -11,7 +9,7 @@ $info: #17a2b8;
 $light: #f8f9fa;
 $dark: #343a40;
 
-// Component Styles
+/* Component Styles */
 .recent-transactions-card {
   background: white;
   border-radius: 16px;
@@ -25,11 +23,11 @@ $dark: #343a40;
   }
 }
 
-// Header Styles
+/* Component Styles */
 .card-header {
   padding: 24px 24px 16px;
   border-bottom: 1px solid rgba(0, 0, 0, 0.06);
-  background: linear-gradient(135deg, rgba($primary, 0.02) 0%, rgba($secondary, 0.02) 100%);
+  background: linear-gradient(135deg, rgba(#2a2a72, 0.02) 0%, rgba(#009ffd, 0.02) 100%);
 
   .header-content {
     display: flex;
@@ -47,13 +45,13 @@ $dark: #343a40;
     gap: 8px;
 
     i {
-      color: $primary;
+      color: #2a2a72;
       font-size: 1.1rem;
     }
   }
 }
 
-// Button Styles
+/* Component Styles */
 .btn {
   border: none;
   border-radius: 8px;
@@ -66,28 +64,28 @@ $dark: #343a40;
   cursor: pointer;
 
   &.btn-outline-primary {
-    color: $primary;
-    border: 1px solid $primary;
+    color: #2a2a72;
+    border: 1px solid #2a2a72;
     background: transparent;
     padding: 6px 12px;
     font-size: 0.875rem;
 
     &:hover {
-      background: $primary;
+      background: #2a2a72;
       color: white;
       transform: translateY(-2px);
     }
   }
 
   &.btn-primary {
-    background: linear-gradient(135deg, $primary 0%, $secondary 100%);
+    background: linear-gradient(135deg, #2a2a72 0%, #009ffd 100%);
     color: white;
     padding: 12px 20px;
     font-size: 0.9rem;
 
     &:hover {
       transform: translateY(-2px);
-      box-shadow: 0 6px 20px rgba($primary, 0.3);
+      box-shadow: 0 6px 20px rgba(#2a2a72, 0.3);
     }
   }
 
@@ -102,14 +100,14 @@ $dark: #343a40;
   }
 }
 
-// Transactions List
+/* Component Styles */
 .transactions-list {
   padding: 8px 0;
   max-height: 600px;
   overflow-y: auto;
 }
 
-// Individual Transaction Item
+/* Component Styles */
 .transaction-item {
   display: flex;
   align-items: center;
@@ -118,7 +116,7 @@ $dark: #343a40;
   border-bottom: 1px solid rgba(0, 0, 0, 0.04);
 
   &:hover {
-    background: rgba($primary, 0.02);
+    background: rgba(#2a2a72, 0.02);
     transform: translateX(4px);
   }
 
@@ -127,7 +125,7 @@ $dark: #343a40;
   }
 }
 
-// Transaction Icon
+/* Component Styles */
 .transaction-icon {
   width: 44px;
   height: 44px;
@@ -158,12 +156,12 @@ $dark: #343a40;
   }
 
   &.icon-secondary {
-    background: rgba($secondary, 0.1);
-    color: $secondary;
+    background: rgba(#009ffd, 0.1);
+    color: #009ffd;
   }
 }
 
-// Transaction Details
+/* Component Styles */
 .transaction-details {
   flex: 1;
   min-width: 0;
@@ -223,7 +221,7 @@ $dark: #343a40;
   }
 }
 
-// Transaction Amount
+/* Component Styles */
 .transaction-amount {
   text-align: right;
   flex-shrink: 0;
@@ -258,7 +256,7 @@ $dark: #343a40;
   }
 }
 
-// Empty State
+/* Component Styles */
 .empty-state {
   text-align: center;
   padding: 48px 24px;
@@ -282,14 +280,14 @@ $dark: #343a40;
   }
 }
 
-// Footer
+/* Component Styles */
 .card-footer {
   padding: 16px 24px 24px;
   border-top: 1px solid rgba(0, 0, 0, 0.06);
   background: rgba($background, 0.3);
 }
 
-// Responsive Design
+/* Component Styles */
 @media (max-width: 768px) {
   .recent-transactions-card {
     margin: 0 -16px;
@@ -333,7 +331,7 @@ $dark: #343a40;
   }
 }
 
-// Animation for loading states
+/* Component Styles */
 @keyframes fadeInUp {
   from {
     opacity: 0;

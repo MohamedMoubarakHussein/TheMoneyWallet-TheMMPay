@@ -13,7 +13,7 @@ import { CreateWalletRequest, CURRENCIES, CURRENTWALLETTYPES, User, WalletType }
   standalone: true,
   imports: [CommonModule, FormsModule],
   templateUrl: './create-wallet.component.html',
-  styleUrls: ['./create-wallet.component.scss']
+
 })
 export class CreateWalletComponent implements OnInit, OnDestroy {
   

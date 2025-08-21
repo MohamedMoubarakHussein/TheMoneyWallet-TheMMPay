@@ -12,7 +12,7 @@ import { User, Notification,UserWallet } from '../../../entity/UnifiedResponse';
   standalone: true,
   imports: [CommonModule],
   templateUrl: './sub-header.component.html',
-  styleUrls: ['./sub-header.component.scss']
+  styleUrls: ['./sub-header.component.css']
 })
 export class SubHeaderComponent implements OnInit, OnDestroy {
   // Input properties from parent component

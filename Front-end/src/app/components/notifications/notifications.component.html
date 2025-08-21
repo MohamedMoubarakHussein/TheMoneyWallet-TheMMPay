@@ -1,41 +1,48 @@
-<div class="notifications-container">
-    <div class="header">
-      <h2>Notifications</h2>
-      <div class="header-actions">
-        <button class="mark-all-read" (click)="markAllAsRead()">
+<div class="max-w-4xl mx-auto my-8 p-8">
+    <div class="flex justify-between items-center mb-8">
+      <h2 class="text-2xl font-bold text-gray-900">Notifications</h2>
+      <div class="flex gap-4">
+        <button class="bg-blue-100 border-none py-2 px-4 rounded-lg cursor-pointer transition-all duration-300 hover:bg-blue-200 text-blue-900" (click)="markAllAsRead()">
           Mark all as read
         </button>
-        <button class="back-button" routerLink="/dashboard">
+        <button class="bg-gray-100 border-none py-2 px-4 rounded-lg cursor-pointer flex items-center gap-2 transition-all duration-300 hover:bg-gray-200" routerLink="/dashboard">
           <i class="fas fa-arrow-left"></i>
           Back to Dashboard
         </button>
       </div>
     </div>
   
-    <div class="notifications-list">
+    <div class="space-y-4">
       <div *ngFor="let notification of notifications" 
-           class="notification-card"
-           [class.unread]="!notification.read"
-           [class.success]="notification.type === 'success'"
-           [class.warning]="notification.type === 'warning'"
-           [class.error]="notification.type === 'error'">
-        <div class="notification-icon">
-          <i class="fas" [ngClass]="getIcon(notification.type)"></i>
+           class="bg-white p-6 rounded-2xl shadow-sm border-2 transition-all duration-300 hover:shadow-md"
+           [class.border-blue-200]="!notification.read"
+           [class.border-gray-200]="notification.read"
+           [class.bg-green-50]="notification.type === 'success'"
+           [class.bg-yellow-50]="notification.type === 'warning'"
+           [class.bg-red-50]="notification.type === 'error'">
+        <div class="flex items-start gap-4">
+          <div class="flex-shrink-0 w-12 h-12 rounded-full flex items-center justify-center text-white text-lg"
+               [class.bg-green-500]="notification.type === 'success'"
+               [class.bg-yellow-500]="notification.type === 'warning'"
+               [class.bg-red-500]="notification.type === 'error'"
+               [class.bg-blue-500]="notification.type === 'info'">
+            <i class="fas" [ngClass]="getIcon(notification.type)"></i>
+          </div>
+          <div class="flex-1 min-w-0">
+            <h4 class="text-lg font-semibold text-gray-900 mb-2">{{ notification.title }}</h4>
+            <p class="text-gray-600 mb-2">{{ notification.message }}</p>
+            <span class="text-sm text-gray-500">{{ notification.timestamp | date: 'MMM d, y • h:mm a' }}</span>
+          </div>
+          <button class="flex-shrink-0 w-8 h-8 rounded-full bg-gray-100 border-none cursor-pointer transition-all duration-300 hover:bg-gray-200 flex items-center justify-center" (click)="dismiss(notification.id)">
+            <i class="fas fa-times text-gray-600"></i>
+          </button>
         </div>
-        <div class="notification-content">
-          <h4>{{ notification.title }}</h4>
-          <p>{{ notification.message }}</p>
-          <span class="timestamp">{{ notification.timestamp | date: 'MMM d, y • h:mm a' }}</span>
-        </div>
-        <button class="dismiss-btn" (click)="dismiss(notification.id)">
-          <i class="fas fa-times"></i>
-        </button>
       </div>
   
-      <div *ngIf="notifications.length === 0" class="empty-state">
-        <i class="fas fa-bell-slash"></i>
-        <h3>No new notifications</h3>
-        <p>You're all caught up!</p>
+      <div *ngIf="notifications.length === 0" class="text-center py-16">
+        <i class="fas fa-bell-slash text-6xl text-gray-300 mb-4"></i>
+        <h3 class="text-xl font-semibold text-gray-900 mb-2">No new notifications</h3>
+        <p class="text-gray-600">You're all caught up!</p>
       </div>
     </div>
   </div>

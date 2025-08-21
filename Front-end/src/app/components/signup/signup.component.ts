@@ -1,5 +1,5 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, OnDestroy, OnInit, Inject, PLATFORM_ID } from '@angular/core';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, AbstractControlOptions, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { HttpErrorResponse } from '@angular/common/http';
@@ -23,7 +23,7 @@ import { UserService } from '../../services/userService/user-service.service';
     ComingSoonComponent
   ],
   templateUrl: './signup.component.html',
-  styleUrls: ['./signup.component.scss']
+
 })
 export class SignupComponent implements OnInit, OnDestroy {
   //TODO EDITING AND ADDING THE GOOGLE OAUTH2
@@ -38,7 +38,8 @@ export class SignupComponent implements OnInit, OnDestroy {
     // Replaced multiple service injections with single AuthService
     private authService: AuthService,
     private userService: UserService,
-    private router: Router
+    private router: Router,
+    @Inject(PLATFORM_ID) private platformId: Object
   ) {
     this.initializeForm();
     this.setupDebouncedValidation();
@@ -176,6 +177,11 @@ export class SignupComponent implements OnInit, OnDestroy {
 
     // STEP 2: Handle OAuth2 callback from URL parameters
   private handleOAuth2Callback(): void {
+    // Only access browser APIs in browser environment
+    if (!isPlatformBrowser(this.platformId)) {
+      return;
+    }
+    
     const urlParams = new URLSearchParams(window.location.search);
     const token = urlParams.get('token');
     
@@ -201,19 +207,24 @@ export class SignupComponent implements OnInit, OnDestroy {
 
   // STEP 4: Updated Google button to redirect to OAuth2 endpoint
   btnGoogle = () => {
+    // Only access browser APIs in browser environment
+    if (!isPlatformBrowser(this.platformId)) {
+      return;
+    }
+    
     this.isSubmitting = true;
     // First-time generation (store in localStorage or secure storage)
-const device_id = localStorage.getItem("device_id") || crypto.randomUUID();
-localStorage.setItem("device_id", device_id);
+    const device_id = localStorage.getItem("device_id") || crypto.randomUUID();
+    localStorage.setItem("device_id", device_id);
 
-const device_name = `${navigator.platform} ${navigator.userAgent}`;
+    const device_name = `${navigator.platform} ${navigator.userAgent}`;
 
-// Send these during OAuth flow
-const params = new URLSearchParams({
-  device_id: device_id,
-  device_name: device_name,
-});
+    // Send these during OAuth flow
+    const params = new URLSearchParams({
+      device_id: device_id,
+      device_name: device_name,
+    });
 
-window.location.href = `http://192.168.1.9:8099/login/oauth2/code/google?${params}`;
+    window.location.href = `http://192.168.1.9:8099/login/oauth2/code/google?${params}`;
   };
 }

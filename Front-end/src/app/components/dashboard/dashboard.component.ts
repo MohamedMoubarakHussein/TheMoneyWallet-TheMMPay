@@ -1,460 +1,446 @@
-import { Component, OnInit, OnDestroy, HostListener } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectionStrategy, ChangeDetectorRef, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { Router, RouterModule } from '@angular/router';
+import { HoverAnimationDirective } from '../../directives/hover-animation/hover-animation.directive';
+import { RippleDirective } from '../../directives/ripple/ripple.directive';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
-import { CommonModule } from '@angular/common';
-import { Router } from '@angular/router';
 import { AuthService } from '../../services/auth/auth.service';
 import { WalletService } from '../../services/wallet/wallet-service.service';
-import { NotificationService } from '../../services/notification/notification-service.service';
 import { TransactionService } from '../../services/transaction/transaction-service.service';
-import { User, Transaction, Notification, UserWallet } from '../../entity/UnifiedResponse';
-import { mockWallets, mockNotifications , mockTransactions ,mockUnifiedResponse , mockUsers } from '../../environments/mock';
-import { RecentTransactionsComponent } from "./RecentTransactionsComponent/recentTransactions.component";
-import { HeaderComponent } from "../header/header.component";
-import { FooterComponent } from "../footer/footer.component";
-import { SubHeaderComponent } from "./sub-header/sub-header.component";
+import { User, UserWallet, Transaction, Notification } from '../../entity/UnifiedResponse';
+import { NgChartsModule } from 'ng2-charts';
+import { Chart, ChartConfiguration, ChartType } from 'chart.js';
+import 'chart.js/auto';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, RecentTransactionsComponent, FooterComponent, SubHeaderComponent],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [CommonModule, RouterModule, HoverAnimationDirective, RippleDirective, NgChartsModule],
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.scss']
 })
-export class DashboardComponent implements OnInit, OnDestroy {
-  // User and UI state
-  user: User | null = null;
-  userName: string = 'User';
-  showNotifications = false;
-  showUserMenu = false;
-  showWalletSelector = false;
-
-  // Data properties
-  notifications: Notification[] = [];
-  transactions: Transaction[] = [];
-  selectedWallet: UserWallet | null = null;
-
-  // Loading states
-  isLoadingData = true;
-  isUpdatingWallet = false;
-
+export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
+  @ViewChild('transactionChart') transactionChartCanvas!: ElementRef<HTMLCanvasElement>;
+  @ViewChild('balanceChart') balanceChartCanvas!: ElementRef<HTMLCanvasElement>;
+  
+  currentUser: User | null = null;
+  wallets: UserWallet[] = [];
+  recentTransactions: Transaction[] = [];
+  isLoading = false;
+  pageLoaded = false;
+  
+  // Chart configurations
+  transactionChart: Chart | null = null;
+  balanceChart: Chart | null = null;
+  
+  // Chart data
+  transactionChartData = {
+    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+    datasets: [
+      {
+        label: 'Income',
+        data: [1200, 1900, 1500, 2200, 1800, 2400],
+        backgroundColor: 'rgba(16, 185, 129, 0.2)',
+        borderColor: 'rgba(16, 185, 129, 1)',
+        borderWidth: 2,
+        tension: 0.4,
+        fill: true
+      },
+      {
+        label: 'Expenses',
+        data: [900, 1200, 1700, 1400, 1600, 1300],
+        backgroundColor: 'rgba(239, 68, 68, 0.2)',
+        borderColor: 'rgba(239, 68, 68, 1)',
+        borderWidth: 2,
+        tension: 0.4,
+        fill: true
+      }
+    ]
+  };
+  
+  balanceChartData = {
+    labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'],
+    datasets: [
+      {
+        label: 'Balance',
+        data: [3200, 3800, 3500, 4200],
+        backgroundColor: 'rgba(59, 130, 246, 0.2)',
+        borderColor: 'rgba(59, 130, 246, 1)',
+        borderWidth: 2,
+        tension: 0.4,
+        fill: true,
+        pointBackgroundColor: 'rgba(59, 130, 246, 1)',
+        pointRadius: 4
+      }
+    ]
+  };
+  
   private destroy$ = new Subject<void>();
 
   constructor(
     private authService: AuthService,
     private walletService: WalletService,
-    private notificationService: NotificationService,
     private transactionService: TransactionService,
-    private router: Router
+    private router: Router,
+    private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
-    this.loadUserData();
-    this.setupDataRefresh();
+    this.setupAuthService();
+    this.setupWalletService();
+    this.setupTransactionService();
+    this.loadDashboardData();
+  }
+
+  ngAfterViewInit(): void {
+    // Initialize charts after view is initialized
+    setTimeout(() => {
+      this.initializeCharts();
+    }, 500);
   }
 
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
+    
+    // Destroy charts to prevent memory leaks
+    if (this.transactionChart) {
+      this.transactionChart.destroy();
+    }
+    
+    if (this.balanceChart) {
+      this.balanceChart.destroy();
+    }
+  }
+  
+  private initializeCharts(): void {
+    if (this.transactionChartCanvas && this.balanceChartCanvas) {
+      this.initTransactionChart();
+      this.initBalanceChart();
+    }
+  }
+  
+  private initTransactionChart(): void {
+    const ctx = this.transactionChartCanvas.nativeElement.getContext('2d');
+    
+    if (ctx) {
+      this.transactionChart = new Chart(ctx, {
+        type: 'line',
+        data: this.transactionChartData,
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              position: 'top',
+              labels: {
+                usePointStyle: true,
+                padding: 20,
+                font: {
+                  family: "'Inter', sans-serif",
+                  size: 12
+                }
+              }
+            },
+            tooltip: {
+              backgroundColor: 'rgba(255, 255, 255, 0.9)',
+              titleColor: '#111827',
+              bodyColor: '#4b5563',
+              borderColor: '#e5e7eb',
+              borderWidth: 1,
+              padding: 12,
+              boxPadding: 6,
+              usePointStyle: true,
+              callbacks: {
+                label: function(context) {
+                  return `${context.dataset.label}: $${context.parsed.y}`;
+                }
+              }
+            }
+          },
+          scales: {
+            x: {
+              grid: {
+                display: false
+              },
+              ticks: {
+                font: {
+                  family: "'Inter', sans-serif",
+                  size: 12
+                }
+              }
+            },
+            y: {
+              beginAtZero: true,
+              grid: {
+                color: 'rgba(243, 244, 246, 1)'
+              },
+              ticks: {
+                font: {
+                  family: "'Inter', sans-serif",
+                  size: 12
+                },
+                callback: function(value) {
+                  return '$' + value;
+                }
+              }
+            }
+          },
+          elements: {
+            line: {
+              tension: 0.4
+            },
+            point: {
+              radius: 4,
+              hitRadius: 10,
+              hoverRadius: 6
+            }
+          },
+          animation: {
+            duration: 1000,
+            easing: 'easeOutQuart'
+          }
+        }
+      });
+    }
+  }
+  
+  private initBalanceChart(): void {
+    const ctx = this.balanceChartCanvas.nativeElement.getContext('2d');
+    
+    if (ctx) {
+      this.balanceChart = new Chart(ctx, {
+        type: 'line',
+        data: this.balanceChartData,
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              display: false
+            },
+            tooltip: {
+              backgroundColor: 'rgba(255, 255, 255, 0.9)',
+              titleColor: '#111827',
+              bodyColor: '#4b5563',
+              borderColor: '#e5e7eb',
+              borderWidth: 1,
+              padding: 12,
+              boxPadding: 6,
+              callbacks: {
+                label: function(context) {
+                  return `Balance: $${context.parsed.y}`;
+                }
+              }
+            }
+          },
+          scales: {
+            x: {
+              grid: {
+                display: false
+              },
+              ticks: {
+                font: {
+                  family: "'Inter', sans-serif",
+                  size: 12
+                }
+              }
+            },
+            y: {
+              beginAtZero: true,
+              grid: {
+                color: 'rgba(243, 244, 246, 1)'
+              },
+              ticks: {
+                font: {
+                  family: "'Inter', sans-serif",
+                  size: 12
+                },
+                callback: function(value) {
+                  return '$' + value;
+                }
+              }
+            }
+          },
+          elements: {
+            line: {
+              tension: 0.4
+            },
+            point: {
+              radius: 4,
+              hitRadius: 10,
+              hoverRadius: 6
+            }
+          },
+          animation: {
+            duration: 1000,
+            easing: 'easeOutQuart'
+          }
+        }
+      });
+    }
   }
 
-  // Data loading methods
-  private loadUserData(): void {
-  
+  private setupAuthService(): void {
     this.authService.currentUser$
       .pipe(takeUntil(this.destroy$))
-      .subscribe({
-        next: (user: User | null) => {
-         
-          this.user = user;
-          if (user) {
-            console.log("xz   "+ JSON.stringify(user));
-            this.userName = user.fullName || user.firstName || 'User';
-            this.loadDashboardData(user);
-            this.initializeSelectedWallet(user);
-          }
-          this.isLoadingData = false;
-        },
-        error: (error: any) => {
-          console.error('Error loading user data:', error);
-          this.isLoadingData = false;
-        }
+      .subscribe(user => {
+        this.currentUser = user;
       });
+  }
+
+  private setupWalletService(): void {
+    this.walletService.wallets$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(wallets => {
+        this.wallets = wallets;
+      });
+  }
+
+  private setupTransactionService(): void {
+    this.transactionService.transactions$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(transactions => {
+        this.recentTransactions = transactions.slice(0, 10);
+      });
+  }
+
+  private loadDashboardData(): void {
+    this.isLoading = true;
+    
+    // Load wallets and transactions
+    Promise.all([
+      this.walletService.getWallets().toPromise(),
+      this.transactionService.getTransactions().toPromise()
+    ]).finally(() => {
+      this.isLoading = false;
       
+      // Set page loaded status after a short delay to ensure animations work properly
+      setTimeout(() => {
+        this.pageLoaded = true;
+        this.cdr.markForCheck();
+      }, 300);
+    });
   }
 
-  private loadDashboardData(user: User): void {
-    // Load notifications
-    this.notifications = user.Notifications || [];
+  // Navigation methods
+  navigateTo(path: string): void {
+    this.router.navigate([path]);
+  }
+
+  // Data refresh
+  refreshData(): void {
+    this.loadDashboardData();
+    this.refreshCharts();
+  }
+  
+  // Refresh charts with new data
+  refreshCharts(): void {
+    // In a real application, you would fetch new data here
+    // For demo purposes, we'll just update with random data
     
-    // Load recent transactions
-    this.transactions = user.recentTransactions || [];
-    // Load additional data if needed
-    this.loadRecentTransactions();
-    this.loadNotifications();
-  }
-
-  private loadRecentTransactions(): void {
-    if (this.selectedWallet) {
-      this.transactionService.getRecentTransactions(this.selectedWallet.id, 5)
-        .pipe(takeUntil(this.destroy$))
-        .subscribe({
-          next: (transactions) => {
-            this.transactions = transactions;
-          },
-          error: (error) => {
-            console.error('Error loading transactions:', error);
-          }
-        });
-    }
-  }
-
-  private loadNotifications(): void {
-    this.notificationService.getNotifications()
-      .pipe(takeUntil(this.destroy$))
-      .subscribe({
-        next: (notifications) => {
-          this.notifications = notifications;
-        },
-        error: (error) => {
-          console.error('Error loading notifications:', error);
-        }
-      });
-  }
-
-  private setupDataRefresh(): void {
-    // Refresh data every 30 seconds
-    setInterval(() => {
-      if (this.user && !this.isLoadingData) {
-        this.loadRecentTransactions();
-        this.loadNotifications();
-      }
-    }, 30000);
-  }
-
-  private initializeSelectedWallet(user: User): void {
-    if (user.wallets && user.wallets.length > 0) {
-      // Set primary wallet as default, or first active wallet
-      this.selectedWallet = user.wallets.find(w => w.id === user.primaryWalletId && this.isWalletActive(w)) 
-        || user.wallets.find(w => this.isWalletActive(w))
-        || user.wallets[0];
-    }
-   
-  }
-
-  // Computed properties (getters)
-  get unreadCount(): number {
-    return this.notifications.filter(n => !n.read).length;
-  }
-
-  get availableWallets(): UserWallet[] {
-    return this.user?.wallets || mockWallets;
-  }
-
-  get selectedWalletBalance(): number {
-    return this.selectedWallet?.balance || 0;
-  }
-
-  get selectedWalletCurrency(): string {
-    return this.selectedWallet?.currency || 'USD';
-  }
-
-  get selectedWalletName(): string {
-    return this.selectedWallet?.name || 'Select Wallet';
-  }
-
-  // Event handlers
-  @HostListener('document:click', ['$event'])
-  onDocumentClick(event: MouseEvent): void {
-    const target = event.target as HTMLElement;
+    // Update transaction chart data
+    this.transactionChartData.datasets[0].data = Array.from({length: 6}, () => Math.floor(Math.random() * 2000) + 800);
+    this.transactionChartData.datasets[1].data = Array.from({length: 6}, () => Math.floor(Math.random() * 1500) + 500);
     
-    if (!target.closest('.notification-wrapper')) {
-      this.showNotifications = false;
+    // Update balance chart data
+    this.balanceChartData.datasets[0].data = Array.from({length: 4}, () => Math.floor(Math.random() * 2000) + 2000);
+    
+    // Update charts
+    if (this.transactionChart && this.balanceChart) {
+      this.transactionChart.update();
+      this.balanceChart.update();
     }
     
-    if (!target.closest('.user-menu-wrapper')) {
-      this.showUserMenu = false;
-    }
-    
-    if (!target.closest('.wallet-selector-wrapper')) {
-      this.showWalletSelector = false;
-    }
+    this.cdr.markForCheck();
   }
 
-  @HostListener('window:keydown.escape')
-  onEscapeKey(): void {
-    this.closeAllDropdowns();
+  // Balance methods
+  getTotalBalance(): number {
+    if (!this.currentUser?.totalBalance) return 0;
+    return this.currentUser.totalBalance;
   }
 
-  // UI toggle methods
-  toggleNotifications(): void {
-    this.showNotifications = !this.showNotifications;
-    if (this.showNotifications) {
-      this.showUserMenu = false;
-      this.showWalletSelector = false;
-    }
+  getBalanceChange(): number {
+    // Mock balance change - in real app, calculate from transaction history
+    return 125.50;
   }
 
-  toggleUserMenu(): void {
-    this.showUserMenu = !this.showUserMenu;
-    if (this.showUserMenu) {
-      this.showNotifications = false;
-      this.showWalletSelector = false;
-    }
+  // Wallet methods
+  getPrimaryWallet(): UserWallet | null {
+    if (!this.wallets.length) return null;
+    return this.wallets.find(w => w.id === this.currentUser?.primaryWalletId) ||
+           this.wallets.find(w => w.status === 'active') ||
+           this.wallets[0];
   }
 
-  toggleWalletSelector(): void {
-    if (this.availableWallets.length === 0) return;
-    
-    this.showWalletSelector = !this.showWalletSelector;
-    if (this.showWalletSelector) {
-      this.showNotifications = false;
-      this.showUserMenu = false;
-    }
+  getWalletCount(): number {
+    return this.wallets.length;
   }
 
-  private closeAllDropdowns(): void {
-    this.showNotifications = false;
-    this.showUserMenu = false;
-    this.showWalletSelector = false;
-  }
-
-  // Wallet management
   selectWallet(wallet: UserWallet): void {
-    if (!this.isWalletActive(wallet)) {
-      console.warn('Cannot select inactive wallet:', wallet.name);
-      return;
-    }
-
-    this.selectedWallet = wallet;
-    this.showWalletSelector = false;
-    console.log('Wallet selected:', wallet);
-    
-    // Load transactions for the selected wallet
-    this.loadRecentTransactions();
-    
-    // Update primary wallet if it's different
-    if (this.user && wallet.id !== this.user.primaryWalletId) {
-      this.updatePrimaryWallet(wallet.id);
-    }
+    // Navigate to wallet details or select wallet
+    this.router.navigate(['/wallets', wallet.id]);
   }
 
-  private updatePrimaryWallet(walletId: string): void {
-    if (this.isUpdatingWallet) return;
-    
-    this.isUpdatingWallet = true;
-    this.walletService.updatePrimaryWallet(walletId)
-      .pipe(takeUntil(this.destroy$))
-      .subscribe({
-        next: (response: any) => {
-          console.log('Primary wallet updated successfully');
-          if (this.user) {
-            this.user.primaryWalletId = walletId;
-          }
-          this.isUpdatingWallet = false;
-        },
-        error: (error: any) => {
-          console.error('Error updating primary wallet:', error);
-          this.isUpdatingWallet = false;
-        }
-      });
+  // Transaction methods
+  getTransactionCount(): number {
+    return this.recentTransactions.length;
   }
 
-  // Wallet utility methods
-  getWalletTypeIcon(walletType: string): string {
-    const iconMap: { [key: string]: string } = {
-      'checking': '🏦',
-      'savings': '💰',
-      'credit': '💳',
-      'crypto': '₿',
-      'business': '🏢',
-      'investment': '📈',
-      'default': '👛'
-    };
-    return iconMap[walletType?.toLowerCase()] || iconMap['default'];
+  getTransactionType(transaction: Transaction): string {
+    if (transaction.type === 'received' || transaction.type === 'deposit') return 'credit';
+    if (transaction.type === 'sent' || transaction.type === 'withdrawal') return 'debit';
+    return 'transfer';
   }
 
-  getWalletTypeColor(walletType: string): string {
-    const colorMap: { [key: string]: string } = {
-      'checking': '#4CAF50',
-      'savings': '#2196F3', 
-      'credit': '#FF9800',
-      'crypto': '#9C27B0',
-      'business': '#795548',
-      'investment': '#E91E63',
-      'default': '#757575'
-    };
-    return colorMap[walletType?.toLowerCase()] || colorMap['default'];
+  getTransactionIcon(transaction: Transaction): string {
+    if (transaction.type === 'received' || transaction.type === 'deposit') return '📥';
+    if (transaction.type === 'sent' || transaction.type === 'withdrawal') return '📤';
+    return '🔄';
   }
 
-  isWalletActive(wallet: UserWallet): boolean {
-    return wallet.status === 'active';
+  getTransactionSign(transaction: Transaction): string {
+    if (transaction.type === 'received' || transaction.type === 'deposit') return '+';
+    if (transaction.type === 'sent' || transaction.type === 'withdrawal') return '-';
+    return '';
   }
 
-  // Action methods
-  sendMoney(): void {
-    if (!this.selectedWallet) {
-      console.warn('No wallet selected for sending money');
-      this.showWalletSelector = true;
-      return;
-    }
-    
-    if (!this.isWalletActive(this.selectedWallet)) {
-      console.warn('Selected wallet is not active');
-      return;
-    }
-
-    console.log('Send Money clicked from wallet:', this.selectedWallet.name);
-    this.router.navigate(['/send-money'], { 
-      queryParams: { walletId: this.selectedWallet.id } 
-    });
-  }
-
-  addFunds(): void {
-    if (!this.selectedWallet) {
-      console.warn('No wallet selected for adding funds');
-      this.showWalletSelector = true;
-      return;
-    }
-
-    if (!this.isWalletActive(this.selectedWallet)) {
-      console.warn('Selected wallet is not active');
-      return;
-    }
-
-    console.log('Add Funds clicked to wallet:', this.selectedWallet.name);
-    this.router.navigate(['/add-funds'], { 
-      queryParams: { walletId: this.selectedWallet.id } 
-    });
-  }
-
-  requestMoney(): void {
-    if (!this.selectedWallet) {
-      console.warn('No wallet selected for requesting money');
-      this.showWalletSelector = true;
-      return;
-    }
-
-    if (!this.isWalletActive(this.selectedWallet)) {
-      console.warn('Selected wallet is not active');
-      return;
-    }
-
-    console.log('Request Money clicked for wallet:', this.selectedWallet.name);
-    this.router.navigate(['/request-money'], { 
-      queryParams: { walletId: this.selectedWallet.id } 
-    });
-  }
-
-  invoice(): void {
-    if (!this.selectedWallet) {
-      console.warn('No wallet selected for invoice');
-      this.showWalletSelector = true;
-      return;
-    }
-
-    if (!this.isWalletActive(this.selectedWallet)) {
-      console.warn('Selected wallet is not active');
-      return;
-    }
-
-    console.log('Invoice clicked for wallet:', this.selectedWallet.name);
-    this.router.navigate(['/invoice'], { 
-      queryParams: { walletId: this.selectedWallet.id } 
+  viewTransaction(transaction: Transaction): void {
+    this.router.navigate(['/transactions'], { 
+      queryParams: { id: transaction.id } 
     });
   }
 
   // Notification methods
-  markAsRead(notificationId: string): void {
-    const notification = this.notifications.find(n => n.id === notificationId);
-    if (notification && !notification.read) {
-      notification.read = true;
-      
-      // Update on server
-      this.notificationService.markAsRead(notificationId)
-        .pipe(takeUntil(this.destroy$))
-        .subscribe({
-          next: () => {
-            console.log('Notification marked as read');
-          },
-          error: (error) => {
-            console.error('Error marking notification as read:', error);
-            // Revert on error
-            notification.read = false;
-          }
-        });
-    }
+  getUnreadNotificationCount(): number {
+    if (!this.currentUser?.Notifications) return 0;
+    return this.currentUser.Notifications.filter(n => !n.read).length;
   }
 
-  clearAllNotifications(): void {
-    if (this.notifications.length === 0) return;
-    
-    this.notificationService.clearAll()
-      .pipe(takeUntil(this.destroy$))
-      .subscribe({
-        next: () => {
-          this.notifications = [];
-          this.showNotifications = false;
-          console.log('All notifications cleared');
-        },
-        error: (error) => {
-          console.error('Error clearing notifications:', error);
-        }
-      });
+  getUnreadNotifications(): Notification[] {
+    if (!this.currentUser?.Notifications) return [];
+    return this.currentUser.Notifications.filter(n => !n.read);
   }
 
-  // User actions
-
-/*  logout(): void {
-    this.authService.logout()
-      .pipe(takeUntil(this.destroy$))
-      .subscribe({
-        next: () => {
-          this.router.navigate(['/login']);
-        },
-        error: (error) => {
-          console.error('Error during logout:', error);
-          // Force redirect even on error
-          this.router.navigate(['/login']);
-        }
-      });
-  }
-*/
-  // Navigation methods
-  viewAllTransactions(): void {
-    this.router.navigate(['/transactions'], {
-      queryParams: this.selectedWallet ? { walletId: this.selectedWallet.id } : {}
+  viewNotification(notification: Notification): void {
+    this.router.navigate(['/notifications'], { 
+      queryParams: { id: notification.id } 
     });
   }
 
-  addWallet(): void {
-    this.router.navigate(['/add-wallet']);
-  }
-
   // Utility methods
-  refreshData(): void {
-    if (!this.isLoadingData) {
-      this.isLoadingData = true;
-      this.loadUserData();
-    }
+  getCurrentUser(): User | null {
+    return this.currentUser;
   }
 
-  formatTransactionAmount(transaction: Transaction): string {
-    const sign = transaction.type === 'received' ? '+' : '-';
-    return `${sign}${transaction.amount}`;
+  getWallets(): UserWallet[] {
+    return this.wallets;
   }
 
-  getTransactionIcon(transaction: Transaction): string {
-    const iconMap: { [key: string]: string } = {
-      'sent': '📤',
-      'received': '📥',
-      'deposit': '💰',
-      'withdrawal': '💸',
-      'transfer': '🔄',
-      'payment': '💳',
-      'refund': '↩️',
-      'default': '💰'
-    };
-    return iconMap[transaction.type?.toLowerCase()] || iconMap['default'];
+  getTransactions(): Transaction[] {
+    return this.recentTransactions;
   }
 }

@@ -1,0 +1,357 @@
+<div class="settings-container" [@fadeInUp]>
+  <!-- Header Section -->
+  <div class="settings-header" [@slideInDown]>
+    <div class="header-content">
+      <div class="header-left">
+        <h1 class="page-title">
+          <span class="title-icon">⚙️</span>
+          Settings
+        </h1>
+        <p class="page-subtitle">Customize your TheMMPay experience</p>
+      </div>
+      <div class="header-actions">
+        <button 
+          class="export-btn"
+          (click)="exportSettings()"
+          [@bounceIn]>
+          <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+          </svg>
+          Export Settings
+        </button>
+        
+        <label class="import-btn">
+          <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
+          </svg>
+          Import Settings
+          <input 
+            type="file" 
+            accept=".json" 
+            (change)="importSettings($event)" 
+            class="hidden">
+        </label>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="isLoading" class="loading-overlay" [@fadeIn]>
+    <div class="loading-spinner">
+      <div class="spinner"></div>
+      <p>Loading settings...</p>
+    </div>
+  </div>
+
+  <!-- Settings Content -->
+  <div class="settings-content" *ngIf="!isLoading">
+    <!-- Theme Settings -->
+    <div class="settings-section" [@slideInUp]>
+      <div class="section-header">
+        <h3 class="section-title">
+          <span class="title-icon">🎨</span>
+          Theme & Appearance
+        </h3>
+        <p class="section-subtitle">Customize the look and feel of your app</p>
+      </div>
+      
+      <div class="settings-grid">
+        <div class="setting-card">
+          <div class="setting-info">
+            <h4 class="setting-name">Theme Mode</h4>
+            <p class="setting-description">Choose your preferred theme</p>
+          </div>
+          <div class="setting-control">
+            <div class="theme-options">
+              <button 
+                *ngFor="let theme of getAvailableThemes()" 
+                class="theme-option"
+                [class.active]="currentTheme === theme.value"
+                (click)="onThemeChange(theme.value)"
+                [@scaleIn]>
+                <span class="theme-icon">{{ theme.icon }}</span>
+                <span class="theme-label">{{ theme.label }}</span>
+              </button>
+            </div>
+          </div>
+        </div>
+        
+        <div class="setting-card">
+          <div class="setting-info">
+            <h4 class="setting-name">Quick Theme Toggle</h4>
+            <p class="setting-description">Switch between light and dark mode</p>
+          </div>
+          <div class="setting-control">
+            <button 
+              class="theme-toggle-btn"
+              (click)="toggleTheme()"
+              [@bounceIn]>
+              <svg *ngIf="!isDarkMode" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path>
+              </svg>
+              <svg *ngIf="isDarkMode" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path>
+              </svg>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Preferences Settings -->
+    <div class="settings-section" [@slideInUp]>
+      <div class="section-header">
+        <h3 class="section-title">
+          <span class="title-icon">🔧</span>
+          Preferences
+        </h3>
+        <p class="section-subtitle">Configure your app preferences</p>
+      </div>
+      
+      <form [formGroup]="preferencesForm" (ngSubmit)="onPreferencesSubmit()" class="preferences-form">
+        <div class="settings-grid">
+          <div class="setting-card">
+            <div class="setting-info">
+              <h4 class="setting-name">Language</h4>
+              <p class="setting-description">Select your preferred language</p>
+            </div>
+            <div class="setting-control">
+              <select formControlName="language" class="setting-select">
+                <option *ngFor="let lang of getAvailableLanguages()" [value]="lang.code">
+                  {{ lang.flag }} {{ lang.name }}
+                </option>
+              </select>
+            </div>
+          </div>
+          
+          <div class="setting-card">
+            <div class="setting-info">
+              <h4 class="setting-name">Currency</h4>
+              <p class="setting-description">Set your default currency</p>
+            </div>
+            <div class="setting-control">
+              <select formControlName="currency" class="setting-select">
+                <option *ngFor="let currency of getAvailableCurrencies()" [value]="currency.code">
+                  {{ currency.symbol }} {{ currency.name }}
+                </option>
+              </select>
+            </div>
+          </div>
+          
+          <div class="setting-card">
+            <div class="setting-info">
+              <h4 class="setting-name">Timezone</h4>
+              <p class="setting-description">Set your local timezone</p>
+            </div>
+            <div class="setting-control">
+              <select formControlName="timezone" class="setting-select">
+                <option *ngFor="let tz of getAvailableTimezones()" [value]="tz.value">
+                  {{ tz.label }}
+                </option>
+              </select>
+            </div>
+          </div>
+          
+          <div class="setting-card">
+            <div class="setting-info">
+              <h4 class="setting-name">Date Format</h4>
+              <p class="setting-description">Choose your preferred date format</p>
+            </div>
+            <div class="setting-control">
+              <select formControlName="dateFormat" class="setting-select">
+                <option *ngFor="let format of getAvailableDateFormats()" [value]="format.value">
+                  {{ format.label }} ({{ format.example }})
+                </option>
+              </select>
+            </div>
+          </div>
+          
+          <div class="setting-card">
+            <div class="setting-info">
+              <h4 class="setting-name">Time Format</h4>
+              <p class="setting-description">Choose your preferred time format</p>
+            </div>
+            <div class="setting-control">
+              <select formControlName="timeFormat" class="setting-select">
+                <option *ngFor="let format of getAvailableTimeFormats()" [value]="format.value">
+                  {{ format.label }} ({{ format.example }})
+                </option>
+              </select>
+            </div>
+          </div>
+        </div>
+        
+        <div class="form-actions">
+          <button type="button" class="reset-btn" (click)="resetPreferences()">Reset to Default</button>
+          <button type="submit" class="save-btn">Save Preferences</button>
+        </div>
+      </form>
+    </div>
+
+    <!-- Notification Settings -->
+    <div class="settings-section" [@slideInUp]>
+      <div class="section-header">
+        <h3 class="section-title">
+          <span class="title-icon">🔔</span>
+          Notifications
+        </h3>
+        <p class="section-subtitle">Manage your notification preferences</p>
+      </div>
+      
+      <form [formGroup]="notificationForm" (ngSubmit)="onNotificationSubmit()" class="notifications-form">
+        <div class="settings-grid">
+          <div class="setting-card">
+            <div class="setting-info">
+              <h4 class="setting-name">Email Notifications</h4>
+              <p class="setting-description">Receive notifications via email</p>
+            </div>
+            <div class="setting-control">
+              <label class="toggle-switch">
+                <input type="checkbox" formControlName="emailNotifications">
+                <span class="toggle-slider"></span>
+              </label>
+            </div>
+          </div>
+          
+          <div class="setting-card">
+            <div class="setting-info">
+              <h4 class="setting-name">SMS Notifications</h4>
+              <p class="setting-description">Receive notifications via SMS</p>
+            </div>
+            <div class="setting-control">
+              <label class="toggle-switch">
+                <input type="checkbox" formControlName="smsNotifications">
+                <span class="toggle-slider"></span>
+              </label>
+            </div>
+          </div>
+          
+          <div class="setting-card">
+            <div class="setting-info">
+              <h4 class="setting-name">Push Notifications</h4>
+              <p class="setting-description">Receive push notifications</p>
+            </div>
+            <div class="setting-control">
+              <label class="toggle-switch">
+                <input type="checkbox" formControlName="pushNotifications">
+                <span class="toggle-slider"></span>
+              </label>
+            </div>
+          </div>
+          
+          <div class="setting-card">
+            <div class="setting-info">
+              <h4 class="setting-name">Transaction Alerts</h4>
+              <p class="setting-description">Get notified about transactions</p>
+            </div>
+            <div class="setting-control">
+              <label class="toggle-switch">
+                <input type="checkbox" formControlName="transactionAlerts">
+                <span class="toggle-slider"></span>
+              </label>
+            </div>
+          </div>
+          
+          <div class="setting-card">
+            <div class="setting-info">
+              <h4 class="setting-name">Security Alerts</h4>
+              <p class="setting-description">Get notified about security events</p>
+            </div>
+            <div class="setting-control">
+              <label class="toggle-switch">
+                <input type="checkbox" formControlName="securityAlerts">
+                <span class="toggle-slider"></span>
+              </label>
+            </div>
+          </div>
+          
+          <div class="setting-card">
+            <div class="setting-info">
+              <h4 class="setting-name">Marketing Emails</h4>
+              <p class="setting-description">Receive promotional emails</p>
+            </div>
+            <div class="setting-control">
+              <label class="toggle-switch">
+                <input type="checkbox" formControlName="marketingEmails">
+                <span class="toggle-slider"></span>
+              </label>
+            </div>
+          </div>
+          
+          <div class="setting-card">
+            <div class="setting-info">
+              <h4 class="setting-name">Weekly Reports</h4>
+              <p class="setting-description">Receive weekly financial reports</p>
+            </div>
+            <div class="setting-control">
+              <label class="toggle-switch">
+                <input type="checkbox" formControlName="weeklyReports">
+                <span class="toggle-slider"></span>
+              </label>
+            </div>
+          </div>
+          
+          <div class="setting-card">
+            <div class="setting-info">
+              <h4 class="setting-name">Monthly Reports</h4>
+              <p class="setting-description">Receive monthly financial reports</p>
+            </div>
+            <div class="setting-control">
+              <label class="toggle-switch">
+                <input type="checkbox" formControlName="monthlyReports">
+                <span class="toggle-slider"></span>
+              </label>
+            </div>
+          </div>
+        </div>
+        
+        <div class="form-actions">
+          <button type="button" class="reset-btn" (click)="resetNotifications()">Reset to Default</button>
+          <button type="submit" class="save-btn">Save Notifications</button>
+        </div>
+      </form>
+    </div>
+
+    <!-- Current Settings Summary -->
+    <div class="settings-summary" [@slideInUp]>
+      <div class="summary-header">
+        <h3 class="summary-title">Current Settings Summary</h3>
+        <p class="summary-subtitle">Overview of your current configuration</p>
+      </div>
+      
+      <div class="summary-grid">
+        <div class="summary-item">
+          <div class="summary-icon">🎨</div>
+          <div class="summary-content">
+            <h4>Theme</h4>
+            <p>{{ getCurrentThemeName() }}</p>
+          </div>
+        </div>
+        
+        <div class="summary-item">
+          <div class="summary-icon">🌍</div>
+          <div class="summary-content">
+            <h4>Language</h4>
+            <p>{{ getCurrentLanguageName() }}</p>
+          </div>
+        </div>
+        
+        <div class="summary-item">
+          <div class="summary-icon">💰</div>
+          <div class="summary-content">
+            <h4>Currency</h4>
+            <p>{{ getCurrentCurrencyName() }}</p>
+          </div>
+        </div>
+        
+        <div class="summary-item">
+          <div class="summary-icon">🕐</div>
+          <div class="summary-content">
+            <h4>Timezone</h4>
+            <p>{{ getCurrentTimezoneName() }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,409 @@
+<div class="recurring-payments-container animate-fade-in">
+  <header class="page-header animate-slide-down">
+    <div class="header-content">
+      <h1 class="page-title">Recurring Payments</h1>
+      <p class="page-description">Manage your scheduled and recurring payments</p>
+    </div>
+    <div class="header-actions">
+      <button class="btn-create" (click)="toggleCreateForm()" *ngIf="!showCreateForm">
+        <i class="fas fa-plus-circle"></i>
+        New Recurring Payment
+      </button>
+    </div>
+  </header>
+
+  <!-- Create/Edit Form -->
+  <div class="form-container" *ngIf="showCreateForm" [@cardAnimation]>
+    <div class="form-header">
+      <h2 class="form-title">Create New Recurring Payment</h2>
+      <button class="btn-close" (click)="resetForm()">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+
+    <form [formGroup]="paymentForm" (ngSubmit)="createRecurringPayment()" class="payment-form">
+      <div class="form-grid">
+        <div class="form-group animate-slide-right" style="animation-delay: 50ms">
+          <label for="name">Payment Name</label>
+          <input 
+            type="text" 
+            id="name" 
+            formControlName="name"
+            placeholder="Rent, Subscription, etc."
+            class="form-control"
+            [class.invalid]="paymentForm.get('name')?.invalid && paymentForm.get('name')?.touched"
+          >
+          <div class="error-message" *ngIf="paymentForm.get('name')?.invalid && paymentForm.get('name')?.touched" [@errorAnimation]>
+            Please enter a payment name
+          </div>
+        </div>
+
+        <div class="form-group animate-slide-right" style="animation-delay: 100ms">
+          <label for="amount">Amount</label>
+          <div class="currency-input">
+            <select id="currency" formControlName="currency" class="currency-select">
+              <option value="USD">$</option>
+              <option value="EUR">€</option>
+              <option value="GBP">£</option>
+            </select>
+            <input 
+              type="number" 
+              id="amount" 
+              formControlName="amount"
+              placeholder="0.00"
+              class="form-control"
+              step="0.01"
+              min="0.01"
+              [class.invalid]="paymentForm.get('amount')?.invalid && paymentForm.get('amount')?.touched"
+            >
+          </div>
+          <div class="error-message" *ngIf="paymentForm.get('amount')?.invalid && paymentForm.get('amount')?.touched" [@errorAnimation]>
+            Please enter a valid amount
+          </div>
+        </div>
+
+        <div class="form-group animate-slide-right" style="animation-delay: 150ms">
+          <label for="frequency">Frequency</label>
+          <select 
+            id="frequency" 
+            formControlName="frequency"
+            class="form-control"
+            [class.invalid]="paymentForm.get('frequency')?.invalid && paymentForm.get('frequency')?.touched"
+          >
+            <option value="daily">Daily</option>
+            <option value="weekly">Weekly</option>
+            <option value="biweekly">Bi-Weekly</option>
+            <option value="monthly">Monthly</option>
+            <option value="quarterly">Quarterly</option>
+            <option value="yearly">Yearly</option>
+          </select>
+          <div class="error-message" *ngIf="paymentForm.get('frequency')?.invalid && paymentForm.get('frequency')?.touched" [@errorAnimation]>
+            Please select a frequency
+          </div>
+        </div>
+
+        <div class="form-group animate-slide-right" style="animation-delay: 200ms">
+          <label for="nextPaymentDate">Next Payment Date</label>
+          <input 
+            type="date" 
+            id="nextPaymentDate" 
+            formControlName="nextPaymentDate"
+            class="form-control"
+            [class.invalid]="paymentForm.get('nextPaymentDate')?.invalid && paymentForm.get('nextPaymentDate')?.touched"
+          >
+          <div class="error-message" *ngIf="paymentForm.get('nextPaymentDate')?.invalid && paymentForm.get('nextPaymentDate')?.touched" [@errorAnimation]>
+            Please select a date
+          </div>
+        </div>
+
+        <div class="form-group animate-slide-right" style="animation-delay: 250ms">
+          <label for="endDate">End Date (Optional)</label>
+          <input 
+            type="date" 
+            id="endDate" 
+            formControlName="endDate"
+            class="form-control"
+          >
+        </div>
+
+        <div class="form-group animate-slide-right" style="animation-delay: 300ms">
+          <label for="walletId">Wallet</label>
+          <select 
+            id="walletId" 
+            formControlName="walletId"
+            class="form-control"
+            [class.invalid]="paymentForm.get('walletId')?.invalid && paymentForm.get('walletId')?.touched"
+          >
+            <option value="primary">Primary Wallet</option>
+            <option value="savings">Savings</option>
+            <option value="business">Business</option>
+          </select>
+          <div class="error-message" *ngIf="paymentForm.get('walletId')?.invalid && paymentForm.get('walletId')?.touched" [@errorAnimation]>
+            Please select a wallet
+          </div>
+        </div>
+
+        <div class="form-group animate-slide-right" style="animation-delay: 350ms">
+          <label for="recipientName">Recipient Name</label>
+          <input 
+            type="text" 
+            id="recipientName" 
+            formControlName="recipientName"
+            placeholder="John Doe"
+            class="form-control"
+            [class.invalid]="paymentForm.get('recipientName')?.invalid && paymentForm.get('recipientName')?.touched"
+          >
+          <div class="error-message" *ngIf="paymentForm.get('recipientName')?.invalid && paymentForm.get('recipientName')?.touched" [@errorAnimation]>
+            Please enter recipient name
+          </div>
+        </div>
+
+        <div class="form-group animate-slide-right" style="animation-delay: 400ms">
+          <label for="recipientEmail">Recipient Email (Optional)</label>
+          <input 
+            type="email" 
+            id="recipientEmail" 
+            formControlName="recipientEmail"
+            placeholder="john@example.com"
+            class="form-control"
+          >
+        </div>
+
+        <div class="form-group animate-slide-right" style="animation-delay: 450ms">
+          <label for="recipientPhone">Recipient Phone (Optional)</label>
+          <input 
+            type="tel" 
+            id="recipientPhone" 
+            formControlName="recipientPhone"
+            placeholder="+1 (555) 123-4567"
+            class="form-control"
+          >
+        </div>
+
+        <div class="form-group animate-slide-right" style="animation-delay: 500ms">
+          <label for="recipientAccountNumber">Recipient Account (Optional)</label>
+          <input 
+            type="text" 
+            id="recipientAccountNumber" 
+            formControlName="recipientAccountNumber"
+            placeholder="Account number"
+            class="form-control"
+          >
+        </div>
+
+        <div class="form-group full-width animate-slide-right" style="animation-delay: 550ms">
+          <label for="description">Description (Optional)</label>
+          <textarea 
+            id="description" 
+            formControlName="description"
+            placeholder="Enter details about this payment"
+            class="form-control textarea"
+            rows="3"
+          ></textarea>
+        </div>
+      </div>
+
+      <div class="form-actions animate-slide-up">
+        <button type="button" class="btn-secondary" (click)="resetForm()">Cancel</button>
+        <button 
+          type="submit" 
+          class="btn-primary" 
+          [disabled]="paymentForm.invalid || isLoading" 
+          [class.loading]="isLoading"
+        >
+          <span *ngIf="isLoading" class="spinner"></span>
+          <span *ngIf="!isLoading">Create Payment</span>
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Filters & Search -->
+  <div class="filters-container animate-slide-up">
+    <div class="search-box">
+      <i class="fas fa-search search-icon"></i>
+      <input 
+        type="text" 
+        placeholder="Search payments..." 
+        [(ngModel)]="searchQuery"
+        class="search-input"
+      >
+    </div>
+
+    <div class="filter-options">
+      <div class="filter-group">
+        <label>Status:</label>
+        <select [(ngModel)]="statusFilter" class="filter-select">
+          <option value="all">All</option>
+          <option value="active">Active</option>
+          <option value="inactive">Inactive</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <!-- Payments List -->
+  <div class="payments-list-container">
+    <!-- Loading State -->
+    <div class="loading-container" *ngIf="isLoading && !showCreateForm">
+      <div class="loading-spinner"></div>
+      <p>Loading payments...</p>
+    </div>
+
+    <!-- Empty State -->
+    <div class="empty-state animate-fade-in" *ngIf="filteredPayments.length === 0 && !isLoading">
+      <div class="empty-illustration">
+        <i class="fas fa-calendar-times"></i>
+      </div>
+      <h2>No recurring payments found</h2>
+      <p>You don't have any recurring payments yet or none match your search criteria.</p>
+      <button class="btn-primary" (click)="toggleCreateForm()">
+        <i class="fas fa-plus-circle"></i>
+        Create Your First Recurring Payment
+      </button>
+    </div>
+
+    <!-- Payments List -->
+    <div class="payments-list" *ngIf="filteredPayments.length > 0 && !isLoading">
+      <div 
+        *ngFor="let payment of paginatedPayments; let i = index" 
+        class="payment-card"
+        [class.active]="payment.isActive"
+        [class.upcoming]="getDaysUntilNextPayment(payment) <= 5 && getDaysUntilNextPayment(payment) >= 0"
+        [class.overdue]="isPaymentOverdue(payment)"
+        [@cardAnimation]="{value: '', params: {delay: i * 50}}"
+      >
+        <div class="payment-header">
+          <div class="payment-badge" [ngClass]="payment.isActive ? 'active' : 'inactive'">
+            {{ payment.isActive ? 'Active' : 'Inactive' }}
+          </div>
+          <div class="payment-actions">
+            <button class="action-btn" (click)="selectPayment(payment)" title="View details">
+              <i class="fas fa-ellipsis-v"></i>
+            </button>
+          </div>
+        </div>
+
+        <div class="payment-body">
+          <div class="payment-icon" [ngClass]="payment.frequency">
+            <i [class]="getFrequencyIcon(payment.frequency)"></i>
+          </div>
+          <div class="payment-info">
+            <h3 class="payment-title">{{ payment.name }}</h3>
+            <p class="payment-recipient">To: {{ payment.recipient.name }}</p>
+            <div class="payment-details">
+              <span class="payment-amount">{{ payment.currency }} {{ payment.amount.toFixed(2) }}</span>
+              <span class="payment-frequency">{{ getFrequencyDisplayName(payment.frequency) }}</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="payment-footer">
+          <div class="next-payment" [ngClass]="{'urgent': getDaysUntilNextPayment(payment) <= 3 && getDaysUntilNextPayment(payment) >= 0, 'overdue': isPaymentOverdue(payment)}">
+            <i class="far fa-calendar-alt"></i>
+            <span *ngIf="!isPaymentOverdue(payment) && getDaysUntilNextPayment(payment) === 0">Payment due today</span>
+            <span *ngIf="!isPaymentOverdue(payment) && getDaysUntilNextPayment(payment) === 1">Payment due tomorrow</span>
+            <span *ngIf="!isPaymentOverdue(payment) && getDaysUntilNextPayment(payment) > 1">Next payment in {{ getDaysUntilNextPayment(payment) }} days</span>
+            <span *ngIf="isPaymentOverdue(payment)" class="overdue-text">Payment overdue</span>
+          </div>
+          <div class="quick-actions">
+            <button 
+              class="action-btn-small" 
+              [ngClass]="payment.isActive ? 'pause' : 'resume'"
+              (click)="payment.isActive ? pausePayment(payment.id) : resumePayment(payment.id)"
+              title="{{payment.isActive ? 'Pause' : 'Resume'}} payment"
+            >
+              <i class="fas {{payment.isActive ? 'fa-pause' : 'fa-play'}}"></i>
+            </button>
+            <button class="action-btn-small skip" (click)="skipNextPayment(payment.id)" title="Skip next payment">
+              <i class="fas fa-step-forward"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Pagination -->
+    <div class="pagination" *ngIf="totalPages > 1">
+      <button 
+        class="pagination-btn" 
+        [disabled]="currentPage === 1"
+        (click)="previousPage()"
+      >
+        <i class="fas fa-chevron-left"></i>
+      </button>
+      <span class="pagination-info">Page {{ currentPage }} of {{ totalPages }}</span>
+      <button 
+        class="pagination-btn" 
+        [disabled]="currentPage === totalPages"
+        (click)="nextPage()"
+      >
+        <i class="fas fa-chevron-right"></i>
+      </button>
+    </div>
+  </div>
+
+  <!-- Payment Details Modal -->
+  <div class="modal-backdrop" *ngIf="selectedPayment" (click)="selectedPayment = null"></div>
+  <div class="payment-detail-modal animate-zoom-in" *ngIf="selectedPayment">
+    <div class="modal-header">
+      <h2>Payment Details</h2>
+      <button class="btn-close" (click)="selectedPayment = null">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+
+    <div class="modal-body">
+      <div class="detail-section">
+        <h3>{{ selectedPayment.name }}</h3>
+        <div class="detail-amount">{{ selectedPayment.currency }} {{ selectedPayment.amount.toFixed(2) }}</div>
+        <div class="detail-status" [ngClass]="selectedPayment.isActive ? 'active' : 'inactive'">
+          {{ selectedPayment.isActive ? 'Active' : 'Inactive' }}
+        </div>
+      </div>
+
+      <div class="detail-grid">
+        <div class="detail-item">
+          <span class="detail-label">Frequency</span>
+          <span class="detail-value">{{ getFrequencyDisplayName(selectedPayment.frequency) }}</span>
+        </div>
+
+        <div class="detail-item">
+          <span class="detail-label">Next Payment</span>
+          <span class="detail-value">{{ selectedPayment.nextPaymentDate | date:'mediumDate' }}</span>
+        </div>
+
+        <div class="detail-item" *ngIf="selectedPayment.endDate">
+          <span class="detail-label">End Date</span>
+          <span class="detail-value">{{ selectedPayment.endDate | date:'mediumDate' }}</span>
+        </div>
+
+        <div class="detail-item">
+          <span class="detail-label">Recipient</span>
+          <span class="detail-value">{{ selectedPayment.recipient.name }}</span>
+        </div>
+
+        <div class="detail-item" *ngIf="selectedPayment.recipient.email">
+          <span class="detail-label">Recipient Email</span>
+          <span class="detail-value">{{ selectedPayment.recipient.email }}</span>
+        </div>
+
+        <div class="detail-item" *ngIf="selectedPayment.recipient.phone">
+          <span class="detail-label">Recipient Phone</span>
+          <span class="detail-value">{{ selectedPayment.recipient.phone }}</span>
+        </div>
+
+        <div class="detail-item" *ngIf="selectedPayment.recipient.accountNumber">
+          <span class="detail-label">Account Number</span>
+          <span class="detail-value">{{ selectedPayment.recipient.accountNumber }}</span>
+        </div>
+      </div>
+
+      <div class="detail-description" *ngIf="selectedPayment.description">
+        <h4>Description</h4>
+        <p>{{ selectedPayment.description }}</p>
+      </div>
+    </div>
+
+    <div class="modal-footer">
+      <button class="btn-danger" (click)="deletePayment(selectedPayment.id)">
+        <i class="fas fa-trash-alt"></i>
+        Delete Payment
+      </button>
+      <div class="action-buttons">
+        <button 
+          class="btn-secondary" 
+          [ngClass]="selectedPayment.isActive ? 'pause' : 'resume'"
+          (click)="selectedPayment.isActive ? pausePayment(selectedPayment.id) : resumePayment(selectedPayment.id)"
+        >
+          <i class="fas {{selectedPayment.isActive ? 'fa-pause' : 'fa-play'}}"></i>
+          {{selectedPayment.isActive ? 'Pause' : 'Resume'}}
+        </button>
+        <button class="btn-primary">
+          <i class="fas fa-edit"></i>
+          Edit
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

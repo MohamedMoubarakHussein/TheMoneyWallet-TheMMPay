@@ -18,7 +18,7 @@ interface Transaction {
   standalone: true,
   imports: [CommonModule, FormsModule, RouterModule],
   templateUrl: './transaction-history.component.html',
-  styleUrls: ['./transaction-history.component.scss']
+  styleUrls: ['./transaction-history.component.css']
 })
 export class TransactionHistoryComponent {
   allTransactions: Transaction[] = [];

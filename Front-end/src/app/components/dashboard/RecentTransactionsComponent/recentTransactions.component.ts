@@ -18,7 +18,7 @@ export interface Transaction {
   templateUrl: './recentTransactions.component.html',
   imports : [CommonModule]
   ,
-  styleUrls: ['./recentTransactions.component.scss']
+  styleUrls: ['./recentTransactions.component.css']
 })
 export class RecentTransactionsComponent implements OnInit {
   recentTransactions: Transaction[] = [];

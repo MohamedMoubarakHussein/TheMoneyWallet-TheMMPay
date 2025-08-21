@@ -5,7 +5,7 @@ import { MatIconModule } from '@angular/material/icon';
   selector: 'app-coming-soon',
   imports: [MatIconModule,CommonModule],
   templateUrl: './coming-soon.component.html',
-  styleUrl: './coming-soon.component.scss'
+  styleUrl: './coming-soon.component.css'
 })
 export class ComingSoonComponent {
   @Output() close = new EventEmitter<void>();  // Changed output name to 'close'

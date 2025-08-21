@@ -238,3 +238,200 @@ export interface TransferRequest {
   amount: number;
   description?: string;
 }
+
+export interface Invoice {
+  id: string;
+  userId: string;
+  walletId: string;
+  invoiceNumber: string;
+  amount: number;
+  currency: string;
+  status: 'draft' | 'sent' | 'paid' | 'overdue' | 'cancelled';
+  dueDate: Date;
+  issueDate: Date;
+  paidDate?: Date;
+  recipient: {
+    name: string;
+    email: string;
+    phone?: string;
+    address?: string;
+  };
+  items: InvoiceItem[];
+  notes?: string;
+  terms?: string;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface InvoiceItem {
+  id: string;
+  description: string;
+  quantity: number;
+  unitPrice: number;
+  total: number;
+}
+
+export interface Budget {
+  id: string;
+  userId: string;
+  walletId: string;
+  name: string;
+  amount: number;
+  currency: string;
+  period: 'daily' | 'weekly' | 'monthly' | 'yearly';
+  category: string;
+  spent: number;
+  remaining: number;
+  startDate: Date;
+  endDate: Date;
+  isActive: boolean;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface RecurringPayment {
+  id: string;
+  userId: string;
+  walletId: string;
+  name: string;
+  amount: number;
+  currency: string;
+  frequency: 'daily' | 'weekly' | 'monthly' | 'yearly';
+  nextPaymentDate: Date;
+  endDate?: Date;
+  recipient: {
+    name: string;
+    email?: string;
+    phone?: string;
+    accountNumber?: string;
+  };
+  description?: string;
+  isActive: boolean;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface CurrencyConversion {
+  fromCurrency: string;
+  toCurrency: string;
+  rate: number;
+  lastUpdated: Date;
+}
+
+export interface SecuritySettings {
+  twoFactorEnabled: boolean;
+  twoFactorMethod: 'sms' | 'email' | 'authenticator';
+  loginNotifications: boolean;
+  transactionNotifications: boolean;
+  sessionTimeout: number; // in minutes
+  maxLoginAttempts: number;
+  requirePasswordChange: boolean;
+  lastPasswordChange: Date;
+  recentLogins: Array<{
+    browser: string;
+    os: string;
+    deviceType: 'mobile' | 'tablet' | 'desktop';
+    location: string;
+    timestamp: Date;
+    successful: boolean;
+  }>;
+  connectedApps: Array<{
+    name: string;
+    icon: string;
+    accessLevel: string;
+    connectedDate: Date;
+  }>;
+}
+
+export interface AuditLog {
+  id: string;
+  userId: string;
+  action: string;
+  resource: string;
+  resourceId?: string;
+  details: Record<string, any>;
+  ipAddress: string;
+  userAgent: string;
+  timestamp: Date;
+}
+
+export interface Contact {
+  id: string;
+  userId: string;
+  name: string;
+  email?: string;
+  phone?: string;
+  avatar?: string;
+  isFavorite: boolean;
+  lastTransactionDate?: Date;
+  totalTransactions: number;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface PaymentMethod {
+  id: string;
+  userId: string;
+  type: 'card' | 'bank' | 'wallet';
+  name: string;
+  last4?: string;
+  expiryDate?: string;
+  isDefault: boolean;
+  isActive: boolean;
+  metadata: Record<string, any>;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface BankAccount {
+  id: string;
+  userId: string;
+  bankName: string;
+  accountNumber: string;
+  routingNumber: string;
+  accountType: 'checking' | 'savings';
+  isVerified: boolean;
+  isDefault: boolean;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+// Enhanced User interface with new properties
+export interface User {
+  userId: string;
+  email: string;
+  firstName?: string;
+  lastName?: string;
+  fullName?: string;
+  phone?: string;
+  avatar?: string;
+  status: 'active' | 'inactive' | 'suspended';
+  emailVerified: boolean;
+  phoneVerified: boolean;
+  twoFactorEnabled: boolean;
+  primaryWalletId?: string;
+  totalBalance: number;
+  walletsCount: number;
+  recentTransactionsCount: number;
+  wallets: UserWallet[];
+  recentTransactions: Transaction[];
+  Notifications: Notification[];
+  contacts: Contact[];
+  paymentMethods: PaymentMethod[];
+  bankAccounts: BankAccount[];
+  securitySettings: SecuritySettings;
+  createdAt: Date;
+  updatedAt: Date;
+  lastLoginAt?: Date;
+  preferences: {
+    language: string;
+    timezone: string;
+    currency: string;
+    theme: 'light' | 'dark' | 'auto';
+    notifications: {
+      email: boolean;
+      sms: boolean;
+      push: boolean;
+    };
+  };
+}

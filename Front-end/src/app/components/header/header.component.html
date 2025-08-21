@@ -1,37 +1,49 @@
-<header class="main-header">
-    <div class="header-content">
-      <div class="logo">
-        <a href="/" class="nav-item" style="text-decoration: none;"> <img src="assets/img/logo.png" alt="TheMMPay"></a>
-       
-      </div>
-      <div *ngIf="currentRoute === '/dashboard'">
-      <nav class="nav-links">
-        <a href="#" class="nav-item">Send</a>
-        <a href="#" class="nav-item">Receive</a>
-        <a href="#" class="nav-item">Bills</a>
-        <a href="#" class="nav-item">Support</a>
-      </nav>
-    </div>
+<header class="bg-white border-b border-gray-200 shadow-sm sticky top-0 z-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between h-16">
+        <div class="flex items-center">
+          <a href="/" class="flex items-center" style="text-decoration: none;">
+            <img src="assets/img/logo.png" alt="TheMMPay" class="h-8 w-auto">
+          </a>
+        </div>
+        
+        <div *ngIf="currentRoute === '/dashboard'" class="hidden md:block">
+          <nav class="flex space-x-8">
+            <a href="#" class="text-gray-600 hover:text-blue-900 px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200">Send</a>
+            <a href="#" class="text-gray-600 hover:text-blue-900 px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200">Receive</a>
+            <a href="#" class="text-gray-600 hover:text-blue-900 px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200">Bills</a>
+            <a href="#" class="text-gray-600 hover:text-blue-900 px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200">Support</a>
+          </nav>
+        </div>
   
-      <div class="header-actions">
-        <button class="login-btn" (click)="goToSingIn()" >Sign In</button>
-        <button class="cta-button" (click)="goToSingUp()" >Get Started</button>
-      </div>
+        <div class="flex items-center space-x-4">
+          <button class="text-gray-600 hover:text-blue-900 px-4 py-2 rounded-lg text-sm font-medium transition-colors duration-200" (click)="goToSingIn()">Sign In</button>
+          <button class="bg-blue-900 text-white px-6 py-2 rounded-lg text-sm font-medium hover:bg-blue-800 transition-colors duration-200" (click)="goToSingUp()">Get Started</button>
+        </div>
   
-      <div class="menu-icon" (click)="toggleMenu()">
-        <div class="bar"></div>
-        <div class="bar"></div>
-        <div class="bar"></div>
+        <div class="md:hidden">
+          <button class="text-gray-600 hover:text-blue-900 p-2 rounded-md" (click)="toggleMenu()">
+            <div class="w-6 h-6 flex flex-col justify-center items-center">
+              <div class="w-5 h-0.5 bg-current mb-1"></div>
+              <div class="w-5 h-0.5 bg-current mb-1"></div>
+              <div class="w-5 h-0.5 bg-current"></div>
+            </div>
+          </button>
+        </div>
       </div>
     </div>
   
     <!-- Mobile Menu -->
-    <div class="mobile-nav" *ngIf="isMenuOpen">
-      <a href="#" class="nav-item">Send</a>
-      <a href="#" class="nav-item">Receive</a>
-      <a href="#" class="nav-item">Bills</a>
-      <a href="#" class="nav-item">Support</a>
-      <button class="login-btn">Sign In</button>
-      <button class="cta-button">Get Started</button>
+    <div class="md:hidden bg-white border-t border-gray-200" *ngIf="isMenuOpen">
+      <div class="px-2 pt-2 pb-3 space-y-1">
+        <a href="#" class="block px-3 py-2 text-gray-600 hover:text-blue-900 text-base font-medium">Send</a>
+        <a href="#" class="block px-3 py-2 text-gray-600 hover:text-blue-900 text-base font-medium">Receive</a>
+        <a href="#" class="block px-3 py-2 text-gray-600 hover:text-blue-900 text-base font-medium">Bills</a>
+        <a href="#" class="block px-3 py-2 text-gray-600 hover:text-blue-900 text-base font-medium">Support</a>
+        <div class="pt-4 pb-3 border-t border-gray-200">
+          <button class="block w-full text-left px-3 py-2 text-gray-600 hover:text-blue-900 text-base font-medium">Sign In</button>
+          <button class="block w-full text-left px-3 py-2 text-blue-900 font-medium">Get Started</button>
+        </div>
+      </div>
     </div>
   </header>

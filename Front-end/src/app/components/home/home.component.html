@@ -1,43 +1,254 @@
 <app-header></app-header>
-<section class="hero">
-    <div class="hero-content">
-      <h1>Secure Payments Made Simple</h1>
-    </div>
-    <button class="cta-button" (click)="goToSingUp()">Get Started</button>
-  </section>
-  
-  <section class="features">
-    <div class="feature-card">
-      <div class="icon send"></div>
-      <h3>Send Money</h3>
-      <p>Instant transfers to any account worldwide</p>
+
+<!-- Hero Section with Amazing Background Animations -->
+<section class="hero-section relative overflow-hidden">
+  <!-- Animated Background Layers -->
+  <div class="animated-background">
+    <!-- Gradient Background -->
+    <div class="bg-gradient absolute inset-0 bg-gradient-to-br from-blue-900 via-purple-900 to-indigo-900"></div>
+    
+    <!-- Animated Particles -->
+    <div class="particles-container absolute inset-0">
+      <div class="particle particle-1"></div>
+      <div class="particle particle-2"></div>
+      <div class="particle particle-3"></div>
+      <div class="particle particle-4"></div>
+      <div class="particle particle-5"></div>
+      <div class="particle particle-6"></div>
+      <div class="particle particle-7"></div>
+      <div class="particle particle-8"></div>
+      <div class="particle particle-9"></div>
+      <div class="particle particle-10"></div>
     </div>
     
-    <div class="feature-card">
-      <div class="icon receive"></div>
-      <h3>Receive Payments</h3>
-      <p>Accept payments securely and efficiently</p>
+    <!-- Floating Geometric Shapes -->
+    <div class="geometric-shapes absolute inset-0">
+      <div class="shape shape-1"></div>
+      <div class="shape shape-2"></div>
+      <div class="shape shape-3"></div>
+      <div class="shape shape-4"></div>
+      <div class="shape shape-5"></div>
+      <div class="shape shape-6"></div>
     </div>
+    
+    <!-- Wave Animation -->
+    <div class="wave-container absolute bottom-0 left-0 right-0">
+      <div class="wave wave-1"></div>
+      <div class="wave wave-2"></div>
+      <div class="wave wave-3"></div>
+    </div>
+    
+    <!-- Glowing Orbs -->
+    <div class="glowing-orbs absolute inset-0">
+      <div class="orb orb-1"></div>
+      <div class="orb orb-2"></div>
+      <div class="orb orb-3"></div>
+    </div>
+  </div>
   
-    <div class="feature-card">
-      <div class="icon bills"></div>
-      <h3>Pay Bills</h3>
-      <p>Manage all your bills in one place</p>
+  <!-- Hero Content with Enhanced Animations -->
+  <div class="relative z-20 container mx-auto px-6 py-20 lg:py-32 flex flex-col items-center justify-center min-h-screen text-center">
+    <div class="max-w-6xl mx-auto">
+      <!-- Animated Logo with Enhanced Effects -->
+      <div class="mb-12 relative" data-aos="fade-down" data-aos-duration="1500">
+        <div class="logo-container">
+          <img src="/assets/img/logo.png" alt="TheMMPay Logo" class="hero-logo">
+          <div class="logo-glow"></div>
+          <div class="logo-pulse"></div>
+        </div>
+      </div>
+      
+      <!-- Animated Title -->
+      <div class="title-container mb-8">
+        <h1 class="hero-title">
+          <span class="title-primary typing-animation">Secure Payments</span>
+          <br>
+          <span class="title-secondary slide-in-animation">Made Simple</span>
+        </h1>
+      </div>
+      
+      <!-- Animated Subtitle -->
+      <p class="hero-subtitle mb-12 fade-in-animation">
+        Experience the future of digital payments with TheMMPay. 
+        Fast, secure, and seamless transactions at your fingertips.
+      </p>
+      
+      <!-- Enhanced CTA Buttons with Animations -->
+      <div class="cta-buttons" data-aos="fade-up" data-aos-delay="300" data-aos-duration="1000">
+        <button 
+          class="cta-primary magnetic-button"
+          (click)="goToSingUp()">
+          <span class="button-content">
+            <span>Get Started</span>
+            <svg class="button-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
+            </svg>
+          </span>
+          <div class="button-glow"></div>
+        </button>
+        
+        <button class="cta-secondary hover-effect-button">
+          <span class="button-content">
+            <svg class="w-5 h-5 mr-3" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd"></path>
+            </svg>
+            <span>Watch Demo</span>
+          </span>
+        </button>
+      </div>
     </div>
-  </section>
+  </div>
   
-  <section class="stats">
-    <div class="stat-item">
-      <h4>1M+</h4>
-      <p>Happy Users</p>
+  <!-- Enhanced Scroll Indicator -->
+  <div class="scroll-indicator">
+    <div class="scroll-line"></div>
+    <div class="scroll-arrow bounce-animation">▼</div>
+  </div>
+</section>
+
+<!-- Enhanced Features Section with Responsive Heights and AOS Animations -->
+<section class="features-section py-24 lg:py-32 bg-gray-50 relative overflow-hidden">
+  <!-- Background Pattern -->
+  <div class="features-bg-pattern absolute inset-0 opacity-5"></div>
+  
+  <div class="container mx-auto px-6 relative z-10">
+    <!-- Section Header -->
+    <div class="text-center mb-20">
+      <div class="section-badge animate-badge" data-aos="fade-down">
+        <span>Features</span>
+      </div>
+      <h2 class="section-title" data-aos="fade-up" data-aos-delay="100">
+        Everything You Need for
+        <span class="text-blue-900 gradient-text">Digital Payments</span>
+      </h2>
+      <p class="section-subtitle" data-aos="fade-up" data-aos-delay="200">
+        Powerful features designed to make your financial transactions effortless and secure
+      </p>
     </div>
-    <div class="stat-item">
-      <h4>$5B+</h4>
-      <p>Processed</p>
+    
+    <!-- Enhanced Feature Cards with Equal Heights -->
+    <div class="features-grid">
+      <!-- Send Money Card -->
+      <div class="feature-card group card-hover-effect" data-aos="fade-up" data-aos-delay="100" data-aos-duration="1200">
+        <div class="card-content">
+          <div class="feature-icon-wrapper">
+            <div class="icon-background bg-blue-600"></div>
+            <svg class="feature-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
+            </svg>
+            <div class="icon-glow"></div>
+          </div>
+          <h3 class="feature-title">Send Money</h3>
+          <p class="feature-description">
+            Instant transfers to any account worldwide with competitive rates and lightning-fast processing
+          </p>
+          <div class="feature-arrow">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path>
+            </svg>
+          </div>
+        </div>
+        <div class="card-glow"></div>
+      </div>
+      
+      <!-- Receive Payments Card -->
+      <div class="feature-card group card-hover-effect" data-aos="fade-up" data-aos-delay="200" data-aos-duration="1200">
+        <div class="card-content">
+          <div class="feature-icon-wrapper">
+            <div class="icon-background bg-green-600"></div>
+            <svg class="feature-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 11l5-5m0 0l5 5m-5-5v12"></path>
+            </svg>
+            <div class="icon-glow"></div>
+          </div>
+          <h3 class="feature-title">Receive Payments</h3>
+          <p class="feature-description">
+            Accept payments securely and efficiently from customers, clients, and partners worldwide
+          </p>
+          <div class="feature-arrow">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path>
+            </svg>
+          </div>
+        </div>
+        <div class="card-glow"></div>
+      </div>
+
+      <!-- Pay Bills Card -->
+      <div class="feature-card group card-hover-effect" data-aos="fade-up" data-aos-delay="300" data-aos-duration="1200">
+        <div class="card-content">
+          <div class="feature-icon-wrapper">
+            <div class="icon-background bg-purple-600"></div>
+            <svg class="feature-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+            </svg>
+            <div class="icon-glow"></div>
+          </div>
+          <h3 class="feature-title">Pay Bills</h3>
+          <p class="feature-description">
+            Manage all your bills in one place with automated payments and smart reminders
+          </p>
+          <div class="feature-arrow">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path>
+            </svg>
+          </div>
+        </div>
+        <div class="card-glow"></div>
+      </div>
     </div>
-    <div class="stat-item">
-      <h4>150+</h4>
-      <p>Countries</p>
+  </div>
+</section>
+
+<!-- Enhanced Stats Section with AOS Animations -->
+<section class="stats-section py-20 bg-blue-900 relative overflow-hidden">
+  <!-- Animated Background Pattern -->
+  <div class="stats-bg-pattern absolute inset-0 opacity-10">
+    <div class="moving-dots"></div>
+  </div>
+  
+  <div class="container mx-auto px-6 relative z-10">
+    <div class="text-center mb-16">
+      <h2 class="stats-title text-white glow-text" data-aos="zoom-in">
+        Trusted by Millions Worldwide
+      </h2>
     </div>
-  </section>
-  <app-footer></app-footer>
+    
+    <div class="stats-grid">
+      <!-- Users Stat -->
+      <div class="stat-item stat-hover-effect" data-aos="zoom-in" data-aos-delay="100" data-aos-duration="800">
+        <div class="stat-number-container">
+          <div class="stat-number counter-animation" data-count="1">0</div>
+          <span class="stat-suffix">M+</span>
+        </div>
+        <div class="stat-label">Happy Users</div>
+        <div class="stat-description">Trusted by millions worldwide</div>
+        <div class="stat-glow"></div>
+      </div>
+      
+      <!-- Transactions Stat -->
+      <div class="stat-item stat-hover-effect" data-aos="zoom-in" data-aos-delay="200" data-aos-duration="800">
+        <div class="stat-number-container">
+          <div class="stat-number counter-animation" data-count="5">0</div>
+          <span class="stat-suffix">B+</span>
+        </div>
+        <div class="stat-label">Processed</div>
+        <div class="stat-description">In secure transactions</div>
+        <div class="stat-glow"></div>
+      </div>
+      
+      <!-- Countries Stat -->
+      <div class="stat-item stat-hover-effect" data-aos="zoom-in" data-aos-delay="300" data-aos-duration="800">
+        <div class="stat-number-container">
+          <div class="stat-number counter-animation" data-count="150">0</div>
+          <span class="stat-suffix">+</span>
+        </div>
+        <div class="stat-label">Countries</div>
+        <div class="stat-description">Global reach and support</div>
+        <div class="stat-glow"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<app-footer></app-footer>

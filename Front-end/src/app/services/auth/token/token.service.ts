@@ -1,7 +1,8 @@
-import { Injectable } from '@angular/core';
+import { Injectable, Inject, PLATFORM_ID } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { BehaviorSubject, Observable, throwError, timer } from 'rxjs';
 import { switchMap, tap, finalize, catchError } from 'rxjs/operators';
+import { isPlatformBrowser } from '@angular/common';
 import { User, UnifiedResponse } from '../../../entity/UnifiedResponse';
 import { AuthStateService } from '../state/AuthState.service';
 
@@ -19,29 +20,37 @@ export class TokenService {
 
   constructor(
     private http: HttpClient,
-    private authStateService: AuthStateService
+    private authStateService: AuthStateService,
+    @Inject(PLATFORM_ID) private platformId: Object
   ) {}
 
 
   updateSession(user: User, token: string, tokenExpirationSeconds: number): void {
-   
-    localStorage.setItem('accessToken', token);
+    // Only access localStorage in browser environment
+    if (isPlatformBrowser(this.platformId)) {
+      localStorage.setItem('accessToken', token);
+    }
     
-  
     this.authStateService.setAuthenticatedUser(user);
     
-   
     this.scheduleTokenRefresh(tokenExpirationSeconds);
   }
 
   
   getToken(): string | null {
+    // Only access localStorage in browser environment
+    if (!isPlatformBrowser(this.platformId)) {
+      return null;
+    }
     return localStorage.getItem('accessToken');
   }
 
  
   clearToken(): void {
-    localStorage.removeItem('accessToken');
+    // Only access localStorage in browser environment
+    if (isPlatformBrowser(this.platformId)) {
+      localStorage.removeItem('accessToken');
+    }
   }
 
   
@@ -118,7 +127,10 @@ export class TokenService {
           throw new Error('No token received from refresh endpoint');
         }
         
-        localStorage.setItem('accessToken', token);
+                // Only access localStorage in browser environment
+        if (isPlatformBrowser(this.platformId)) {
+          localStorage.setItem('accessToken', token);
+        }
         
         this.refreshTokenSubject.next(token);
       }),

@@ -12,7 +12,7 @@ import { AuthService } from '../../services/auth/auth.service';
   imports: [CommonModule, FormsModule],
   standalone: true,
   templateUrl: './email-verifcation.component.html',
-  styleUrl: './email-verifcation.component.scss'
+
 })
 export class EmailVerificationComponent implements OnInit, OnDestroy {
   

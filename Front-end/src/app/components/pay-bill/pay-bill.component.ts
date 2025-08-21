@@ -24,7 +24,7 @@ interface PaymentMethod {
   standalone: true,
   imports: [CommonModule, FormsModule, RouterModule],
   templateUrl: './pay-bill.component.html',
-  styleUrls: ['./pay-bill.component.scss']
+
 })
 export class PayBillComponent {
   currentStep = 1;
