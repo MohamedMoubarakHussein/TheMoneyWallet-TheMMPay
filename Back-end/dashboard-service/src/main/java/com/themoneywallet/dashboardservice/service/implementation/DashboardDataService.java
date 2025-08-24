@@ -3,7 +3,6 @@ package com.themoneywallet.dashboardservice.service.implementation;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.Objects;
 
@@ -38,11 +37,13 @@ public class DashboardDataService {
     private final UserRecentTransactionsRepository transactionsRepository;
     private final UserWalletsRepository walletsRepository;
     private final ObjectMapper objectMapper;
+    private final com.themoneywallet.dashboardservice.service.cache.DashboardCacheService cacheService;
+    private final com.themoneywallet.dashboardservice.repository.UserNotificationRepository notificationRepository;
     
     
     public void createUserDashboard(Event event) {
        
-        Map<String, Map<String, String>> eventMap = event.getAdditionalData(); 
+        // Additional event data currently unused for creation logic
         UserEventDto user;
         try {
             user = this.objectMapper.readValue(event.getAdditionalData().get(ResponseKey.DATA.toString()).get("data"), UserEventDto.class);
@@ -246,7 +247,44 @@ private void updateUserTotalBalance( String id) {
 }
 
 public void userLogin(Event event){
-    // TODO call the user dashaboard and dashboard summery to be preperad for user request in the cash <--- check if the cash config exits
+    String userId = event.getUserId();
+    if(userId == null){
+        return;
+    }
+
+    try {
+        java.util.Optional<com.themoneywallet.dashboardservice.entity.UserDashboardSummary> summaryOpt = dashboardRepository.findByUserId(userId);
+        if(summaryOpt.isEmpty()){
+            // Dashboard not found – nothing to cache yet
+            return;
+        }
+
+        java.util.List<com.themoneywallet.dashboardservice.entity.UserRecentTransaction> recentTransactions =
+                transactionsRepository.findTop10ByUserIdOrderByTransactionDateDesc(userId);
+
+        java.util.List<com.themoneywallet.dashboardservice.entity.UserWallet> wallets = walletsRepository.findByUserId(userId);
+
+        java.util.List<com.themoneywallet.dashboardservice.entity.UserNotification> notifications = notificationRepository.findByUserId(userId);
+
+        com.themoneywallet.dashboardservice.dto.response.UserDashboardResponse dashboardResponse =
+                com.themoneywallet.dashboardservice.dto.response.UserDashboardResponse.builder()
+                        .userId(userId)
+                        .fullName(summaryOpt.get().getFullName())
+                        .email(summaryOpt.get().getEmail())
+                        .totalBalance(summaryOpt.get().getTotalBalance())
+                        .primaryWalletId(summaryOpt.get().getPrimaryWalletId())
+                        .recentTransactions(recentTransactions)
+                        .userNotifications(notifications)
+                        .wallets(wallets)
+                        .lastUpdated(summaryOpt.get().getLastUpdated())
+                        .build();
+
+        cacheService.save(userId, dashboardResponse);
+        log.info("Cached dashboard for user {}", userId);
+
+    } catch (Exception e){
+        log.error("Failed to cache dashboard on login for user {} : {}", userId, e.getMessage());
+    }
 }
  
 }

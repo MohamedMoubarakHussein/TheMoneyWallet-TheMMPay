@@ -5,39 +5,32 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 
-import com.mysql.cj.protocol.Resultset;
-
+/**
+ * Minimal JDBC utility showcasing parameterised query execution. <br/>
+ * NOTE: This class belongs to legacy code and should be replaced by a proper
+ * Spring Data repository. It is kept only for backward-compatibility demos.
+ */
+@Deprecated
 public class MyFirstJdbc {
-    
-    public MyFirstJdbc(){
-  try {
-  DriverManager.registerDriver(new com.mysql.cj.jdbc.Driver());
 
-            String url = "jdbc:mysql://localhost:3306/your_db";
-            String user = "root";
-            String password = "your_password";
+    private static final String URL = System.getenv().getOrDefault("LEGACY_DB_URL", "jdbc:mysql://localhost:3306/your_db");
+    private static final String USER = System.getenv().getOrDefault("LEGACY_DB_USER", "root");
+    private static final String PASSWORD = System.getenv().getOrDefault("LEGACY_DB_PASSWORD", "your_password");
 
-  Connection con = DriverManager.getConnection(url, user, password);
+    public void printTestRows() {
+        String sql = "SELECT * FROM test";
+        try (Connection con = DriverManager.getConnection(URL, USER, PASSWORD);
+             PreparedStatement ps = con.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
 
-  Statement st = con.createStatement();
-  PreparedStatement stt = con.prepareStatement("select * from test where id = ? and name = ?");
+            while (rs.next()) {
+                System.out.println(rs.getString(1));
+            }
 
-  stt.setInt(1, 1);
-  stt.setString(0, "hello");
-  //stt.executeQuery()
-  //stt.executeUpdate()
-  ResultSet rs = st.executeQuery("selcet * from test");
-    while (rs.next()) {
-      System.out.println(rs.getString(1));
-    }
-    st.close();
-    rs.close();
-
-} catch (SQLException e) {
-  // TODO Auto-generated catch block
-  e.printStackTrace();
-}
+        } catch (SQLException e) {
+            // Log and propagate as unchecked for simplicity in legacy code
+            throw new RuntimeException("Database operation failed", e);
+        }
     }
 }

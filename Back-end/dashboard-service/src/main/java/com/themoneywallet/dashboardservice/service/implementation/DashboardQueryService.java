@@ -11,6 +11,7 @@ import org.springframework.validation.annotation.Validated;
 
 import com.themoneywallet.dashboardservice.dto.response.UnifiedResponse;
 import com.themoneywallet.dashboardservice.dto.response.UserDashboardResponse;
+import com.themoneywallet.dashboardservice.service.cache.DashboardCacheService;
 import com.themoneywallet.dashboardservice.entity.UserDashboardSummary;
 import com.themoneywallet.dashboardservice.entity.UserNotification;
 import com.themoneywallet.dashboardservice.entity.UserRecentTransaction;
@@ -20,7 +21,7 @@ import com.themoneywallet.dashboardservice.repository.UserNotificationRepository
 import com.themoneywallet.dashboardservice.repository.UserRecentTransactionsRepository;
 import com.themoneywallet.dashboardservice.repository.UserWalletsRepository;
 import com.themoneywallet.dashboardservice.utilities.UnifidResponseHandler;
-import com.themoneywallet.dashboardservice.utilities.shared.JwtValidator;
+import com.themoneywallet.sharedUtilities.utilities.JwtValidator;
 import jakarta.transaction.Transactional;
 import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
@@ -38,8 +39,8 @@ public class DashboardQueryService {
     private final UserRecentTransactionsRepository transactionsRepository;
     private final UserWalletsRepository walletsRepository;
     private final UnifidResponseHandler uResponseHandler;
+    private final DashboardCacheService cacheService;
     private final UserNotificationRepository notificationRepository;
-    private ResponseEntity<UnifiedResponse> successResponse;
 
 
     
@@ -49,6 +50,11 @@ public class DashboardQueryService {
             System.out.println(userId+ " xz");
         if(userId == null){
             return this.uResponseHandler.generateFailedResponse("error", "Contact the admin of the site with the following code #DRTK00001", "DRTK00001" , "String");
+        }
+
+        java.util.Optional<UserDashboardResponse> cachedOpt = cacheService.retrieve(userId);
+        if(cachedOpt.isPresent()){
+            return uResponseHandler.generateSuccessResponse("dashboard", cachedOpt.get(), HttpStatus.OK);
         }
 
         Optional<UserDashboardSummary> Opsummary = dashboardRepository.findByUserId(userId);
@@ -81,13 +87,15 @@ public class DashboardQueryService {
                 .build();
                         log.info("  xzczxxxx ");
 
-                ResponseEntity<UnifiedResponse> successResponse2 = this.uResponseHandler.generateSuccessResponse("dashboard", dashboardResponse, HttpStatus.OK);
-                System.out.println(successResponse2.toString()+" csz");
+                // store in cache for subsequent requests
+                cacheService.save(userId, dashboardResponse);
+
                 return this.uResponseHandler.generateSuccessResponse("dashboard", dashboardResponse, HttpStatus.OK);
 
     }
 
     public String getUserId(String token ) {
-        return this.jwtValidator.getUserId(token); 
+        java.util.UUID id = this.jwtValidator.getUserId(token);
+        return id != null ? id.toString() : null;
     }
 }

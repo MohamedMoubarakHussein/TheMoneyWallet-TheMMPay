@@ -6,7 +6,7 @@ import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.kafka.annotation.EnableKafka;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
-@SpringBootApplication
+@SpringBootApplication(scanBasePackages = {"com.themoneywallet"})
 @EnableDiscoveryClient
 @EnableKafka
 @EnableTransactionManagement

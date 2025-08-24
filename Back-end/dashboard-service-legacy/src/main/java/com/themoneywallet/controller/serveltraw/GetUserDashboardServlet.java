@@ -9,6 +9,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.ServletRequest;
 import jakarta.servlet.ServletResponse;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 public class GetUserDashboardServlet implements Servlet {
     ServletConfig servletConfig;
@@ -39,13 +40,16 @@ public class GetUserDashboardServlet implements Servlet {
         HttpServletRequest httpReq = (HttpServletRequest) req;
 
         String token = httpReq.getHeader("Authorization");
-        
-        //TODO prepare the dashboard  
 
-        //TODO need to write unified response with the dashboard
-        //TODO how to return unified response inside responseEntity
-        PrintWriter writer = resp.getWriter();
-        writer.println("<h1> Hello world </h1>");
+        HttpServletResponse httpResp = (HttpServletResponse) resp;
+        httpResp.setContentType("application/json");
+
+        // The legacy servlet simply echoes a placeholder. Production code should delegate
+        // to the new dashboard micro-service.
+        String json = "{\"message\":\"Legacy dashboard endpoint has been replaced.\"}";
+        try (PrintWriter writer = httpResp.getWriter()) {
+            writer.print(json);
+        }
 
     }
     

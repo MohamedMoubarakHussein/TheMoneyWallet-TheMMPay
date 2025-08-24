@@ -6,19 +6,22 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class RedisService {
+public class RedisService implements com.themoneywallet.sharedUtilities.ports.CachePort {
 
     private final RedisTemplate<String, String> redisTemplate;
 
-    public void saveData(String key, String value) {
+    @Override
+    public void put(String key, String value) {
         redisTemplate.opsForValue().set(key, value);
     }
 
-    public String getData(String key) {
+    @Override
+    public String get(String key) {
         return redisTemplate.opsForValue().get(key);
     }
 
-    public void deleteData(String key) {
+    @Override
+    public void delete(String key) {
         redisTemplate.delete(key);
     }
 }
