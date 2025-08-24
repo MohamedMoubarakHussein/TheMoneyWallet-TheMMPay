@@ -37,4 +37,7 @@ public class UpdateBalanceRequestDTO {
     private String transactionReference;
     
     private String description;
+    
+    // Token for authentication - not persisted
+    private String token;
 }

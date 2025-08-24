@@ -19,7 +19,7 @@ import com.walletservice.entity.WalletLimits;
 
 import com.walletservice.repository.WalletRepository;
 
-import jakarta.validation.Valid;
+
 
 import java.math.BigDecimal;
 import java.util.ArrayList;

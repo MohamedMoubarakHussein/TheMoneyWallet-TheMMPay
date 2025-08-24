@@ -5,9 +5,7 @@ import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import com.themoneywallet.sharedUtilities.enums.CurrencyType;
 import com.themoneywallet.sharedUtilities.enums.WalletTypes;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -26,4 +24,7 @@ public class CreateWalletRequestDTO {
     
     @NotNull(message = "Currency is required")
     private CurrencyType currency;
+    
+    // Token for authentication - not persisted
+    private String token;
 }
