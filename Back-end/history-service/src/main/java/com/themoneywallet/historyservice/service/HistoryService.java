@@ -8,7 +8,7 @@ import com.themoneywallet.historyservice.service.shared.EventProducer;
 import com.themoneywallet.historyservice.service.shared.RedisService;
 import com.themoneywallet.historyservice.utilites.EventHandler;
 import com.themoneywallet.historyservice.utilites.HttpHelper;
-import com.themoneywallet.historyservice.utilites.UnifidResponseHandler;
+import com.themoneywallet.sharedUtilities.utilities.UnifidResponseHandler;
 import java.time.LocalDateTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
