@@ -13,6 +13,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 import org.springframework.stereotype.Component;
+import java.util.concurrent.ThreadLocalRandom;
 
 @Component
 @RequiredArgsConstructor
@@ -24,8 +25,12 @@ public class EventHandler {
         String userId,
         Map<String, Map<String, String>> additionalData
     ) {
+        // Use ThreadLocalRandom for better performance than UUID.randomUUID()
+        String eventId = Long.toHexString(ThreadLocalRandom.current().nextLong()) + 
+                        Long.toHexString(System.nanoTime());
+        
         return Event.builder()
-            .eventId(UUID.randomUUID().toString())
+            .eventId(eventId)
             .eventType(eventType)
             .timestamp(LocalDateTime.now())
             .userId(userId)

@@ -11,16 +11,23 @@ import java.util.UUID;
 import lombok.Data;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import com.themoneywallet.sharedUtilities.config.properties.JwtProperties;
+import com.themoneywallet.sharedUtilities.utilities.definition.TokenValidator;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.io.Decoders;
+import io.jsonwebtoken.security.Keys;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Component;
 
-@Data
-@ConfigurationProperties(prefix =  "app.jwt")
-public class JwtValidator {
-   
-    private String secretAccess ;
-       
+@Component
+@RequiredArgsConstructor
+public class JwtValidator implements TokenValidator {
+
+    private final JwtProperties jwtProperties;
 
     private Key getKey() {
-        byte[] key = Decoders.BASE64.decode(secretAccess);
+        byte[] key = Decoders.BASE64.decode(jwtProperties.getSecretAccess());
         return Keys.hmacShaKeyFor(key);
     }
 
@@ -53,26 +60,17 @@ public class JwtValidator {
 
 
     public UUID getUserId(String token) {
-        if(this.isTokenValid(token)){
-            Claims claims = this.extractInfoFromToken(token);
-            return  (UUID)claims.get("id");
-        }
-        return null;
+        Claims claims = this.extractInfoFromToken(token);
+        return  (UUID)claims.get("id");
     }
 
     public String getUserrole(String token) {
-        if(this.isTokenValid(token)){
-            Claims claims = this.extractInfoFromToken(token);
-            return  (String)claims.get("role");
-        }
-        return null;
+        Claims claims = this.extractInfoFromToken(token);
+        return  (String)claims.get("role");
     }
 
     public String getUserName(String token) {
-        if(this.isTokenValid(token)){
-            Claims claims = this.extractInfoFromToken(token);
-            return  (String)claims.get("username");
-        }
-        return null;
+        Claims claims = this.extractInfoFromToken(token);
+        return  (String)claims.get("username");
     }
 }
