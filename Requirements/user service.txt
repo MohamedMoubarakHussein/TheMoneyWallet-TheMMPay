@@ -1,0 +1,19 @@
+UR  -> authentication service
+
+
+VD  ->  validation error
+DB  ->  database-level error 
+UC  -> user managment service connection error occured
+CR   -> user wrong credantial 
+Tk   ->  token problem
+MP   ->  object mapping error 
+CY  ->  some error occured while creation some auto object
+GE  ->  some unhandled exception has occured that cause by some unhandled exception 
+PE  -> publish event error or data convert error 
+UD  ->  user not found in the db 
+
+[2char name service][2char name error type][can user solve 1 or 0][3 number for internal uniquness ]
+
+URUD0001
+URUD0002
+
