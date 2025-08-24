@@ -8,7 +8,7 @@ import java.util.Map;
 import org.springframework.stereotype.Component;
 
 import com.gatewayApi.config.JwtConfig;
-import com.themoneywallet.sharedUtilities.utilities.TokenValidator;
+import com.themoneywallet.sharedUtilities.utilities.defination.TokenValidator;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
