@@ -1,0 +1,25 @@
+<div class="relative w-full h-full min-h-[200px] bg-white rounded-md overflow-hidden" [style.height]="height" @fadeIn>
+  <div *ngIf="loading" class="absolute inset-0 flex flex-col items-center justify-center bg-white bg-opacity-80 z-10">
+    <div class="w-10 h-10 border-3 border-blue-200 border-t-blue-600 rounded-full animate-spin mb-4"></div>
+    <div class="text-sm text-gray-600 font-medium">Loading chart data...</div>
+  </div>
+  
+  <div *ngIf="error && !loading" class="absolute inset-0 flex flex-col items-center justify-center bg-gray-50 p-6">
+    <div class="text-2xl mb-4">⚠️</div>
+    <div class="text-sm text-gray-600 text-center max-w-xs mb-6">{{ errorMessage }}</div>
+    <button class="px-4 py-2 bg-blue-500 text-white rounded-md font-medium transition-colors hover:bg-blue-600" (click)="retryLoad()">Retry</button>
+  </div>
+
+  <div *ngIf="!loading && !error && isEmpty" class="absolute inset-0 flex flex-col items-center justify-center bg-gray-50 p-6">
+    <div class="text-2xl mb-4">📊</div>
+    <div class="text-sm text-gray-600 text-center max-w-xs">No data available</div>
+  </div>
+  
+  <canvas *ngIf="!loading && !error && !isEmpty" baseChart #chartCanvas
+    [data]="chartData"
+    [type]="chartType"
+    [options]="chartOptions"
+    [plugins]="chartPlugins"
+    @chartAnimation>
+  </canvas>
+</div>

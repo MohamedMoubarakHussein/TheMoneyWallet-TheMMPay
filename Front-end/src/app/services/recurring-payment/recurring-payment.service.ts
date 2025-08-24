@@ -65,7 +65,7 @@ export class RecurringPaymentService {
 
   // Get all recurring payments for a user
   getRecurringPayments(walletId?: string, isActive?: boolean): Observable<RecurringPayment[]> {
-    let params = new URLSearchParams();
+    const params = new URLSearchParams();
     if (walletId) params.set('walletId', walletId);
     if (isActive !== undefined) params.set('isActive', isActive.toString());
 
@@ -228,7 +228,7 @@ export class RecurringPaymentService {
     processedDate?: Date;
     failureReason?: string;
   }[]> {
-    return this.http.get<ApiResponse<any>>(`${this.apiUrl}/${paymentId}/history?limit=${limit}`)
+    return this.http.get<ApiResponse<PaymentHistoryItem[]>>(`${this.apiUrl}/${paymentId}/history?limit=${limit}`)
       .pipe(
         map(response => response.data || []),
         catchError(this.handleError)

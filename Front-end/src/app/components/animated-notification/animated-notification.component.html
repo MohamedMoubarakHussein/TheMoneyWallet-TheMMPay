@@ -1,0 +1,30 @@
+<div class="fixed z-[9999] flex flex-col gap-3 max-w-sm w-full p-4 pointer-events-none"
+  [ngClass]="{
+    'top-0 right-0': position === 'top-right',
+    'top-0 left-0': position === 'top-left',
+    'bottom-0 right-0': position === 'bottom-right',
+    'bottom-0 left-0': position === 'bottom-left',
+    'top-0 left-1/2 -translate-x-1/2': position === 'top-center',
+    'bottom-0 left-1/2 -translate-x-1/2': position === 'bottom-center'
+  }">
+  <div *ngFor="let notification of notifications" 
+    class="relative flex p-4 rounded-md shadow-lg overflow-hidden pointer-events-auto w-full max-w-full bg-white border-l-4"
+    [ngClass]="{
+      'border-green-500': notification.type === 'success',
+      'border-red-500': notification.type === 'error',
+      'border-yellow-500': notification.type === 'warning',
+      'border-blue-500': notification.type === 'info'
+    }"
+    [@notificationAnimation]="getAnimationState(notification)"
+    (@notificationAnimation.done)="animationDone($event, notification.id)">
+    <div class="flex-1 min-w-0">
+      <h4 *ngIf="notification.title" class="m-0 text-base font-semibold text-gray-800">{{ notification.title }}</h4>
+      <p class="m-0 text-sm text-gray-600 leading-relaxed">{{ notification.message }}</p>
+    </div>
+    <button *ngIf="notification.closable !== false"
+      class="bg-transparent border-none text-gray-400 text-lg cursor-pointer p-0 ml-2"
+      (click)="closeNotification(notification.id)">
+      ×
+    </button>
+  </div>
+</div>

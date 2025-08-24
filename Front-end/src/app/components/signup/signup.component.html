@@ -1,17 +1,16 @@
-
 <app-header></app-header>
 
 <div class="min-h-screen flex">
   <!-- Left Section - Sign Up Form -->
   <div class="flex-1 flex items-center justify-center px-4 sm:px-6 lg:px-8 py-12">
-    <div class="max-w-md w-full space-y-8">
+    <div class="max-w-md w-full space-y-8" @fadeInUp>
       <div class="text-center">
         <h1 class="text-3xl font-bold text-gray-900 mb-2">Create Account</h1>
         <p class="text-gray-600">Join our secure payment platform</p>
       </div>
 
       <form class="space-y-6" [formGroup]="signupForm" (ngSubmit)="onSubmit()">
-        <div *ngIf="serverErrorMessage" class="bg-red-50 border border-red-200 rounded-lg p-4">
+        <div *ngIf="serverErrorMessage" class="bg-red-50 border border-red-200 rounded-lg p-4 animate-fadeIn">
           <p class="text-red-800 text-sm">{{ serverErrorMessage }}</p>
         </div>
 
@@ -23,7 +22,7 @@
             formControlName="userName"
             class="w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
           >
-          <div *ngIf="showError('userName')" class="text-red-600 text-sm">
+          <div *ngIf="showError('userName')" class="text-red-600 text-sm animate-fadeIn">
             <div *ngIf="signupForm.get('userName')?.errors?.['required']">Username is required</div>
             <div *ngIf="signupForm.get('userName')?.errors?.['minlength']">Minimum 4 characters</div>
             <div *ngIf="signupForm.get('userName')?.errors?.['maxlength']">Maximum 16 characters</div>
@@ -42,7 +41,7 @@
               formControlName="firstName"
               class="w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             >
-            <div *ngIf="showError('firstName')" class="text-red-600 text-sm">
+            <div *ngIf="showError('firstName')" class="text-red-600 text-sm animate-fadeIn">
               <div *ngIf="signupForm.get('firstName')?.errors?.['required']">First name is required</div>
               <div *ngIf="signupForm.get('firstName')?.errors?.['minlength']">Minimum 2 characters</div>
               <div *ngIf="signupForm.get('firstName')?.errors?.['maxlength']">Maximum 16 characters</div>
@@ -60,7 +59,7 @@
               formControlName="lastName"
               class="w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             >
-            <div *ngIf="showError('lastName')" class="text-red-600 text-sm">
+            <div *ngIf="showError('lastName')" class="text-red-600 text-sm animate-fadeIn">
               <div *ngIf="signupForm.get('lastName')?.errors?.['required']">Last name is required</div>
               <div *ngIf="signupForm.get('lastName')?.errors?.['minlength']">Minimum 2 characters</div>
               <div *ngIf="signupForm.get('lastName')?.errors?.['maxlength']">Maximum 16 characters</div>
@@ -79,7 +78,7 @@
             formControlName="email"
             class="w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
           >
-          <div *ngIf="showError('email')" class="text-red-600 text-sm">
+          <div *ngIf="showError('email')" class="text-red-600 text-sm animate-fadeIn">
             <div *ngIf="signupForm.get('email')?.errors?.['required']">Email is required</div>
             <div *ngIf="signupForm.get('email')?.errors?.['email']">Invalid email format</div>
             <div *ngIf="signupForm.get('email')?.errors?.['serverError']">
@@ -96,7 +95,7 @@
             formControlName="password"
             class="w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
           >
-          <div *ngIf="showError('password')" class="text-red-600 text-sm">
+          <div *ngIf="showError('password')" class="text-red-600 text-sm animate-fadeIn">
             <div *ngIf="signupForm.get('password')?.errors?.['required']">Password is required</div>
             <div *ngIf="signupForm.get('password')?.errors?.['minlength']">Minimum 8 characters</div>
             <div *ngIf="signupForm.get('password')?.errors?.['maxlength']">Maximum 16 characters</div>
@@ -114,7 +113,7 @@
             formControlName="confirmPassword"
             class="w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
           >
-          <div *ngIf="showError('confirmPassword')" class="text-red-600 text-sm">
+          <div *ngIf="showError('confirmPassword')" class="text-red-600 text-sm animate-fadeIn">
             <div *ngIf="signupForm.get('confirmPassword')?.errors">Password doesn't match</div>
           </div>
         </div>
@@ -133,7 +132,7 @@
               <a href="#" class="text-blue-600 hover:text-blue-700">Privacy Policy</a>
             </span>
           </label>
-          <div *ngIf="showError('terms')" class="text-red-600 text-sm">
+          <div *ngIf="showError('terms')" class="text-red-600 text-sm animate-fadeIn">
             You must accept the terms
           </div>
         </div>
@@ -181,7 +180,7 @@
   <!-- Right Section - Background -->
   <div class="hidden lg:block lg:w-1/2 relative">
     <div class="absolute inset-0 bg-gradient-to-br from-blue-900 to-blue-500"></div>
-    <div class="relative h-full flex items-center justify-center px-8">
+    <div class="relative h-full flex items-center justify-center px-8" @fadeInUp>
       <div class="text-center text-white">
         <h2 class="text-4xl font-bold mb-4">Start Your Financial Journey</h2>
         <p class="text-xl text-blue-100">Get access to seamless payments and bill management</p>
@@ -192,5 +191,5 @@
 
 <app-coming-soon 
 *ngIf="showComingSoon" 
-(close)="showComingSoon = false">
+(closeModal)="showComingSoon = false">
 </app-coming-soon>

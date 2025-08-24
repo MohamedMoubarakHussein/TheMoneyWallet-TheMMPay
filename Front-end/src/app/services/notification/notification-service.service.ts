@@ -41,7 +41,7 @@ export class NotificationService {
 
   // Get all notifications
   getNotifications(filters?: NotificationFilters): Observable<Notification[]> {
-    let params: any = {};
+    const params: { [param: string]: string | string[] } = {};
     
     if (filters) {
       if (filters.read !== undefined) params.read = filters.read;
@@ -199,7 +199,9 @@ export class NotificationService {
   subscribeToRealTimeNotifications(): Observable<Notification> {
     // This would typically use WebSocket or Server-Sent Events
     // For now, return an empty observable
-    return new Observable<Notification>(observer => {
+    return new Observable<Notification>((
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      observer) => {
       // WebSocket implementation would go here
       // const ws = new WebSocket(`${environment.wsUrl}/notifications`);
       // ws.onmessage = (event) => {

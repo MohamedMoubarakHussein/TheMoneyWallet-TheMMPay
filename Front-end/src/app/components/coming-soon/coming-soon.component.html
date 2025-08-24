@@ -1,16 +1,12 @@
-<!-- coming-soon.component.html -->
-<div class="overlay">
-    <div class="glass-card">
-        <button class="close-btn" (click)="onClose()">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-          <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"/>
-        </svg>
-      </button>
-      <div class="content">
-        <div class="icon">🚀</div>
-        <h3>Feature in Progress</h3>
-        <p>Our team is working hard to bring you this functionality. Expect it in our next update!</p>
-        <div class="progress-line"></div>
-      </div>
-    </div> 
+<div class="fixed inset-0 bg-black/50 flex justify-center items-center z-50" @fadeIn>
+  <div class="bg-white rounded-2xl p-8 relative w-11/12 max-w-md shadow-lg" @scaleIn>
+    <button class="absolute top-4 right-4 text-gray-600 hover:text-primary" (click)="onClose()">
+      <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+    </button>
+    <div class="text-center">
+      <div class="text-4xl mb-4">🚀</div>
+      <h3 class="text-primary text-2xl font-semibold mb-4">Feature in Progress</h3>
+      <p class="text-gray-600 leading-relaxed mb-6">Our team is working hard to bring you this functionality. Expect it in our next update!</p>
+    </div>
   </div>
+</div>

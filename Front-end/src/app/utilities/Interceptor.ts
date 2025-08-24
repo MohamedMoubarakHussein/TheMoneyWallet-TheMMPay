@@ -3,6 +3,7 @@ import { HttpInterceptor, HttpRequest, HttpHandler, HttpEvent, HttpErrorResponse
 import { Observable, throwError, BehaviorSubject } from 'rxjs';
 import { catchError, switchMap, filter, take } from 'rxjs/operators';
 import { AuthService } from './../services/auth/auth.service';
+import { User } from '../entity/UnifiedResponse';
 
 /**
  * Enhanced HTTP Interceptor that:
@@ -19,11 +20,11 @@ export class AuthInterceptor implements HttpInterceptor {
   private isRefreshing = false;
   
   // Subject to queue requests while token is being refreshed
-  private refreshTokenSubject: BehaviorSubject<any> = new BehaviorSubject<any>(null);
+  private refreshTokenSubject: BehaviorSubject<string | null> = new BehaviorSubject<string | null>(null);
 
   constructor(private authService: AuthService) {}
 
-  intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
+  intercept(request: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {
     // Add authentication headers and credentials to the request
     const authRequest = this.addAuthHeaders(request);
     
@@ -47,12 +48,12 @@ export class AuthInterceptor implements HttpInterceptor {
    * Add authentication headers and credentials to the request
    * This method ensures every request has the necessary authentication information
    */
-  private addAuthHeaders(request: HttpRequest<any>): HttpRequest<any> {
+  private addAuthHeaders(request: HttpRequest<unknown>): HttpRequest<unknown> {
     // Get the current authentication token
     const authToken = this.authService.getToken();
     
     // Clone the request to add headers (HTTP requests are immutable)
-    let authRequest = request.clone({
+    const authRequest = request.clone({
       // Always include credentials to send HTTP-only cookies
       setHeaders: {
         // Only add Authorization header if we have a token and it's not a login/signup request
@@ -82,7 +83,7 @@ export class AuthInterceptor implements HttpInterceptor {
    * Handle 401 Unauthorized errors by attempting token refresh
    * This is where the magic happens - automatic token refresh on authentication failure
    */
-  private handle401Error(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
+  private handle401Error(request: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {
     
     if (!this.isRefreshing) {
       // Start the refresh process
@@ -91,7 +92,7 @@ export class AuthInterceptor implements HttpInterceptor {
 
       // Attempt to refresh the token using the auth service
       return this.authService.refreshToken().pipe(
-        switchMap((authResponse: any) => {
+        switchMap((authResponse: User) => {
           // Token refresh successful
           this.isRefreshing = false;
           

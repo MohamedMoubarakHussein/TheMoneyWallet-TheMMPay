@@ -1,4 +1,5 @@
 import { isPlatformBrowser } from '@angular/common';
+import { HttpErrorResponse } from '@angular/common/http';
 
 /**
  * Utility functions for safe error handling in both browser and server environments
@@ -8,7 +9,7 @@ import { isPlatformBrowser } from '@angular/common';
  * Safely checks if an error is a client-side error (ErrorEvent)
  * Only works in browser environment, returns false in server environment
  */
-export function isClientError(error: any, platformId: Object): boolean {
+export function isClientError(error: HttpErrorResponse, platformId: object): boolean {
   if (!isPlatformBrowser(platformId)) {
     return false;
   }
@@ -24,7 +25,7 @@ export function isClientError(error: any, platformId: Object): boolean {
  * Safely checks if an error is a network error
  * Only works in browser environment, returns false in server environment
  */
-export function isNetworkError(error: any, platformId: Object): boolean {
+export function isNetworkError(error: HttpErrorResponse, platformId: object): boolean {
   if (!isPlatformBrowser(platformId)) {
     return false;
   }
@@ -40,7 +41,7 @@ export function isNetworkError(error: any, platformId: Object): boolean {
  * Safely checks if an error is a timeout error
  * Only works in browser environment, returns false in server environment
  */
-export function isTimeoutError(error: any, platformId: Object): boolean {
+export function isTimeoutError(error: HttpErrorResponse, platformId: object): boolean {
   if (!isPlatformBrowser(platformId)) {
     return false;
   }
@@ -55,7 +56,7 @@ export function isTimeoutError(error: any, platformId: Object): boolean {
 /**
  * Gets a safe error message that works in both environments
  */
-export function getSafeErrorMessage(error: any, platformId: Object): string {
+export function getSafeErrorMessage(error: HttpErrorResponse, platformId: object): string {
   if (isClientError(error, platformId)) {
     return error.error.message || 'Client error occurred';
   }

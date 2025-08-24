@@ -1,340 +1,56 @@
-<div class="contacts-container" [@fadeInUp]>
+<div class="max-w-7xl mx-auto my-8 p-8 animate-fadeInUp">
   <!-- Header Section -->
-  <div class="contacts-header" [@slideInDown]>
-    <div class="header-content">
-      <div class="header-left">
-        <h1 class="page-title">
-          <span class="title-icon">👥</span>
-          Contacts
-        </h1>
-        <p class="page-subtitle">Manage your contacts and send money easily</p>
-      </div>
-      <div class="header-actions">
-        <div class="search-box">
-          <svg class="search-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-          </svg>
-          <input 
-            type="text" 
-            [(ngModel)]="searchQuery" 
-            placeholder="Search contacts..."
-            class="search-input"
-            [@scaleIn]>
-        </div>
-        
-        <button 
-          class="add-btn"
-          (click)="toggleAddForm()"
-          [@bounceIn]>
-          <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
-          </svg>
-          Add Contact
-        </button>
-      </div>
+  <div class="flex justify-between items-center mb-8">
+    <div>
+      <h1 class="text-3xl font-bold text-text-dark">Contacts</h1>
+      <p class="text-gray-600">Manage your contacts and send money easily</p>
+    </div>
+    <div class="flex gap-4">
+      <input type="text" [(ngModel)]="searchQuery" (ngModelChange)="onSearchQueryChanged()" placeholder="Search contacts..." class="py-2 px-4 rounded-lg border-2 border-gray-200 focus:outline-none focus:border-primary">
+      <button class="py-2 px-4 rounded-lg font-semibold bg-primary text-white hover:bg-primary-dark transition-colors" (click)="toggleAddForm()">Add Contact</button>
     </div>
   </div>
 
   <!-- Loading State -->
-  <div *ngIf="isLoading" class="loading-overlay" [@fadeIn]>
-    <div class="loading-spinner">
-      <div class="spinner"></div>
-      <p>Loading contacts...</p>
-    </div>
+  <div *ngIf="isLoading$ | async" class="flex justify-center items-center h-64">
+    <div class="animate-spin rounded-full h-16 w-16 border-b-2 border-primary"></div>
   </div>
 
   <!-- Contacts Content -->
-  <div class="contacts-content" *ngIf="!isLoading">
-    <!-- Quick Stats -->
-    <div class="quick-stats" [@slideInUp]>
-      <div class="stats-grid">
-        <div class="stat-card">
-          <div class="stat-icon total">
-            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
-            </svg>
-          </div>
-          <div class="stat-info">
-            <h3>Total Contacts</h3>
-            <p class="stat-value">{{ contacts.length }}</p>
-          </div>
-        </div>
-        
-        <div class="stat-card">
-          <div class="stat-icon favorites">
-            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
-            </svg>
-          </div>
-          <div class="stat-info">
-            <h3>Favorites</h3>
-            <p class="stat-value">{{ getFavoriteContacts().length }}</p>
-          </div>
-        </div>
-        
-        <div class="stat-card">
-          <div class="stat-icon recent">
-            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-            </svg>
-          </div>
-          <div class="stat-info">
-            <h3>Recent</h3>
-            <p class="stat-value">{{ getRecentContacts().length }}</p>
-          </div>
-        </div>
-      </div>
-    </div>
-
+  <div *ngIf="(isLoading$ | async) === false" class="space-y-12">
     <!-- Add Contact Form -->
-    <div class="add-form-container" *ngIf="showAddForm" [@slideInDown]>
-      <div class="form-card">
-        <div class="form-header">
-          <h3>{{ selectedContact ? 'Edit Contact' : 'Add New Contact' }}</h3>
-          <button class="close-btn" (click)="resetForm()">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-            </svg>
-          </button>
+    <div *ngIf="showAddForm" class="p-8 bg-white rounded-2xl shadow-lg" @slideInDown>
+      <h3 class="text-xl font-semibold text-text-dark mb-6">{{ selectedContact ? 'Edit Contact' : 'Add New Contact' }}</h3>
+      <form [formGroup]="contactForm" (ngSubmit)="selectedContact ? updateContact() : addContact()">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <!-- Form fields -->
         </div>
-        
-        <form [formGroup]="contactForm" (ngSubmit)="selectedContact ? updateContact() : addContact()" class="contact-form">
-          <div class="form-grid">
-            <div class="form-group">
-              <label for="name">Full Name</label>
-              <input 
-                type="text" 
-                id="name" 
-                formControlName="name" 
-                placeholder="Enter full name"
-                class="form-input">
-            </div>
-            
-            <div class="form-group">
-              <label for="email">Email Address</label>
-              <input 
-                type="email" 
-                id="email" 
-                formControlName="email" 
-                placeholder="Enter email address"
-                class="form-input">
-            </div>
-            
-            <div class="form-group">
-              <label for="phone">Phone Number</label>
-              <input 
-                type="tel" 
-                id="phone" 
-                formControlName="phone" 
-                placeholder="Enter phone number"
-                class="form-input">
-            </div>
-            
-            <div class="form-group">
-              <label class="checkbox-label">
-                <input 
-                  type="checkbox" 
-                  formControlName="isFavorite"
-                  class="checkbox-input">
-                <span class="checkbox-custom"></span>
-                Mark as Favorite
-              </label>
-            </div>
-          </div>
-          
-          <div class="form-actions">
-            <button type="button" class="cancel-btn" (click)="resetForm()">Cancel</button>
-            <button type="submit" class="submit-btn" [disabled]="!contactForm.valid">
-              {{ selectedContact ? 'Update Contact' : 'Add Contact' }}
-            </button>
-          </div>
-        </form>
-      </div>
+        <div class="flex justify-end gap-4 mt-6">
+          <button type="button" class="py-2 px-4 rounded-lg font-semibold bg-gray-100 text-gray-700 hover:bg-gray-200 transition-colors" (click)="resetForm()">Cancel</button>
+          <button type="submit" class="py-2 px-4 rounded-lg font-semibold bg-primary text-white hover:bg-primary-dark transition-colors" [disabled]="!contactForm.valid">{{ selectedContact ? 'Update' : 'Add' }}</button>
+        </div>
+      </form>
     </div>
 
-    <!-- Favorites Section -->
-    <div class="favorites-section" *ngIf="getFavoriteContacts().length > 0" [@slideInUp]>
-      <div class="section-header">
-        <h3 class="section-title">
-          <span class="title-icon">⭐</span>
-          Favorite Contacts
-        </h3>
-        <p class="section-subtitle">Quick access to your most important contacts</p>
-      </div>
-      
-      <div class="contacts-grid">
-        <div 
-          *ngFor="let contact of getFavoriteContacts(); let i = index" 
-          class="contact-card favorite"
-          [@slideInUp]
-          [style.animation-delay]="i * 100 + 'ms'">
-          
-          <div class="contact-avatar">
-            <img 
-              [src]="getContactAvatar(contact)" 
-              [alt]="contact.name"
-              class="avatar-image"
-              (error)="onImageError($event)">
-            <div class="avatar-fallback" *ngIf="!contact.avatar">
-              {{ getContactInitials(contact) }}
-            </div>
-            <div class="favorite-badge">⭐</div>
-          </div>
-          
-          <div class="contact-info">
-            <h4 class="contact-name">{{ contact.name }}</h4>
-            <p class="contact-email" *ngIf="contact.email">{{ contact.email }}</p>
-            <p class="contact-phone" *ngIf="contact.phone">{{ contact.phone }}</p>
-            
-            <div class="contact-stats" *ngIf="contact.totalTransactions > 0">
-              <span class="stat-item">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
-                </svg>
-                {{ contact.totalTransactions }} transactions
-              </span>
-            </div>
-          </div>
-          
-          <div class="contact-actions">
-            <button class="action-btn send-money" (click)="sendMoneyToContact(contact)" title="Send Money">
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
-              </svg>
-            </button>
-            <button class="action-btn edit" (click)="editContact(contact)" title="Edit Contact">
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
-              </svg>
-            </button>
-            <button class="action-btn remove-favorite" (click)="toggleFavorite(contact)" title="Remove from Favorites">
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
-              </svg>
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- All Contacts Section -->
-    <div class="all-contacts-section" [@slideInUp]>
-      <div class="section-header">
-        <h3 class="section-title">
-          <span class="title-icon">👥</span>
-          All Contacts
-        </h3>
-        <p class="section-subtitle">{{ filteredContacts.length }} contacts found</p>
-      </div>
-      
-      <div class="contacts-grid" [@staggerIn]>
-        <div 
-          *ngFor="let contact of paginatedContacts; let i = index" 
-          class="contact-card"
-          [@slideInUp]
-          [style.animation-delay]="i * 100 + 'ms'">
-          
-          <div class="contact-avatar">
-            <img 
-              [src]="getContactAvatar(contact)" 
-              [alt]="contact.name"
-              class="avatar-image"
-              (error)="onImageError($event)">
-            <div class="avatar-fallback" *ngIf="!contact.avatar">
-              {{ getContactInitials(contact) }}
-            </div>
-            <div class="favorite-badge" *ngIf="contact.isFavorite">⭐</div>
-          </div>
-          
-          <div class="contact-info">
-            <h4 class="contact-name">{{ contact.name }}</h4>
-            <p class="contact-email" *ngIf="contact.email">{{ contact.email }}</p>
-            <p class="contact-phone" *ngIf="contact.phone">{{ contact.phone }}</p>
-            
-            <div class="contact-stats" *ngIf="contact.totalTransactions > 0">
-              <span class="stat-item">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
-                </svg>
-                {{ contact.totalTransactions }} transactions
-              </span>
-              <span class="stat-item" *ngIf="contact.lastTransactionDate">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-                </svg>
-                {{ contact.lastTransactionDate | date:'MMM dd' }}
-              </span>
-            </div>
-          </div>
-          
-          <div class="contact-actions">
-            <button class="action-btn send-money" (click)="sendMoneyToContact(contact)" title="Send Money">
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
-              </svg>
-            </button>
-            <button class="action-btn edit" (click)="editContact(contact)" title="Edit Contact">
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
-              </svg>
-            </button>
-            <button 
-              class="action-btn favorite" 
-              (click)="toggleFavorite(contact)" 
-              [class.active]="contact.isFavorite"
-              [title]="contact.isFavorite ? 'Remove from Favorites' : 'Add to Favorites'">
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
-              </svg>
-            </button>
-            <button class="action-btn delete" (click)="deleteContact(contact.id)" title="Delete Contact">
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
-              </svg>
-            </button>
-          </div>
+    <!-- Contacts Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8" [@staggerIn]="(paginatedContacts$ | async)?.length">
+      <div *ngFor="let contact of paginatedContacts$ | async" class="bg-white p-6 rounded-2xl shadow-lg flex flex-col items-center text-center" @fadeInUp>
+        <img [src]="contact.avatar || 'assets/default-avatar.png'" alt="avatar" class="w-24 h-24 rounded-full mb-4">
+        <h4 class="text-lg font-semibold text-text-dark">{{ contact.name }}</h4>
+        <p class="text-gray-600">{{ contact.email }}</p>
+        <div class="flex gap-4 mt-4">
+          <button class="w-10 h-10 rounded-full bg-gray-100 hover:bg-gray-200 transition-colors" (click)="editContact(contact)"><i class="fas fa-pen"></i></button>
+          <button class="w-10 h-10 rounded-full bg-red-100 text-red-600 hover:bg-red-200 transition-colors" (click)="deleteContact(contact.id)"><i class="fas fa-trash"></i></button>
+          <button class="w-10 h-10 rounded-full" [ngClass]="contact.isFavorite ? 'bg-yellow-400 text-white' : 'bg-gray-100 hover:bg-gray-200'" (click)="toggleFavorite(contact)"><i class="fas fa-star"></i></button>
         </div>
       </div>
     </div>
 
     <!-- Pagination -->
-    <div class="pagination" *ngIf="totalPages > 1" [@slideInUp]>
-      <button 
-        class="pagination-btn" 
-        [disabled]="currentPage === 1"
-        (click)="previousPage()">
-        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
-        </svg>
-        Previous
-      </button>
-      
-      <div class="page-info">
-        Page {{ currentPage }} of {{ totalPages }}
-      </div>
-      
-      <button 
-        class="pagination-btn" 
-        [disabled]="currentPage === totalPages"
-        (click)="nextPage()">
-        Next
-        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-        </svg>
-      </button>
-    </div>
-
-    <!-- Empty State -->
-    <div class="empty-state" *ngIf="filteredContacts.length === 0" [@slideInUp]>
-      <div class="empty-icon">👥</div>
-      <h3>No Contacts Found</h3>
-      <p>Add your first contact to start sending money easily</p>
-      <button class="add-btn" (click)="toggleAddForm()">
-        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
-        </svg>
-        Add Your First Contact
-      </button>
+    <div class="flex justify-center items-center gap-4" *ngIf="(totalPages$ | async)! > 1">
+      <button class="py-2 px-4 rounded-lg font-semibold bg-gray-100 text-gray-700 hover:bg-gray-200 transition-colors" [disabled]="currentPage === 1" (click)="previousPage()">Previous</button>
+      <span>{{ currentPage }} / {{ totalPages$ | async }}</span>
+      <button class="py-2 px-4 rounded-lg font-semibold bg-gray-100 text-gray-700 hover:bg-gray-200 transition-colors" [disabled]="currentPage === (totalPages$ | async)" (click)="nextPage()">Next</button>
     </div>
   </div>
 </div>

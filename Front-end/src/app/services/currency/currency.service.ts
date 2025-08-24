@@ -68,7 +68,7 @@ export class CurrencyService {
 
   constructor(
     private http: HttpClient,
-    @Inject(PLATFORM_ID) private platformId: Object
+    @Inject(PLATFORM_ID) private platformId: object
   ) {
     this.initializeService();
   }
@@ -161,7 +161,7 @@ export class CurrencyService {
     feePercentage: number;
     totalAmount: number;
   }> {
-    return this.http.get<ApiResponse<any>>(
+    return this.http.get<ApiResponse<ConversionFeeResponse>>(
       `${this.apiUrl}/fees?from=${fromCurrency}&to=${toCurrency}&amount=${amount}`
     ).pipe(
       map(response => response.data),
@@ -175,7 +175,7 @@ export class CurrencyService {
     limit: number = 20,
     offset: number = 0
   ): Observable<CurrencyConversion[]> {
-    let params = new URLSearchParams();
+    const params = new URLSearchParams();
     if (walletId) params.set('walletId', walletId);
     params.set('limit', limit.toString());
     params.set('offset', offset.toString());
@@ -203,7 +203,7 @@ export class CurrencyService {
     conversionCount: number;
     averageAmount: number;
   }[]> {
-    return this.http.get<ApiResponse<any>>(`${this.apiUrl}/popular-pairs`)
+    return this.http.get<ApiResponse<PopularCurrencyPair[]>>(`${this.apiUrl}/popular-pairs`)
       .pipe(
         map(response => response.data || []),
         catchError(this.handleError)

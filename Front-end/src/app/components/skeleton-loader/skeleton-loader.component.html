@@ -1,0 +1,9 @@
+<div class="bg-gray-200 animate-pulse"
+  [ngClass]="{
+    'rounded-full': type === 'avatar',
+    'rounded-lg': type !== 'avatar' || rounded
+  }"
+  [style.width]="type === 'avatar' ? '3rem' : width"
+  [style.height]="type === 'avatar' ? '3rem' : height"
+  @fadeIn>
+</div>

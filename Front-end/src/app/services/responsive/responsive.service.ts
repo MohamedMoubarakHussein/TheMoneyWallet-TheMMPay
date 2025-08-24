@@ -42,7 +42,7 @@ export class ResponsiveService {
 
   private config: ResponsiveConfig;
 
-  constructor(@Inject(PLATFORM_ID) private platformId: Object) {
+  constructor(@Inject(PLATFORM_ID) private platformId: object) {
     this.config = this.DEFAULT_CONFIG;
     this.initializeResponsiveService();
   }

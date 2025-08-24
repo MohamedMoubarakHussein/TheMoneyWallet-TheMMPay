@@ -1,7 +1,7 @@
 import { Injectable, Inject, PLATFORM_ID } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { BehaviorSubject, Observable, throwError, timer } from 'rxjs';
-import { switchMap, tap, finalize, catchError } from 'rxjs/operators';
+import { switchMap, tap, finalize, catchError, map } from 'rxjs/operators';
 import { isPlatformBrowser } from '@angular/common';
 import { User, UnifiedResponse } from '../../../entity/UnifiedResponse';
 import { AuthStateService } from '../state/AuthState.service';
@@ -16,14 +16,37 @@ export class TokenService {
   private refreshTokenSubject = new BehaviorSubject<string | null>(null);
   private isRefreshing = false;
 
-  private refreshTimer: any = null;
+  private refreshTimer: ReturnType<typeof setTimeout> | null = null;
+  private readonly dashboardUrl = 'http://localhost:8095/dashboard/user';
 
   constructor(
     private http: HttpClient,
     private authStateService: AuthStateService,
-    @Inject(PLATFORM_ID) private platformId: Object
+    @Inject(PLATFORM_ID) private platformId: object
   ) {}
 
+  private extractUserFromToken(token: string): Observable<User> {
+    const headers = new HttpHeaders({
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': 'application/json'
+    });
+    
+    return this.http.get<UnifiedResponse>(this.dashboardUrl, { headers }).pipe(
+      map((unifiedResponse: UnifiedResponse) => {
+        const user = JSON.parse(unifiedResponse.data['DATA']['dashboard']);
+        return user;
+      }),
+      catchError(error => {
+        let message = 'Failed to retrieve user profile from token';
+        try {
+          message = JSON.parse(error.error.data['ERROR']);
+        } catch (_) {
+        }
+        console.error('Profile extraction from token failed:', error);
+        return throwError(() => new Error(message));
+      })
+    );
+  }
 
   updateSession(user: User, token: string, tokenExpirationSeconds: number): void {
     // Only access localStorage in browser environment
@@ -59,7 +82,7 @@ export class TokenService {
   }
 
  
-  validateToken(token: string): Observable<any> {
+  validateToken(token: string): Observable<User> {
     return this.http.get<UnifiedResponse>(`${this.apiUrl}auth/validate`, {
       headers: new HttpHeaders({
         'Authorization': `Bearer ${token}`,
@@ -67,9 +90,9 @@ export class TokenService {
       }),
       withCredentials: true
     }).pipe(
-      tap(response => {
-       
-        console.log('Token validated successfully');
+      switchMap(response => {
+        console.log('Token validated successfully', response);
+        return this.extractUserFromToken(token);
       }),
       catchError(error => {
         console.error('Token validation failed:', error);
@@ -102,7 +125,7 @@ export class TokenService {
   }
 
  
-  attemptTokenRefresh(): Observable<any> {
+  attemptTokenRefresh(): Observable<User> {
 
     if (this.isRefreshing) {
       return this.refreshTokenSubject.pipe(
@@ -157,21 +180,29 @@ export class TokenService {
 
   
   initializeTokenValidation(): void {
+    console.log('TokenService: Initializing token validation');
     const token = this.getToken();
     if (token) {
+      console.log('TokenService: Found token, validating...');
       this.validateToken(token).pipe(
         catchError(() => {
+          console.log('TokenService: Token validation failed, attempting refresh...');
           return this.attemptTokenRefresh();
         })
       ).subscribe({
-        next: () => {
-          this.authStateService.setAuthenticationStatus(true);
+        next: (user: User) => {
+          console.log('TokenService: Token validated/refreshed successfully, setting auth status true and user', user);
+          this.authStateService.setAuthenticatedUser(user);
         },
         error: () => {
+          console.log('TokenService: Token validation/refresh failed, clearing token and setting auth status false');
           this.clearToken();
           this.authStateService.setAuthenticationStatus(false);
         }
       });
+    } else {
+      console.log('TokenService: No token found, setting auth status false');
+      this.authStateService.setAuthenticationStatus(false);
     }
   }
 }

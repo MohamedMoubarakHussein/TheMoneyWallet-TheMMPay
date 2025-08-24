@@ -3,13 +3,13 @@
 <div class="min-h-screen flex">
   <!-- Left Section - Sign In Form -->
   <div class="flex-1 flex items-center justify-center px-4 sm:px-6 lg:px-8 py-12">
-    <div class="max-w-md w-full space-y-8">
+    <div class="max-w-md w-full space-y-8" @fadeInUp>
       <div class="text-center">
         <h1 class="text-3xl font-bold text-gray-900 mb-2">Welcome Back</h1>
         <p class="text-gray-600">Sign in to manage your payments and bills</p>
       </div>
 
-      <div *ngIf="serverError" class="bg-red-50 border border-red-200 rounded-lg p-4">
+      <div *ngIf="serverError" class="bg-red-50 border border-red-200 rounded-lg p-4 animate-fadeIn">
         <p class="text-red-800 text-sm">{{ serverError }}</p>
       </div>
 
@@ -23,7 +23,7 @@
             (input)="clearServerError()"
             class="w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
           >
-          <div *ngIf="submitted && signinForm.get('email')?.errors" class="text-red-600 text-sm">
+          <div *ngIf="submitted && signinForm.get('email')?.errors" class="text-red-600 text-sm animate-fadeIn">
             <div *ngIf="signinForm.get('email')?.hasError('required')">
               Email is required
             </div>
@@ -42,7 +42,7 @@
             (input)="clearServerError()"
             class="w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
           >
-          <div *ngIf="submitted && signinForm.get('password')?.errors" class="text-red-600 text-sm">
+          <div *ngIf="submitted && signinForm.get('password')?.errors" class="text-red-600 text-sm animate-fadeIn">
             <div *ngIf="signinForm.get('password')?.hasError('required')">
               Password is required
             </div>
@@ -59,8 +59,11 @@
           </button>
         </div>
 
-        <button type="submit" class="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors">
-          Sign In
+        <button type="submit" [disabled]="isLoading" class="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors disabled:opacity-50">
+          <span *ngIf="!isLoading">Sign In</span>
+          <span *ngIf="isLoading">
+            <i class="fas fa-spinner fa-spin"></i> Signing In...
+          </span>
         </button>
 
         <div class="relative">
@@ -95,7 +98,7 @@
   <div class="hidden lg:block lg:w-1/2 relative">
     <div class="absolute inset-0 bg-gradient-to-br from-blue-900 to-blue-500"></div>
     <div class="relative h-full flex items-center justify-center px-8">
-      <div class="text-center text-white">
+      <div class="text-center text-white" @fadeInUp>
         <h2 class="text-4xl font-bold mb-4">Secure Payment Platform</h2>
         <p class="text-xl text-blue-100">Manage all your financial transactions in one secure place</p>
       </div>
@@ -105,5 +108,5 @@
 
 <app-coming-soon 
 *ngIf="showComingSoon" 
-(close)="showComingSoon = false">
+(closeModal)="showComingSoon = false">
 </app-coming-soon>

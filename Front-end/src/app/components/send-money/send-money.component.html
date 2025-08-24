@@ -1,134 +1,129 @@
-<div class="max-w-4xl mx-auto my-8 p-8">
-    <div class="flex justify-between items-center mb-8">
-      <h2 class="text-2xl font-bold text-gray-900">Send Money</h2>
-      <button class="bg-gray-100 border-none py-3 px-6 rounded-lg cursor-pointer flex items-center gap-2 transition-all duration-300 hover:bg-gray-200" routerLink="/dashboard">
-        <i class="fas fa-arrow-left"></i>
-        Back to Dashboard
-      </button>
+<div class="max-w-4xl mx-auto my-8 p-8 animate-fadeIn">
+  <div class="flex justify-between items-center mb-8">
+    <h2 class="text-3xl font-bold text-text-dark">Send Money</h2>
+    <button class="flex items-center gap-2 py-2 px-4 rounded-lg font-semibold bg-gray-100 text-gray-700 hover:bg-gray-200 transition-colors" routerLink="/dashboard">
+      <i class="fas fa-arrow-left"></i>
+      Back to Dashboard
+    </button>
+  </div>
+
+  <div class="bg-white p-8 rounded-2xl shadow-lg">
+    <div class="flex justify-between mb-8 py-4 border-b-2 border-gray-100">
+      <div class="font-medium relative flex-1 text-center" [ngClass]="{'text-primary font-semibold': (currentStep$ | async) === 1, 'text-gray-500': (currentStep$ | async) !== 1}">1. Recipient</div>
+      <div class="font-medium relative flex-1 text-center" [ngClass]="{'text-primary font-semibold': (currentStep$ | async) === 2, 'text-gray-500': (currentStep$ | async) !== 2}">2. Amount</div>
+      <div class="font-medium relative flex-1 text-center" [ngClass]="{'text-primary font-semibold': (currentStep$ | async) === 3, 'text-gray-500': (currentStep$ | async) !== 3}">3. Confirm</div>
     </div>
-  
-    <div class="bg-white p-8 rounded-2xl shadow-sm">
-      <div class="flex justify-between mb-8 py-4 border-b-2 border-gray-100">
-        <div class="text-gray-500 font-medium relative flex-1 text-center" [class.text-blue-900]="currentStep === 1" [class.font-semibold]="currentStep === 1">1. Recipient</div>
-        <div class="text-gray-500 font-medium relative flex-1 text-center" [class.text-blue-900]="currentStep === 2" [class.font-semibold]="currentStep === 2">2. Amount</div>
-        <div class="text-gray-500 font-medium relative flex-1 text-center" [class.text-blue-900]="currentStep === 3" [class.font-semibold]="currentStep === 3">3. Confirm</div>
-      </div>
-  
-      <form *ngIf="currentStep === 1" (ngSubmit)="nextStep()">
+
+    <div [@stepAnimation]="currentStep$ | async">
+      <!-- Step 1: Recipient -->
+      <form *ngIf="(currentStep$ | async) === 1" (ngSubmit)="nextStep()">
         <div class="mb-6">
-          <label class="block mb-2 text-blue-900 font-medium">Select Recipient</label>
+          <label class="block mb-2 text-text-dark font-medium">Select Recipient</label>
           <div class="space-y-3">
-            <div class="p-4 border-2 border-gray-200 rounded-lg cursor-pointer transition-all duration-300 hover:border-blue-500" 
+            <div class="p-4 border-2 rounded-lg cursor-pointer transition-all duration-300 hover:border-primary-dark" 
                  *ngFor="let recipient of recentRecipients" 
                  (click)="selectRecipient(recipient)"
-                 [class.border-blue-500]="selectedRecipient?.id === recipient.id"
-                 [class.bg-blue-50]="selectedRecipient?.id === recipient.id">
+                 [ngClass]="{'border-primary bg-primary/10': (selectedRecipient$ | async)?.id === recipient.id, 'border-gray-200': (selectedRecipient$ | async)?.id !== recipient.id}">
               <div class="flex items-center gap-4">
                 <img [src]="recipient.avatar" alt="avatar" class="w-12 h-12 rounded-full">
                 <div>
-                  <h4 class="font-semibold text-gray-900">{{ recipient.name }}</h4>
+                  <h4 class="font-semibold text-text-dark">{{ recipient.name }}</h4>
                   <p class="text-gray-600 text-sm">{{ recipient.accountNumber }}</p>
                 </div>
               </div>
             </div>
           </div>
         </div>
-  
         <div class="mb-6">
-          <label class="block mb-2 text-blue-900 font-medium">Or enter new account number</label>
+          <label class="block mb-2 text-text-dark font-medium">Or enter new account number</label>
           <input type="text" [(ngModel)]="newAccountNumber" name="accountNumber" 
                  placeholder="Enter account number"
-                 class="w-full p-3 border-2 border-gray-200 rounded-lg text-base transition-all duration-300 focus:outline-none focus:border-blue-500">
+                 class="w-full p-3 border-2 border-gray-200 rounded-lg text-base transition-colors focus:outline-none focus:border-primary">
         </div>
-  
         <div class="flex justify-end">
-          <button type="submit" class="py-3 px-8 border-none rounded-lg font-medium cursor-pointer transition-all duration-300 bg-blue-900 text-white hover:bg-blue-800">Continue</button>
+          <button type="submit" class="py-3 px-8 rounded-lg font-medium cursor-pointer transition-colors bg-primary text-white hover:bg-primary-dark">Continue</button>
         </div>
       </form>
-  
-      <form *ngIf="currentStep === 2" (ngSubmit)="nextStep()">
+
+      <!-- Step 2: Amount -->
+      <form *ngIf="(currentStep$ | async) === 2" (ngSubmit)="nextStep()">
         <div class="mb-6">
-          <label class="block mb-2 text-blue-900 font-medium">Amount</label>
+          <label class="block mb-2 text-text-dark font-medium">Amount</label>
           <div class="relative">
-            <span class="absolute left-3 top-1/2 transform -translate-y-1/2 font-semibold text-blue-900">{{ selectedCurrency }}</span>
+            <span class="absolute left-3 top-1/2 transform -translate-y-1/2 font-semibold text-text-dark">{{ selectedCurrency }}</span>
             <input type="number" [(ngModel)]="transactionData.amount" 
                    name="amount" required min="0.01" step="0.01"
-                   class="w-full p-3 border-2 border-gray-200 rounded-lg text-base transition-all duration-300 focus:outline-none focus:border-blue-500 pl-12">
+                   class="w-full p-3 border-2 border-gray-200 rounded-lg text-base transition-colors focus:outline-none focus:border-primary pl-12">
           </div>
         </div>
-  
         <div class="mb-6">
-          <label class="block mb-2 text-blue-900 font-medium">Currency</label>
+          <label class="block mb-2 text-text-dark font-medium">Currency</label>
           <select [(ngModel)]="selectedCurrency" name="currency"
-                  class="w-full p-3 border-2 border-gray-200 rounded-lg text-base transition-all duration-300 focus:outline-none focus:border-blue-500">
+                  class="w-full p-3 border-2 border-gray-200 rounded-lg text-base transition-colors focus:outline-none focus:border-primary">
             <option *ngFor="let currency of currencies" [value]="currency.code">
               {{ currency.name }} ({{ currency.symbol }})
             </option>
           </select>
         </div>
-  
         <div class="mb-6">
-          <label class="block mb-2 text-blue-900 font-medium">Add Note (Optional)</label>
+          <label class="block mb-2 text-text-dark font-medium">Add Note (Optional)</label>
           <textarea [(ngModel)]="transactionData.note" 
                    placeholder="Payment description"
-                   class="w-full p-3 border-2 border-gray-200 rounded-lg text-base transition-all duration-300 focus:outline-none focus:border-blue-500 resize-none"
+                   class="w-full p-3 border-2 border-gray-200 rounded-lg text-base transition-colors focus:outline-none focus:border-primary resize-none"
                    rows="3"></textarea>
         </div>
-  
         <div class="flex justify-end gap-4">
-          <button type="button" class="py-3 px-8 border-none rounded-lg font-medium cursor-pointer transition-all duration-300 bg-gray-100 text-gray-600 hover:bg-gray-200" (click)="previousStep()">Back</button>
-          <button type="submit" class="py-3 px-8 border-none rounded-lg font-medium cursor-pointer transition-all duration-300 bg-blue-900 text-white hover:bg-blue-800">Continue</button>
+          <button type="button" class="py-3 px-8 rounded-lg font-medium cursor-pointer transition-colors bg-gray-100 text-gray-600 hover:bg-gray-200" (click)="previousStep()">Back</button>
+          <button type="submit" class="py-3 px-8 rounded-lg font-medium cursor-pointer transition-colors bg-primary text-white hover:bg-primary-dark">Continue</button>
         </div>
       </form>
-  
-      <div *ngIf="currentStep === 3">
+
+      <!-- Step 3: Confirmation -->
+      <div *ngIf="(currentStep$ | async) === 3">
         <div class="mb-8">
-          <h3 class="text-blue-900 mt-0 mb-6 font-semibold">Confirm Transaction</h3>
-          
+          <h3 class="text-text-dark mt-0 mb-6 font-semibold">Confirm Transaction</h3>
           <div class="mb-6">
             <span class="text-gray-600 block mb-2 text-sm">Recipient:</span>
             <div class="flex items-center gap-4 p-4 bg-gray-100 rounded-lg">
-              <img [src]="selectedRecipient?.avatar" alt="avatar" class="w-12 h-12 rounded-full">
+              <img [src]="(selectedRecipient$ | async)?.avatar" alt="avatar" class="w-12 h-12 rounded-full">
               <div>
-                <h4 class="font-semibold text-gray-900">{{ selectedRecipient?.name || newAccountNumber }}</h4>
-                <p class="text-gray-600 text-sm">{{ selectedRecipient?.accountNumber || newAccountNumber }}</p>
+                <h4 class="font-semibold text-text-dark">{{ (selectedRecipient$ | async)?.name || newAccountNumber }}</h4>
+                <p class="text-gray-600 text-sm">{{ (selectedRecipient$ | async)?.accountNumber || newAccountNumber }}</p>
               </div>
             </div>
           </div>
-  
           <div class="mb-6">
             <span class="text-gray-600 block mb-2 text-sm">Amount:</span>
-            <h4 class="text-xl font-semibold text-blue-900">{{ transactionData.amount | currency:selectedCurrency }}</h4>
+            <h4 class="text-xl font-semibold text-primary">{{ transactionData.amount | currency:selectedCurrency }}</h4>
           </div>
-  
           <div class="mb-6" *ngIf="transactionData.note">
             <span class="text-gray-600 block mb-2 text-sm">Note:</span>
-            <p class="text-gray-900">{{ transactionData.note }}</p>
+            <p class="text-text-dark">{{ transactionData.note }}</p>
           </div>
-  
           <div class="bg-blue-50 text-blue-800 p-4 rounded-lg my-8 flex items-center gap-2">
             <i class="fas fa-info-circle"></i>
             A transfer fee of {{ fee | currency:selectedCurrency }} will be applied
           </div>
         </div>
-  
         <div class="flex justify-end gap-4">
-          <button type="button" class="py-3 px-8 border-none rounded-lg font-medium cursor-pointer transition-all duration-300 bg-gray-100 text-gray-600 hover:bg-gray-200" (click)="previousStep()">Back</button>
-          <button type="button" class="py-3 px-8 border-none rounded-lg font-medium cursor-pointer transition-all duration-300 bg-blue-900 text-white hover:bg-blue-800 disabled:bg-gray-400 disabled:cursor-not-allowed" 
+          <button type="button" class="py-3 px-8 rounded-lg font-medium cursor-pointer transition-colors bg-gray-100 text-gray-600 hover:bg-gray-200" (click)="previousStep()">Back</button>
+          <button type="button" class="py-3 px-8 rounded-lg font-medium cursor-pointer transition-colors bg-primary text-white hover:bg-primary-dark disabled:bg-gray-400 disabled:cursor-not-allowed" 
                   (click)="confirmTransaction()"
-                  [disabled]="processing">
-            <span *ngIf="!processing">Confirm Payment</span>
-            <span *ngIf="processing">Processing...</span>
+                  [disabled]="processing$ | async">
+            <span *ngIf="(processing$ | async) === false">Confirm Payment</span>
+            <span *ngIf="processing$ | async">Processing...</span>
           </button>
         </div>
       </div>
-  
-      <div *ngIf="transactionComplete" class="text-center p-8">
+
+      <!-- Step 4: Success -->
+      <div *ngIf="transactionComplete$ | async" class="text-center p-8 animate-scaleUp">
         <i class="fas fa-check-circle text-6xl text-green-500 mb-4"></i>
         <h3 class="text-green-500 mb-2 font-semibold">Payment Successful!</h3>
         <p class="text-gray-600 mb-8">Your payment of {{ transactionData.amount | currency:selectedCurrency }} 
-           has been sent to {{ selectedRecipient?.name || newAccountNumber }}</p>
-        <button class="bg-green-500 text-white border-none py-3 px-8 rounded-lg cursor-pointer transition-all duration-300 hover:bg-green-600" routerLink="/dashboard">Back to Dashboard</button>
+           has been sent to {{ (selectedRecipient$ | async)?.name || newAccountNumber }}</p>
+        <button class="bg-green-500 text-white py-3 px-8 rounded-lg cursor-pointer transition-colors hover:bg-green-600" routerLink="/dashboard">Back to Dashboard</button>
       </div>
     </div>
   </div>
+</div>

@@ -1,74 +1,117 @@
-import { Component } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
-
-interface Recipient {
-  id: string;
-  name: string;
-  accountNumber: string;
-  avatar: string;
-}
-
-interface Currency {
-  code: string;
-  name: string;
-  symbol: string;
-}
+import { Observable, Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
+import { SendMoneyService, Recipient, Currency, TransactionData } from '../../services/send-money.service';
+import { trigger, transition, style, animate, query, group } from '@angular/animations';
 
 @Component({
   selector: 'app-send-money',
   standalone: true,
   imports: [CommonModule, FormsModule, RouterModule],
   templateUrl: './send-money.component.html',
-
+  animations: [
+    trigger('stepAnimation', [
+      transition(':increment', [
+        style({ position: 'relative' }),
+        query(':enter, :leave', [
+          style({
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            width: '100%'
+          })
+        ]),
+        query(':enter', [
+          style({ left: '100%', opacity: 0 })
+        ]),
+        group([
+          query(':leave', [
+            animate('300ms ease-out', style({ left: '-100%', opacity: 0 }))
+          ]),
+          query(':enter', [
+            animate('300ms ease-out', style({ left: '0%', opacity: 1 }))
+          ])
+        ]),
+      ]),
+      transition(':decrement', [
+        style({ position: 'relative' }),
+        query(':enter, :leave', [
+          style({
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            width: '100%'
+          })
+        ]),
+        query(':enter', [
+          style({ left: '-100%', opacity: 0 })
+        ]),
+        group([
+          query(':leave', [
+            animate('300ms ease-out', style({ left: '100%', opacity: 0 }))
+          ]),
+          query(':enter', [
+            animate('300ms ease-out', style({ left: '0%', opacity: 1 }))
+          ])
+        ]),
+      ])
+    ])
+  ]
 })
-export class SendMoneyComponent {
-  currentStep = 1;
-  transactionComplete = false;
-  processing = false;
-  fee = 2.5;
+export class SendMoneyComponent implements OnInit, OnDestroy {
+  currentStep$: Observable<number>;
+  transactionComplete$: Observable<boolean>;
+  processing$: Observable<boolean>;
+  selectedRecipient$: Observable<Recipient | null>;
   
-  recentRecipients: Recipient[] = [
-    { id: '1', name: 'John Doe', accountNumber: '**** 1234', avatar: 'assets/avatar1.png' },
-    { id: '2', name: 'Jane Smith', accountNumber: '**** 5678', avatar: 'assets/avatar2.png' },
-    { id: '3', name: 'Acme Corp', accountNumber: '**** 9012', avatar: 'assets/avatar3.png' }
-  ];
-
-  currencies: Currency[] = [
-    { code: 'USD', name: 'US Dollar', symbol: '$' },
-    { code: 'EUR', name: 'Euro', symbol: '€' },
-    { code: 'GBP', name: 'British Pound', symbol: '£' }
-  ];
-
+  recentRecipients: Recipient[];
+  currencies: Currency[];
+  
+  newAccountNumber: string = '';
+  transactionData: TransactionData = { amount: 0, note: '' };
   selectedCurrency = 'USD';
-  selectedRecipient?: Recipient;
-  newAccountNumber = '';
-  
-  transactionData = {
-    amount: 0,
-    note: ''
-  };
+  fee = 2.5;
+
+  private destroy$ = new Subject<void>();
+
+  constructor(private sendMoneyService: SendMoneyService) {
+    this.currentStep$ = this.sendMoneyService.getCurrentStep();
+    this.transactionComplete$ = this.sendMoneyService.isTransactionComplete();
+    this.processing$ = this.sendMoneyService.isProcessing();
+    this.selectedRecipient$ = this.sendMoneyService.getSelectedRecipient();
+    this.recentRecipients = this.sendMoneyService.getRecentRecipients();
+    this.currencies = this.sendMoneyService.getCurrencies();
+  }
+
+  ngOnInit(): void {
+    this.sendMoneyService.getNewAccountNumber().pipe(takeUntil(this.destroy$)).subscribe(accNum => this.newAccountNumber = accNum);
+    this.sendMoneyService.getTransactionData().pipe(takeUntil(this.destroy$)).subscribe(data => this.transactionData = data);
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+    this.sendMoneyService.reset();
+  }
 
   nextStep() {
-    this.currentStep = Math.min(this.currentStep + 1, 3);
+    this.sendMoneyService.setTransactionData(this.transactionData);
+    this.sendMoneyService.setNewAccountNumber(this.newAccountNumber);
+    this.sendMoneyService.nextStep();
   }
 
   previousStep() {
-    this.currentStep = Math.max(this.currentStep - 1, 1);
+    this.sendMoneyService.previousStep();
   }
 
   selectRecipient(recipient: Recipient) {
-    this.selectedRecipient = recipient;
-    this.newAccountNumber = '';
+    this.sendMoneyService.selectRecipient(recipient);
   }
 
   confirmTransaction() {
-    this.processing = true;
-    // Simulate API call
-    setTimeout(() => {
-      this.processing = false;
-      this.transactionComplete = true;
-    }, 2000);
+    this.sendMoneyService.confirmTransaction();
   }
 }

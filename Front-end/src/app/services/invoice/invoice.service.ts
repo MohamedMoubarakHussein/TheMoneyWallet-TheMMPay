@@ -2,10 +2,9 @@ import { Injectable, Inject, PLATFORM_ID } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Observable, BehaviorSubject, throwError } from 'rxjs';
 import { catchError, tap, map } from 'rxjs/operators';
-import { isPlatformBrowser } from '@angular/common';
 import { Invoice, ApiResponse } from '../../entity/UnifiedResponse';
 import { environment } from '../../environments/environment';
-import { isClientError, getSafeErrorMessage } from '../../utilities/error.utils';
+import { getSafeErrorMessage } from '../../utilities/error.utils';
 
 export interface CreateInvoiceRequest {
   walletId: string;
@@ -56,12 +55,12 @@ export class InvoiceService {
 
   constructor(
     private http: HttpClient,
-    @Inject(PLATFORM_ID) private platformId: Object
+    @Inject(PLATFORM_ID) private platformId: object
   ) {}
 
   // Get all invoices for a user
   getInvoices(walletId?: string, status?: string): Observable<Invoice[]> {
-    let params = new URLSearchParams();
+    const params = new URLSearchParams();
     if (walletId) params.set('walletId', walletId);
     if (status) params.set('status', status);
 
@@ -176,7 +175,7 @@ export class InvoiceService {
     let params = '';
     if (walletId) params = `?walletId=${walletId}`;
 
-    return this.http.get<ApiResponse<any>>(`${this.apiUrl}/stats${params}`)
+    return this.http.get<ApiResponse<InvoiceStats>>(`${this.apiUrl}/stats${params}`)
       .pipe(
         map(response => response.data),
         catchError(this.handleError)

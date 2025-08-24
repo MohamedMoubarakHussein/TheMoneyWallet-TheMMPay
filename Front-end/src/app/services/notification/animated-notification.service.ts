@@ -1,5 +1,5 @@
 import { Injectable, NgZone } from '@angular/core';
-import { Subject, Observable } from 'rxjs';
+import { Subject } from 'rxjs';
 
 export type NotificationType = 'success' | 'error' | 'warning' | 'info';
 

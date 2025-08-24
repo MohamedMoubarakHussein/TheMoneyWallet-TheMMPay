@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Observable, BehaviorSubject, throwError } from 'rxjs';
 import { catchError, tap, map } from 'rxjs/operators';
-import { SecuritySettings, AuditLog, ApiResponse } from '../../entity/UnifiedResponse';
+import { SecuritySettings, AuditLog, ApiResponse, TwoFactorSetupResponse, TwoFactorVerificationResponse, SecurityAlert, DeviceSession, SecurityScore } from '../../entity/UnifiedResponse';
 import { environment } from '../../environments/environment';
 
 export interface TwoFactorSetupRequest {
@@ -110,7 +110,7 @@ export class SecurityService {
 
   // Disable two-factor authentication
   disableTwoFactor(password: string): Observable<{ success: boolean; message: string }> {
-    return this.http.post<ApiResponse<any>>(`${this.apiUrl}/2fa/disable`, { password })
+    return this.http.post<ApiResponse<{ success: boolean; message: string }>>(`${this.apiUrl}/2fa/disable`, { password })
       .pipe(
         map(response => response.data),
         catchError(this.handleError)
@@ -119,7 +119,7 @@ export class SecurityService {
 
   // Change password
   changePassword(passwordData: PasswordChangeRequest): Observable<{ success: boolean; message: string }> {
-    return this.http.post<ApiResponse<any>>(`${this.apiUrl}/password/change`, passwordData)
+    return this.http.post<ApiResponse<{ success: boolean; message: string }>>(`${this.apiUrl}/password/change`, passwordData)
       .pipe(
         map(response => response.data),
         catchError(this.handleError)
@@ -135,7 +135,7 @@ export class SecurityService {
     startDate?: Date,
     endDate?: Date
   ): Observable<AuditLog[]> {
-    let params = new URLSearchParams();
+    const params = new URLSearchParams();
     params.set('limit', limit.toString());
     params.set('offset', offset.toString());
     if (action) params.set('action', action);
@@ -161,15 +161,8 @@ export class SecurityService {
   }
 
   // Get security alerts
-  getSecurityAlerts(): Observable<{
-    id: string;
-    type: 'warning' | 'critical';
-    title: string;
-    message: string;
-    timestamp: Date;
-    isRead: boolean;
-  }[]> {
-    return this.http.get<ApiResponse<any>>(`${this.apiUrl}/alerts`)
+  getSecurityAlerts(): Observable<SecurityAlert[]> {
+    return this.http.get<ApiResponse<SecurityAlert[]>>(`${this.apiUrl}/alerts`)
       .pipe(
         map(response => response.data || []),
         catchError(this.handleError)
@@ -178,7 +171,7 @@ export class SecurityService {
 
   // Mark security alert as read
   markAlertAsRead(alertId: string): Observable<{ success: boolean; message: string }> {
-    return this.http.patch<ApiResponse<any>>(`${this.apiUrl}/alerts/${alertId}/read`, {})
+    return this.http.patch<ApiResponse<{ success: boolean; message: string }>>(`${this.apiUrl}/alerts/${alertId}/read`, {})
       .pipe(
         map(response => response.data),
         catchError(this.handleError)
@@ -186,15 +179,8 @@ export class SecurityService {
   }
 
   // Get device sessions
-  getDeviceSessions(): Observable<{
-    id: string;
-    deviceName: string;
-    browser: string;
-    ipAddress: string;
-    lastActive: Date;
-    isCurrent: boolean;
-  }[]> {
-    return this.http.get<ApiResponse<any>>(`${this.apiUrl}/sessions`)
+  getDeviceSessions(): Observable<DeviceSession[]> {
+    return this.http.get<ApiResponse<DeviceSession[]>>(`${this.apiUrl}/sessions`)
       .pipe(
         map(response => response.data || []),
         catchError(this.handleError)
@@ -203,7 +189,7 @@ export class SecurityService {
 
   // Revoke device session
   revokeSession(sessionId: string): Observable<{ success: boolean; message: string }> {
-    return this.http.delete<ApiResponse<any>>(`${this.apiUrl}/sessions/${sessionId}`)
+    return this.http.delete<ApiResponse<{ success: boolean; message: string }>>(`${this.apiUrl}/sessions/${sessionId}`)
       .pipe(
         map(response => response.data),
         catchError(this.handleError)
@@ -212,7 +198,7 @@ export class SecurityService {
 
   // Revoke all other sessions
   revokeAllOtherSessions(): Observable<{ success: boolean; message: string }> {
-    return this.http.delete<ApiResponse<any>>(`${this.apiUrl}/sessions/revoke-others`)
+    return this.http.delete<ApiResponse<{ success: boolean; message: string }>>(`${this.apiUrl}/sessions/revoke-others`)
       .pipe(
         map(response => response.data),
         catchError(this.handleError)
@@ -226,7 +212,7 @@ export class SecurityService {
     percentage: number;
     recommendations: string[];
   }> {
-    return this.http.get<ApiResponse<any>>(`${this.apiUrl}/score`)
+    return this.http.get<ApiResponse<SecurityScore>>(`${this.apiUrl}/score`)
       .pipe(
         map(response => response.data),
         catchError(this.handleError)

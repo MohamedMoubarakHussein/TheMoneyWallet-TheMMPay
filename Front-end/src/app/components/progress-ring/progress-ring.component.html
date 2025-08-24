@@ -1,0 +1,10 @@
+<div class="relative" [style.width.px]="size" [style.height.px]="size" @fadeIn>
+  <svg class="w-full h-full" [attr.viewBox]="'0 0 ' + size + ' ' + size">
+    <circle class="text-gray-200" stroke-width="thickness" stroke="currentColor" fill="transparent" [attr.r]="radius" [attr.cx]="size/2" [attr.cy]="size/2"/>
+    <circle class="text-primary" stroke-width="thickness" [attr.stroke-dasharray]="circumference" [attr.stroke-dashoffset]="strokeDashoffset" stroke-linecap="round" stroke="currentColor" fill="transparent" [attr.r]="radius" [attr.cx]="size/2" [attr.cy]="size/2"/>
+  </svg>
+  <div class="absolute inset-0 flex flex-col items-center justify-center text-center">
+    <span *ngIf="showValue" class="text-xl font-bold text-text-dark">{{ value }}%</span>
+    <span *ngIf="label" class="text-xs text-gray-500">{{ label }}</span>
+  </div>
+</div>

@@ -3,8 +3,7 @@ import { CommonModule } from '@angular/common';
 import { RouterOutlet, Router, NavigationEnd } from '@angular/router';
 import { LoadingService } from './services/loading-service.service';
 import { MobileNavigationComponent } from './components/mobile-navigation/mobile-navigation.component';
-import { trigger, state, style, transition, animate, query, stagger, group } from '@angular/animations';
-import { AnimationService } from './services/animation/animation.service';
+import { trigger, style, transition, animate, query } from '@angular/animations';
 import { filter } from 'rxjs/operators';
 
 @Component({
@@ -12,7 +11,6 @@ import { filter } from 'rxjs/operators';
   standalone: true,
   imports: [CommonModule, RouterOutlet, MobileNavigationComponent],
   templateUrl: './app.component.html',
-  styleUrls: ['./app.component.css'],
   animations: [
     trigger('routeAnimations', [
       transition('* <=> *', [
@@ -34,12 +32,6 @@ import { filter } from 'rxjs/operators';
           style({ opacity: 0, transform: 'translateY(20px)' }),
           animate('0.6s ease-out', style({ opacity: 1, transform: 'translateY(0)' }))
         ], { optional: true })
-      ])
-    ]),
-    trigger('fadeIn', [
-      transition(':enter', [
-        style({ opacity: 0 }),
-        animate('0.6s ease-out', style({ opacity: 1 }))
       ])
     ]),
     trigger('slideInFromRight', [
@@ -73,27 +65,22 @@ export class AppComponent implements OnInit {
 
   constructor(
     private loadingService: LoadingService,
-    private router: Router,
-    private animationService: AnimationService
+    private router: Router
   ) {}
 
   ngOnInit(): void {
-    // Subscribe to loading service
     this.loadingService.isLoading$.subscribe(loading => {
       this.isLoading = loading;
     });
     
-    // Track route changes to apply appropriate animations
     this.router.events.pipe(
       filter(event => event instanceof NavigationEnd)
     ).subscribe(() => {
-      // Scroll to top on route change
       window.scrollTo(0, 0);
     });
   }
   
-  // Helper method to determine the state of the route animation
-  prepareRoute(outlet: any) {
+  prepareRoute(outlet: RouterOutlet) {
     return outlet && outlet.activatedRouteData && 
            outlet.activatedRouteData['animation'];
   }

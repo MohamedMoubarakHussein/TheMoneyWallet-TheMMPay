@@ -1,50 +1,14 @@
-<div class="loading-overlay" *ngIf="isLoading" [@fadeIn]>
-  <div class="loading-container" [ngClass]="type">
-    <!-- Modern Spinner -->
-    <div class="modern-spinner" *ngIf="type === 'default'">
-      <div class="spinner-ring">
-        <div class="spinner-segment"></div>
-      </div>
-      <div class="spinner-core"></div>
+<div class="fixed inset-0 bg-black/50 flex justify-center items-center z-50" *ngIf="isLoading" @fadeIn>
+  <div class="flex flex-col items-center">
+    <div *ngIf="type === 'default'" class="animate-spin rounded-full h-16 w-16 border-b-2 border-primary"></div>
+    <div *ngIf="type === 'dots'" class="flex space-x-2">
+      <div class="w-4 h-4 bg-primary rounded-full animate-bounce"></div>
+      <div class="w-4 h-4 bg-primary rounded-full animate-bounce delay-150"></div>
+      <div class="w-4 h-4 bg-primary rounded-full animate-bounce delay-300"></div>
     </div>
-
-    <!-- Dots Spinner -->
-    <div class="dots-spinner" *ngIf="type === 'dots'">
-      <div class="dot" *ngFor="let dot of [1,2,3,4]; let i = index" 
-           [style.animation-delay]="i * 0.15 + 's'"></div>
+    <div *ngIf="type === 'progress'" class="w-64 h-4 bg-gray-200 rounded-full">
+      <div class="h-4 bg-primary rounded-full" [style.width.%]="progress"></div>
     </div>
-
-    <!-- Progress Bar -->
-    <div class="progress-spinner" *ngIf="type === 'progress' && progress > 0">
-      <div class="progress-track">
-        <div class="progress-fill" [style.width.%]="progress">
-          <div class="progress-glow"></div>
-        </div>
-      </div>
-      <div class="progress-text">{{ progress }}%</div>
-    </div>
-
-    <!-- Bar Spinner -->
-    <div class="bar-spinner" *ngIf="type === 'bars'">
-      <div class="bar" *ngFor="let bar of [1,2,3,4,5]; let i = index"
-           [style.animation-delay]="i * 0.1 + 's'"></div>
-    </div>
-
-    <!-- Pulse Spinner -->
-    <div class="pulse-spinner" *ngIf="type === 'pulse'">
-      <div class="pulse-circle"></div>
-      <div class="pulse-circle delay-1"></div>
-      <div class="pulse-circle delay-2"></div>
-    </div>
-
-    <!-- Loading Text -->
-    <div class="loading-text" *ngIf="message && message.length > 0" [@fadeIn]>
-      {{ message }}
-    </div>
-
-    <!-- Loading Subtitle -->
-    <div class="loading-subtitle" *ngIf="subtitle && subtitle.length > 0" [@fadeIn]>
-      {{ subtitle }}
-    </div>
+    <p class="text-white mt-4">{{ message }}</p>
   </div>
 </div>

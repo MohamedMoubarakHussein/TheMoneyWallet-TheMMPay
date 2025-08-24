@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Observable, BehaviorSubject, throwError } from 'rxjs';
 import { catchError, tap, map } from 'rxjs/operators';
-import { Budget, ApiResponse } from '../../entity/UnifiedResponse';
+import { Budget, ApiResponse, BudgetRecommendation, BudgetAlert } from '../../entity/UnifiedResponse';
 import { environment } from '../../environments/environment';
 
 export interface CreateBudgetRequest {
@@ -59,7 +59,7 @@ export class BudgetService {
 
   // Get all budgets for a user
   getBudgets(walletId?: string, isActive?: boolean): Observable<Budget[]> {
-    let params = new URLSearchParams();
+    const params = new URLSearchParams();
     if (walletId) params.set('walletId', walletId);
     if (isActive !== undefined) params.set('isActive', isActive.toString());
 
@@ -142,7 +142,7 @@ export class BudgetService {
 
   // Get budget analytics
   getBudgetAnalytics(walletId?: string, period?: string): Observable<BudgetAnalytics> {
-    let params = new URLSearchParams();
+    const params = new URLSearchParams();
     if (walletId) params.set('walletId', walletId);
     if (period) params.set('period', period);
 
@@ -154,12 +154,8 @@ export class BudgetService {
   }
 
   // Get budget recommendations
-  getBudgetRecommendations(walletId: string): Observable<{
-    category: string;
-    recommendedAmount: number;
-    reason: string;
-  }[]> {
-    return this.http.get<ApiResponse<any>>(`${this.apiUrl}/recommendations?walletId=${walletId}`)
+  getBudgetRecommendations(walletId: string): Observable<BudgetRecommendation[]> {
+    return this.http.get<ApiResponse<BudgetRecommendation[]>>(`${this.apiUrl}/recommendations?walletId=${walletId}`)
       .pipe(
         map(response => response.data || []),
         catchError(this.handleError)
@@ -167,20 +163,11 @@ export class BudgetService {
   }
 
   // Get budget alerts (when spending approaches limit)
-  getBudgetAlerts(walletId?: string): Observable<{
-    budgetId: string;
-    budgetName: string;
-    category: string;
-    spent: number;
-    budget: number;
-    remaining: number;
-    alertType: 'warning' | 'critical';
-    message: string;
-  }[]> {
+  getBudgetAlerts(walletId?: string): Observable<BudgetAlert[]> {
     let params = '';
     if (walletId) params = `?walletId=${walletId}`;
 
-    return this.http.get<ApiResponse<any>>(`${this.apiUrl}/alerts${params}`)
+    return this.http.get<ApiResponse<BudgetAlert[]>>(`${this.apiUrl}/alerts${params}`)
       .pipe(
         map(response => response.data || []),
         catchError(this.handleError)
@@ -251,4 +238,4 @@ export class BudgetService {
     console.error('BudgetService Error:', errorMessage);
     return throwError(() => new Error(errorMessage));
   }
-} 
+}

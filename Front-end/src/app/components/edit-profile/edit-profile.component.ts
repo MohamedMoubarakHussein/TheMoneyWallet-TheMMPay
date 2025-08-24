@@ -1,20 +1,30 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
+import { Observable } from 'rxjs';
+import { EditProfileService } from '../../services/edit-profile.service';
+import { trigger, transition, style, animate } from '@angular/animations';
 
 @Component({
   selector: 'app-edit-profile',
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './edit-profile.component.html',
-
+  animations: [
+    trigger('fadeInUp', [
+      transition(':enter', [
+        style({ opacity: 0, transform: 'translateY(20px)' }),
+        animate('500ms ease-out', style({ opacity: 1, transform: 'translateY(0)' })),
+      ]),
+    ]),
+  ],
 })
-export class EditProfileComponent {
+export class EditProfileComponent implements OnInit {
   profileForm: FormGroup;
-  loading = false;
+  loading$: Observable<boolean>;
   profileImage: string | ArrayBuffer | null = null;
 
-  constructor(private fb: FormBuilder) {
+  constructor(private fb: FormBuilder, private editProfileService: EditProfileService) {
     this.profileForm = this.fb.group({
       firstName: ['', Validators.required],
       lastName: ['', Validators.required],
@@ -26,6 +36,16 @@ export class EditProfileComponent {
       twoFactorAuth: [false],
       password: [''],
       confirmPassword: ['']
+    });
+    this.loading$ = this.editProfileService.isLoading();
+  }
+
+  ngOnInit(): void {
+    this.editProfileService.getUserProfile().subscribe(profile => {
+      if (profile) {
+        this.profileForm.patchValue(profile);
+        this.profileImage = profile.profileImage || 'assets/default-avatar.png';
+      }
     });
   }
 
@@ -42,12 +62,8 @@ export class EditProfileComponent {
 
   onSubmit(): void {
     if (this.profileForm.valid) {
-      this.loading = true;
-      // Simulate API call
-      setTimeout(() => {
-        console.log('Form submitted:', this.profileForm.value);
-        this.loading = false;
-      }, 2000);
+      const updatedProfile = { ...this.profileForm.value, profileImage: this.profileImage };
+      this.editProfileService.updateUserProfile(updatedProfile).subscribe();
     }
   }
 }

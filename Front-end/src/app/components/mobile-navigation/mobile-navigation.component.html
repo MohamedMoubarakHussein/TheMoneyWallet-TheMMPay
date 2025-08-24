@@ -1,47 +1,32 @@
-<!-- Mobile Navigation Toggle Button -->
-<button 
-  class="md:hidden fixed top-4 right-4 z-50 p-2 bg-white rounded-lg shadow-lg border border-gray-200 nav-toggle"
-  (click)="toggleNavigation()"
-  appRipple
-  appHoverAnimation="scale"
-  [scale]="1.1"
-  aria-label="Toggle navigation menu">
-  <div class="w-6 h-6 flex flex-col justify-center items-center">
-    <div class="w-5 h-0.5 bg-gray-600 mb-1 transition-all duration-300" [class.rotate-45]="isOpen" [class.translate-y-1.5]="isOpen"></div>
-    <div class="w-5 h-0.5 bg-gray-600 mb-1 transition-all duration-300" [class.opacity-0]="isOpen"></div>
-    <div class="w-5 h-0.5 bg-gray-600 transition-all duration-300" [class.-rotate-45]="isOpen" [class.-translate-y-1.5]="isOpen"></div>
-  </div>
-</button>
-
 <!-- Mobile Navigation Overlay -->
-<div 
+<div
   class="md:hidden fixed inset-0 bg-black bg-opacity-50 z-40"
-  *ngIf="isOpen"
+  *ngIf="isOpen$ | async"
   [@overlayAnimation]
   (click)="closeNavigation()">
 </div>
 
 <!-- Mobile Navigation Menu -->
-<nav 
+<nav
   class="md:hidden fixed top-0 right-0 h-full w-80 bg-white shadow-2xl z-50 mobile-nav"
-  *ngIf="isOpen"
+  *ngIf="isOpen$ | async"
   [@menuAnimation]>
   <!-- Header Section -->
-  <div class="p-6 border-b border-gray-200">
+  <div class="p-6 border-b border-gray-200" *ngIf="currentUser$ | async as user">
     <div class="flex items-center space-x-4" (click)="toggleUserMenu()">
       <div class="w-12 h-12 bg-blue-600 rounded-full flex items-center justify-center text-white font-semibold">
-        {{ getUserInitials() }}
+        {{ getUserInitials(user) }}
       </div>
       <div class="flex-1">
-        <h3 class="font-semibold text-gray-900">{{ getUserDisplayName() }}</h3>
-        <p class="text-sm text-gray-600">{{ getTotalBalance() }}</p>
-        <p class="text-xs text-gray-500">{{ getWalletCount() }} wallet{{ getWalletCount() !== 1 ? 's' : '' }}</p>
+        <h3 class="font-semibold text-gray-900">{{ getUserDisplayName(user) }}</h3>
+        <p class="text-sm text-gray-600">{{ getTotalBalance(user) }}</p>
+        <p class="text-xs text-gray-500">{{ getWalletCount(user) }} wallet{{ getWalletCount(user) !== 1 ? 's' : '' }}</p>
       </div>
-      <div class="text-gray-400 transition-transform duration-200" [class.rotate-180]="showUserMenu">▼</div>
+      <div class="text-gray-400 transition-transform duration-200" [class.rotate-180]="showUserMenu$ | async">▼</div>
     </div>
 
     <!-- User Menu Dropdown -->
-    <div class="mt-4 space-y-2" *ngIf="showUserMenu" [@userMenuAnimation]>
+    <div class="mt-4 space-y-2" *ngIf="showUserMenu$ | async" [@userMenuAnimation]>
       <div class="flex items-center space-x-3 p-2 rounded-lg hover:bg-gray-100 cursor-pointer" (click)="navigateTo('/profile')">
         <span class="text-lg">👤</span>
         <span class="text-sm">Edit Profile</span>
@@ -65,69 +50,72 @@
   <!-- Quick Actions Section -->
   <div class="p-6 border-b border-gray-200">
     <h4 class="font-semibold text-gray-900 mb-4">Quick Actions</h4>
-    <div class="grid grid-cols-2 gap-3" [@quickActionsAnimation]="quickActions.length">
-      <div 
-        *ngFor="let action of quickActions" 
-        class="p-4 rounded-lg border border-gray-200 text-center cursor-pointer"
-        appRipple
-        appHoverAnimation="lift"
-        [translateY]="-3"
-        (click)="executeQuickAction(action.action)">
-        <div class="text-2xl mb-2">{{ action.icon }}</div>
-        <span class="text-sm font-medium text-gray-700">{{ action.label }}</span>
-      </div>
+    <div class="grid grid-cols-2 gap-3">
+      <ng-container *ngFor="let action of quickActions">
+        <div
+          *ngIf="!action.requiresAuth || (currentUser$ | async)"
+          class="p-4 rounded-lg border border-gray-200 text-center cursor-pointer"
+          appRipple
+          appHoverAnimation="lift"
+          [translateY]="-3"
+          (click)="executeQuickAction(action.action)">
+          <div class="text-2xl mb-2">{{ action.icon }}</div>
+          <span class="text-sm font-medium text-gray-700">{{ action.label }}</span>
+        </div>
+      </ng-container>
     </div>
   </div>
 
   <!-- Navigation Menu -->
   <div class="p-6 border-b border-gray-200">
     <h4 class="font-semibold text-gray-900 mb-4">Menu</h4>
-    <div class="space-y-2" [@navItemsAnimation]="navigationItems.length">
-      <div 
-        *ngFor="let item of navigationItems" 
-        class="flex items-center justify-between p-3 rounded-lg cursor-pointer"
-        [class.bg-blue-50]="isActiveRoute(item.path)"
-        [class.text-blue-900]="isActiveRoute(item.path)"
-        [class.hover:bg-gray-100]="!isActiveRoute(item.path)"
-        appRipple
-        appHoverAnimation="scale"
-        [scale]="1.02"
-        (click)="navigateTo(item.path)">
-        <div class="flex items-center space-x-3">
-          <span class="text-lg">{{ item.icon }}</span>
-          <span class="font-medium">{{ item.label }}</span>
-          <span *ngIf="item.badge" class="bg-red-500 text-white text-xs px-2 py-1 rounded-full">{{ item.badge }}</span>
+    <div class="space-y-2">
+      <ng-container *ngFor="let item of navigationItems">
+        <div
+          *ngIf="!item.requiresAuth || (currentUser$ | async)"
+          class="flex items-center justify-between p-3 rounded-lg cursor-pointer"
+          [class.bg-blue-50]="isActiveRoute(item.path)"
+          [class.text-blue-900]="isActiveRoute(item.path)"
+          [class.hover:bg-gray-100]="!isActiveRoute(item.path)"
+          appRipple
+          appHoverAnimation="scale"
+          [scale]="1.02"
+          (click)="navigateTo(item.path)">
+          <div class="flex items-center space-x-3">
+            <span class="text-lg">{{ item.icon }}</span>
+            <span class="font-medium">{{ item.label }}</span>
+          </div>
+          <span class="text-gray-400">›</span>
         </div>
-        <span class="text-gray-400">›</span>
-      </div>
+      </ng-container>
     </div>
   </div>
 
   <!-- Notifications Section -->
-  <div class="p-6 border-b border-gray-200">
+  <div class="p-6 border-b border-gray-200" *ngIf="currentUser$ | async as user">
     <div class="flex items-center justify-between cursor-pointer" (click)="toggleNotifications()">
       <div class="flex items-center space-x-3">
         <span class="text-lg">🔔</span>
         <span class="font-medium">Notifications</span>
-        <span *ngIf="getNotificationCount() > 0" class="bg-red-500 text-white text-xs px-2 py-1 rounded-full">{{ getNotificationCount() }}</span>
+        <span *ngIf="getNotificationCount(user) > 0" class="bg-red-500 text-white text-xs px-2 py-1 rounded-full">{{ getNotificationCount(user) }}</span>
       </div>
-      <span class="text-gray-400 transition-transform duration-200" [class.rotate-180]="showNotifications">▼</span>
+      <span class="text-gray-400 transition-transform duration-200" [class.rotate-180]="showNotifications$ | async">▼</span>
     </div>
 
     <!-- Notifications Dropdown -->
-    <div class="mt-4 space-y-2" *ngIf="showNotifications" [@notificationsAnimation]>
-      <div *ngIf="getNotificationCount() === 0" class="flex items-center space-x-3 p-3 text-gray-500">
+    <div class="mt-4 space-y-2" *ngIf="showNotifications$ | async" [@notificationsAnimation]>
+      <div *ngIf="getNotificationCount(user) === 0" class="flex items-center space-x-3 p-3 text-gray-500">
         <span class="text-lg">✅</span>
         <span class="text-sm">All caught up!</span>
       </div>
-      <div *ngFor="let notification of currentUser?.Notifications?.slice(0, 5)" class="p-3 border border-gray-200 rounded-lg">
+      <div *ngFor="let notification of user?.Notifications?.slice(0, 5)" class="p-3 border border-gray-200 rounded-lg">
         <div class="space-y-1">
           <div class="font-medium text-sm">{{ notification.title }}</div>
           <div class="text-xs text-gray-600">{{ notification.message }}</div>
           <div class="text-xs text-gray-500">{{ notification.createdAt | date:'short' }}</div>
         </div>
       </div>
-      <div *ngIf="getNotificationCount() > 5" class="text-center p-2 text-blue-600 text-sm cursor-pointer hover:underline" (click)="navigateTo('/notifications')">
+      <div *ngIf="getNotificationCount(user) > 5" class="text-center p-2 text-blue-600 text-sm cursor-pointer hover:underline" (click)="navigateTo('/notifications')">
         View all notifications
       </div>
     </div>
@@ -149,9 +137,9 @@
 </nav>
 
 <!-- Mobile Bottom Navigation Bar (for screens < 720p) -->
-<div class="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 z-40" [@bottomNavAnimation]>
+<div *ngIf="currentUser$ | async" class="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 z-40">
   <div class="flex justify-around">
-    <div class="flex flex-col items-center py-2 px-3 cursor-pointer" 
+    <div class="flex flex-col items-center py-2 px-3 cursor-pointer"
          [class.text-blue-600]="isActiveRoute('/dashboard')"
          [class.text-gray-600]="!isActiveRoute('/dashboard')"
          appRipple
@@ -163,7 +151,8 @@
          [class.text-blue-600]="isActiveRoute('/send-money')"
          [class.text-gray-600]="!isActiveRoute('/send-money')"
          appRipple
-         (click)="navigateTo('/send-money')">
+         (click)="navigateTo('/send-money')"
+         *ngIf="currentUser$ | async">
       <span class="text-xl mb-1">📤</span>
       <span class="text-xs">Send</span>
     </div>
@@ -171,7 +160,8 @@
          [class.text-blue-600]="isActiveRoute('/add-funds')"
          [class.text-gray-600]="!isActiveRoute('/add-funds')"
          appRipple
-         (click)="navigateTo('/add-funds')">
+         (click)="navigateTo('/add-funds')"
+         *ngIf="currentUser$ | async">
       <span class="text-xl mb-1">💰</span>
       <span class="text-xs">Add</span>
     </div>
@@ -191,12 +181,12 @@
 </div>
 
 <!-- Floating Action Button for Quick Actions -->
-<div 
-  class="md:hidden fixed bottom-20 right-4 w-14 h-14 bg-blue-600 rounded-full shadow-lg flex items-center justify-center text-white text-2xl cursor-pointer z-30" 
+<div
+  *ngIf="currentUser$ | async"
+  class="md:hidden fixed bottom-20 right-4 w-14 h-14 bg-blue-600 rounded-full shadow-lg flex items-center justify-center text-white text-2xl cursor-pointer z-30"
   appRipple
   appHoverAnimation="scale"
   [scale]="1.1"
-  [@fabAnimation]
   (click)="toggleNavigation()">
   <span>+</span>
 </div> 

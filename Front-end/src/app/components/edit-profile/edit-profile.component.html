@@ -1,6 +1,6 @@
-<div class="max-w-4xl mx-auto my-8 p-8 bg-white rounded-2xl shadow-sm">
+<div class="max-w-4xl mx-auto my-8 p-8 bg-white rounded-2xl shadow-lg animate-fadeInUp">
     <div class="text-center mb-8">
-      <h2 class="text-blue-900 mb-2 font-bold">Account Settings</h2>
+      <h2 class="text-3xl font-bold text-text-dark">Account Settings</h2>
       <p class="text-gray-600">Manage your personal information and preferences</p>
     </div>
   
@@ -11,7 +11,7 @@
           <div class="w-32 h-32 rounded-full overflow-hidden border-4 border-white shadow-lg">
             <img [src]="profileImage || 'assets/default-avatar.png'" alt="Profile Picture" class="w-full h-full object-cover">
           </div>
-          <label class="absolute bottom-0 right-0 bg-blue-500 w-10 h-10 rounded-full flex items-center justify-center cursor-pointer transition-all duration-300 hover:bg-blue-600">
+          <label class="absolute bottom-0 right-0 bg-primary w-10 h-10 rounded-full flex items-center justify-center cursor-pointer transition-transform hover:scale-110">
             <input type="file" (change)="onFileSelected($event)" accept="image/*" class="hidden">
             <i class="fas fa-camera text-white text-lg"></i>
           </label>
@@ -19,47 +19,47 @@
       </div>
   
       <!-- Personal Info -->
-      <div class="mb-8 p-6 bg-gray-100 rounded-2xl">
-        <h3 class="text-blue-900 mt-0 mb-6 font-semibold">Personal Information</h3>
+      <div class="mb-8 p-6 bg-gray-50 rounded-2xl">
+        <h3 class="text-xl font-semibold text-text-dark mt-0 mb-6">Personal Information</h3>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div class="mb-4">
-            <label class="block mb-2 text-blue-900 font-medium">First Name</label>
-            <input type="text" formControlName="firstName" required class="w-full p-3 border-2 border-gray-200 rounded-lg text-base transition-colors duration-300 focus:outline-none focus:border-blue-500">
-            <div class="text-red-500 text-sm mt-1" *ngIf="profileForm.get('firstName')?.errors?.['required']">
+            <label class="block mb-2 text-text-dark font-medium">First Name</label>
+            <input type="text" formControlName="firstName" required class="w-full p-3 border-2 border-gray-200 rounded-lg text-base transition-colors focus:outline-none focus:border-primary">
+            <div class="text-red-500 text-sm mt-1" *ngIf="profileForm.get('firstName')?.touched && profileForm.get('firstName')?.errors?.['required']">
               First name is required
             </div>
           </div>
   
           <div class="mb-4">
-            <label class="block mb-2 text-blue-900 font-medium">Last Name</label>
-            <input type="text" formControlName="lastName" required class="w-full p-3 border-2 border-gray-200 rounded-lg text-base transition-colors duration-300 focus:outline-none focus:border-blue-500">
-            <div class="text-red-500 text-sm mt-1" *ngIf="profileForm.get('lastName')?.errors?.['required']">
+            <label class="block mb-2 text-text-dark font-medium">Last Name</label>
+            <input type="text" formControlName="lastName" required class="w-full p-3 border-2 border-gray-200 rounded-lg text-base transition-colors focus:outline-none focus:border-primary">
+            <div class="text-red-500 text-sm mt-1" *ngIf="profileForm.get('lastName')?.touched && profileForm.get('lastName')?.errors?.['required']">
               Last name is required
             </div>
           </div>
   
           <div class="mb-4">
-            <label class="block mb-2 text-blue-900 font-medium">Email</label>
-            <input type="email" formControlName="email" required class="w-full p-3 border-2 border-gray-200 rounded-lg text-base transition-colors duration-300 focus:outline-none focus:border-blue-500">
-            <div class="text-red-500 text-sm mt-1" *ngIf="profileForm.get('email')?.errors?.['email']">
+            <label class="block mb-2 text-text-dark font-medium">Email</label>
+            <input type="email" formControlName="email" required class="w-full p-3 border-2 border-gray-200 rounded-lg text-base transition-colors focus:outline-none focus:border-primary">
+            <div class="text-red-500 text-sm mt-1" *ngIf="profileForm.get('email')?.touched && profileForm.get('email')?.errors?.['email']">
               Please enter a valid email
             </div>
           </div>
   
           <div class="mb-4">
-            <label class="block mb-2 text-blue-900 font-medium">Phone Number</label>
-            <input type="tel" formControlName="phone" class="w-full p-3 border-2 border-gray-200 rounded-lg text-base transition-colors duration-300 focus:outline-none focus:border-blue-500">
+            <label class="block mb-2 text-text-dark font-medium">Phone Number</label>
+            <input type="tel" formControlName="phone" class="w-full p-3 border-2 border-gray-200 rounded-lg text-base transition-colors focus:outline-none focus:border-primary">
           </div>
         </div>
       </div>
   
       <!-- Preferences -->
-      <div class="mb-8 p-6 bg-gray-100 rounded-2xl">
-        <h3 class="text-blue-900 mt-0 mb-6 font-semibold">Preferences</h3>
+      <div class="mb-8 p-6 bg-gray-50 rounded-2xl">
+        <h3 class="text-xl font-semibold text-text-dark mt-0 mb-6">Preferences</h3>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div class="mb-4">
-            <label class="block mb-2 text-blue-900 font-medium">Currency</label>
-            <select formControlName="currency" class="w-full p-3 border-2 border-gray-200 rounded-lg text-base transition-colors duration-300 focus:outline-none focus:border-blue-500 appearance-none bg-no-repeat bg-right bg-center pr-10" style="background-image: url('data:image/svg+xml;charset=UTF-8,%3csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 24 24%27 fill=%27none%27 stroke=%27currentColor%27 stroke-width=%272%27 stroke-linecap=%27round%27 stroke-linejoin=%27round%27%3e%3cpolyline points=%276 9 12 15 18 9%27%3e%3c/polyline%3e%3c/svg%3e'); background-size: 1rem;">
+            <label class="block mb-2 text-text-dark font-medium">Currency</label>
+            <select formControlName="currency" class="w-full p-3 border-2 border-gray-200 rounded-lg text-base transition-colors focus:outline-none focus:border-primary appearance-none bg-no-repeat bg-right bg-center pr-10" style="background-image: url('data:image/svg+xml;charset=UTF-8,%3csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 24 24%27 fill=%27none%27 stroke=%27currentColor%27 stroke-width=%272%27 stroke-linecap=%27round%27 stroke-linejoin=%27round%27%3e%3cpolyline points=%276 9 12 15 18 9%27%3e%3c/polyline%3e%3c/svg%3e'); background-size: 1rem;">
               <option value="USD">US Dollar ($)</option>
               <option value="EUR">Euro (€)</option>
               <option value="GBP">British Pound (£)</option>
@@ -67,52 +67,48 @@
           </div>
   
           <div class="mb-4">
-            <label class="block mb-2 text-blue-900 font-medium">Language</label>
-            <select formControlName="language" class="w-full p-3 border-2 border-gray-200 rounded-lg text-base transition-colors duration-300 focus:outline-none focus:border-blue-500 appearance-none bg-no-repeat bg-right bg-center pr-10" style="background-image: url('data:image/svg+xml;charset=UTF-8,%3csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 24 24%27 fill=%27none%27 stroke=%27currentColor%27 stroke-width=%272%27 stroke-linecap=%27round%27 stroke-linejoin=%27round%27%3e%3cpolyline points=%276 9 12 15 18 9%27%3e%3c/polyline%3e%3c/svg%3e'); background-size: 1rem;">
+            <label class="block mb-2 text-text-dark font-medium">Language</label>
+            <select formControlName="language" class="w-full p-3 border-2 border-gray-200 rounded-lg text-base transition-colors focus:outline-none focus:border-primary appearance-none bg-no-repeat bg-right bg-center pr-10" style="background-image: url('data:image/svg+xml;charset=UTF-8,%3csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 24 24%27 fill=%27none%27 stroke=%27currentColor%27 stroke-width=%272%27 stroke-linecap=%27round%27 stroke-linejoin=%27round%27%3e%3cpolyline points=%276 9 12 15 18 9%27%3e%3c/polyline%3e%3c/svg%3e'); background-size: 1rem;">
               <option value="en">English</option>
               <option value="es">Spanish</option>
               <option value="fr">French</option>
             </select>
           </div>
   
-          <div class="mb-4">
-            <label class="flex items-center gap-2 cursor-pointer">
-              <input type="checkbox" formControlName="newsletter" class="w-auto">
-              Receive newsletter
-            </label>
+          <div class="mb-4 flex items-center">
+            <input type="checkbox" formControlName="newsletter" id="newsletter" class="h-4 w-4 text-primary focus:ring-primary border-gray-300 rounded">
+            <label for="newsletter" class="ml-2 block text-sm text-gray-900">Receive newsletter</label>
           </div>
   
-          <div class="mb-4">
-            <label class="flex items-center gap-2 cursor-pointer">
-              <input type="checkbox" formControlName="twoFactorAuth" class="w-auto">
-              Two-factor authentication
-            </label>
+          <div class="mb-4 flex items-center">
+            <input type="checkbox" formControlName="twoFactorAuth" id="twoFactorAuth" class="h-4 w-4 text-primary focus:ring-primary border-gray-300 rounded">
+            <label for="twoFactorAuth" class="ml-2 block text-sm text-gray-900">Two-factor authentication</label>
           </div>
         </div>
       </div>
   
       <!-- Security -->
-      <div class="mb-8 p-6 bg-gray-100 rounded-2xl">
-        <h3 class="text-blue-900 mt-0 mb-6 font-semibold">Security</h3>
+      <div class="mb-8 p-6 bg-gray-50 rounded-2xl">
+        <h3 class="text-xl font-semibold text-text-dark mt-0 mb-6">Security</h3>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div class="mb-4">
-            <label class="block mb-2 text-blue-900 font-medium">New Password</label>
-            <input type="password" formControlName="password" class="w-full p-3 border-2 border-gray-200 rounded-lg text-base transition-colors duration-300 focus:outline-none focus:border-blue-500">
+            <label class="block mb-2 text-text-dark font-medium">New Password</label>
+            <input type="password" formControlName="password" class="w-full p-3 border-2 border-gray-200 rounded-lg text-base transition-colors focus:outline-none focus:border-primary">
           </div>
   
           <div class="mb-4">
-            <label class="block mb-2 text-blue-900 font-medium">Confirm Password</label>
-            <input type="password" formControlName="confirmPassword" class="w-full p-3 border-2 border-gray-200 rounded-lg text-base transition-colors duration-300 focus:outline-none focus:border-blue-500">
+            <label class="block mb-2 text-text-dark font-medium">Confirm Password</label>
+            <input type="password" formControlName="confirmPassword" class="w-full p-3 border-2 border-gray-200 rounded-lg text-base transition-colors focus:outline-none focus:border-primary">
           </div>
         </div>
       </div>
   
       <!-- Form Actions -->
       <div class="flex justify-end gap-4 mt-8">
-        <button type="button" class="py-3 px-8 border-none rounded-lg font-medium cursor-pointer transition-all duration-300 bg-gray-200 text-gray-600 hover:bg-gray-300">Cancel</button>
-        <button type="submit" class="py-3 px-8 border-none rounded-lg font-medium cursor-pointer transition-all duration-300 bg-blue-900 text-white hover:bg-blue-800 disabled:bg-gray-400 disabled:cursor-not-allowed" [disabled]="!profileForm.valid">
-          <span *ngIf="!loading">Save Changes</span>
-          <span *ngIf="loading">Saving...</span>
+        <button type="button" class="py-3 px-8 rounded-lg font-medium cursor-pointer transition-colors bg-gray-200 text-gray-600 hover:bg-gray-300">Cancel</button>
+        <button type="submit" class="py-3 px-8 rounded-lg font-medium cursor-pointer transition-colors bg-primary text-white hover:bg-primary-dark disabled:bg-gray-400 disabled:cursor-not-allowed" [disabled]="!profileForm.valid || (loading$ | async)">
+          <span *ngIf="(loading$ | async) === false">Save Changes</span>
+          <span *ngIf="loading$ | async">Saving...</span>
         </button>
       </div>
     </form>

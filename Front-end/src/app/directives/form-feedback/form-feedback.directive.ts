@@ -368,7 +368,7 @@ export class FormFeedbackDirective implements OnInit, OnDestroy {
   /**
    * Get user-friendly error message from validation errors
    */
-  private getErrorMessage(errors: any): string {
+  private getErrorMessage(errors: ValidationErrors): string {
     if (errors.required) {
       return 'This field is required';
     }

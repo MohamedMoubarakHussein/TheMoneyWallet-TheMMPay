@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { BehaviorSubject } from 'rxjs';
 
 export interface AppError {
   id: string;
@@ -379,7 +379,7 @@ export class ErrorHandlingService {
     );
   }
 
-  handleValidationError(errors: any, context?: string): AppError {
+  handleValidationError(errors: ValidationErrors, context?: string): AppError {
     const errorMessages = Object.values(errors).join(', ');
     return this.handleError(
       `Validation failed: ${errorMessages}`,

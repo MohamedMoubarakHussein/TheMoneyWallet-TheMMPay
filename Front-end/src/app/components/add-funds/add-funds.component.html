@@ -1,151 +1,125 @@
-<div class="max-w-4xl mx-auto my-8 p-8">
+<div class="max-w-4xl mx-auto my-8 p-8 animate-fadeIn">
   <div class="flex justify-between items-center mb-8">
-    <h2 class="text-2xl font-bold text-gray-900 m-0">Add Funds</h2>
-    <button class="bg-gray-100 border-none py-3 px-6 rounded-lg cursor-pointer flex items-center gap-2 transition-all duration-300 hover:bg-gray-200" routerLink="/dashboard">
+    <h2 class="text-3xl font-bold text-text-dark">Add Funds</h2>
+    <button class="flex items-center gap-2 py-2 px-4 rounded-lg font-semibold bg-gray-100 text-gray-700 hover:bg-gray-200 transition-colors" routerLink="/dashboard">
       <i class="fas fa-arrow-left"></i>
       Back to Dashboard
     </button>
   </div>
 
-  <div class="bg-white p-8 rounded-2xl shadow-sm">
+  <div class="bg-white p-8 rounded-2xl shadow-lg">
     <div class="flex justify-between mb-8 py-4 border-b-2 border-gray-100">
-      <div class="text-gray-500 font-medium relative flex-1 text-center" [class.text-blue-900]="currentStep === 1" [class.font-semibold]="currentStep === 1">1. Method</div>
-      <div class="text-gray-500 font-medium relative flex-1 text-center" [class.text-blue-900]="currentStep === 2" [class.font-semibold]="currentStep === 2">2. Details</div>
-      <div class="text-gray-500 font-medium relative flex-1 text-center" [class.text-blue-900]="currentStep === 3" [class.font-semibold]="currentStep === 3">3. Confirm</div>
+      <div class="font-medium relative flex-1 text-center" [ngClass]="{'text-primary font-semibold': (currentStep$ | async) === 1, 'text-gray-500': (currentStep$ | async) !== 1}">1. Method</div>
+      <div class="font-medium relative flex-1 text-center" [ngClass]="{'text-primary font-semibold': (currentStep$ | async) === 2, 'text-gray-500': (currentStep$ | async) !== 2}">2. Details</div>
+      <div class="font-medium relative flex-1 text-center" [ngClass]="{'text-primary font-semibold': (currentStep$ | async) === 3, 'text-gray-500': (currentStep$ | async) !== 3}">3. Confirm</div>
     </div>
 
-    <!-- Step 1: Select Funding Method -->
-    <div *ngIf="currentStep === 1">
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-        <div class="p-6 border-2 border-gray-200 rounded-lg cursor-pointer transition-all duration-200 text-center hover:border-blue-500" 
-             *ngFor="let method of paymentMethods"
-             [class.border-blue-900]="selectedMethod === method.id"
-             [class.bg-blue-50]="selectedMethod === method.id"
-             (click)="selectMethod(method.id)">
-          <i class="fas text-4xl text-blue-900 mb-4" [class.fa-credit-card]="method.id === 'card'"
-                          [class.fa-bank]="method.id === 'bank'"
-                          [class.fa-wallet]="method.id === 'wallet'"></i>
-          <h4 class="m-2 mb-0 text-blue-900 font-semibold">{{ method.name }}</h4>
-          <p class="text-gray-600 text-sm m-0">{{ method.description }}</p>
-        </div>
-      </div>
-      <div class="flex justify-end gap-4 mt-8">
-        <button class="py-3 px-8 border-none rounded-lg font-medium cursor-pointer transition-all duration-300 bg-blue-900 text-white hover:bg-blue-800" (click)="nextStep()">Continue</button>
-      </div>
-    </div>
-
-    <!-- Step 2: Payment Details -->
-    <form *ngIf="currentStep === 2" (ngSubmit)="nextStep()">
-      <div class="mb-6">
-        <label class="block mb-2 text-blue-900 font-medium">Amount to Add</label>
-        <div class="relative">
-          <span class="absolute left-3 top-1/2 transform -translate-y-1/2 font-semibold text-blue-900">{{ currencySymbol }}</span>
-          <input type="number" [(ngModel)]="amount" name="amount" 
-                 class="w-full p-3 border-2 border-gray-200 rounded-lg text-base transition-all duration-300 focus:outline-none focus:border-blue-500 pl-12"
-                 required min="10" step="0.01">
-        </div>
-      </div>
-
-      <div *ngIf="selectedMethod === 'card'">
-        <div class="mb-6">
-          <label class="block mb-2 text-blue-900 font-medium">Card Number</label>
-          <input type="text" [(ngModel)]="cardDetails.number" 
-                 name="cardNumber" placeholder="4242 4242 4242 4242" 
-                 class="w-full p-3 border-2 border-gray-200 rounded-lg text-base transition-all duration-300 focus:outline-none focus:border-blue-500" required>
-        </div>
-
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div class="mb-6">
-            <label class="block mb-2 text-blue-900 font-medium">Expiry Date</label>
-            <input type="text" [(ngModel)]="cardDetails.expiry" 
-                   name="expiry" placeholder="MM/YY" 
-                   class="w-full p-3 border-2 border-gray-200 rounded-lg text-base transition-all duration-300 focus:outline-none focus:border-blue-500" required>
-          </div>
-          <div class="mb-6">
-            <label class="block mb-2 text-blue-900 font-medium">CVC</label>
-            <input type="text" [(ngModel)]="cardDetails.cvc" 
-                   name="cvc" placeholder="123" 
-                   class="w-full p-3 border-2 border-gray-200 rounded-lg text-base transition-all duration-300 focus:outline-none focus:border-blue-500" required>
+    <div [@stepAnimation]="currentStep$ | async">
+      <!-- Step 1: Select Funding Method -->
+      <div *ngIf="(currentStep$ | async) === 1">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+          <div class="p-6 border-2 rounded-lg cursor-pointer transition-all duration-200 text-center hover:border-primary-dark" 
+               *ngFor="let method of paymentMethods"
+               [ngClass]="{'border-primary font-semibold bg-primary/10': (selectedMethod$ | async) === method.id, 'border-gray-200': (selectedMethod$ | async) !== method.id}"
+               (click)="selectMethod(method.id)">
+            <i class="fas text-4xl text-primary mb-4" [ngClass]="{'fa-credit-card': method.id === 'card', 'fa-university': method.id === 'bank', 'fa-wallet': method.id === 'wallet'}"></i>
+            <h4 class="m-2 mb-0 text-text-dark font-semibold">{{ method.name }}</h4>
+            <p class="text-gray-600 text-sm m-0">{{ method.description }}</p>
           </div>
         </div>
-      </div>
-
-      <div *ngIf="selectedMethod === 'bank'">
-        <div class="mb-6">
-          <label class="block mb-2 text-blue-900 font-medium">Select Bank Account</label>
-          <select [(ngModel)]="selectedBank" name="bankAccount" 
-                  class="w-full p-3 border-2 border-gray-200 rounded-lg text-base transition-all duration-300 focus:outline-none focus:border-blue-500" required>
-            <option *ngFor="let bank of savedBanks" [value]="bank.id">
-              {{ bank.name }} (****{{ bank.last4 }})
-            </option>
-          </select>
+        <div class="flex justify-end gap-4 mt-8">
+          <button class="py-3 px-8 rounded-lg font-medium cursor-pointer transition-colors bg-primary text-white hover:bg-primary-dark" (click)="nextStep()">Continue</button>
         </div>
       </div>
 
-      <div *ngIf="selectedMethod === 'wallet'">
-        <div class="flex items-center gap-4 p-4 border-2 border-gray-200 rounded-lg mb-4">
-          <img src="assets/paypal-logo.png" alt="PayPal" class="h-8">
-          <button type="button" class="flex-1 bg-gray-100 border-none p-3 rounded-md cursor-pointer transition-all duration-300 hover:bg-gray-200" (click)="connectWallet('paypal')">
-            Connect with PayPal
+      <!-- Step 2: Payment Details -->
+      <form *ngIf="(currentStep$ | async) === 2" (ngSubmit)="nextStep()">
+        <div class="mb-6">
+          <label class="block mb-2 text-text-dark font-medium">Amount to Add</label>
+          <div class="relative">
+            <span class="absolute left-3 top-1/2 transform -translate-y-1/2 font-semibold text-text-dark">{{ currencySymbol }}</span>
+            <input type="number" [(ngModel)]="amount" name="amount" 
+                   class="w-full p-3 border-2 border-gray-200 rounded-lg text-base transition-colors focus:outline-none focus:border-primary pl-12"
+                   required min="10" step="0.01">
+          </div>
+        </div>
+
+        <div *ngIf="(selectedMethod$ | async) === 'card'">
+          <div class="mb-6">
+            <label class="block mb-2 text-text-dark font-medium">Card Number</label>
+            <input type="text" [(ngModel)]="cardDetails.number" 
+                   name="cardNumber" placeholder="4242 4242 4242 4242" 
+                   class="w-full p-3 border-2 border-gray-200 rounded-lg text-base transition-colors focus:outline-none focus:border-primary" required>
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="mb-6">
+              <label class="block mb-2 text-text-dark font-medium">Expiry Date</label>
+              <input type="text" [(ngModel)]="cardDetails.expiry" 
+                     name="expiry" placeholder="MM/YY" 
+                     class="w-full p-3 border-2 border-gray-200 rounded-lg text-base transition-colors focus:outline-none focus:border-primary" required>
+            </div>
+            <div class="mb-6">
+              <label class="block mb-2 text-text-dark font-medium">CVC</label>
+              <input type="text" [(ngModel)]="cardDetails.cvc" 
+                     name="cvc" placeholder="123" 
+                     class="w-full p-3 border-2 border-gray-200 rounded-lg text-base transition-colors focus:outline-none focus:border-primary" required>
+            </div>
+          </div>
+        </div>
+
+        <div *ngIf="(selectedMethod$ | async) === 'bank'">
+          <div class="mb-6">
+            <label class="block mb-2 text-text-dark font-medium">Select Bank Account</label>
+            <select [(ngModel)]="selectedBank" name="bankAccount" 
+                    class="w-full p-3 border-2 border-gray-200 rounded-lg text-base transition-colors focus:outline-none focus:border-primary" required>
+              <option *ngFor="let bank of savedBanks" [value]="bank.id">
+                {{ bank.name }} (****{{ bank.last4 }})
+              </option>
+            </select>
+          </div>
+        </div>
+
+        <div class="flex justify-end gap-4 mt-8">
+          <button type="button" class="py-3 px-8 rounded-lg font-medium cursor-pointer transition-colors bg-gray-100 text-gray-600 hover:bg-gray-200" (click)="previousStep()">Back</button>
+          <button type="submit" class="py-3 px-8 rounded-lg font-medium cursor-pointer transition-colors bg-primary text-white hover:bg-primary-dark">Continue</button>
+        </div>
+      </form>
+
+      <!-- Step 3: Confirmation -->
+      <div *ngIf="(currentStep$ | async) === 3">
+        <div>
+          <h3 class="text-text-dark mt-0 font-semibold">Confirm Deposit</h3>
+          <div class="mb-6">
+            <span class="text-gray-600 block mb-2 text-sm">Method:</span>
+            <h4 class="m-0 text-text-dark font-semibold">{{ getMethodName((selectedMethod$ | async)!) }}</h4>
+          </div>
+          <div class="mb-6">
+            <span class="text-gray-600 block mb-2 text-sm">Amount:</span>
+            <h4 class="m-0 text-text-dark font-semibold">{{ amount | currency:currencyCode }}</h4>
+          </div>
+          <div class="bg-blue-50 text-blue-800 p-4 rounded-lg my-8 flex items-center gap-2" *ngIf="processingFee > 0">
+            <i class="fas fa-info-circle"></i>
+            A processing fee of {{ processingFee | currency:currencyCode }} will be applied
+          </div>
+        </div>
+        <div class="flex justify-end gap-4 mt-8">
+          <button type="button" class="py-3 px-8 rounded-lg font-medium cursor-pointer transition-colors bg-gray-100 text-gray-600 hover:bg-gray-200" (click)="previousStep()">Back</button>
+          <button type="button" class="py-3 px-8 rounded-lg font-medium cursor-pointer transition-colors bg-primary text-white hover:bg-primary-dark disabled:bg-gray-400 disabled:cursor-not-allowed" 
+                  (click)="processPayment()"
+                  [disabled]="processing$ | async">
+            <span *ngIf="(processing$ | async) === false">Confirm Deposit</span>
+            <span *ngIf="processing$ | async">Processing...</span>
           </button>
         </div>
-        <div class="flex items-center gap-4 p-4 border-2 border-gray-200 rounded-lg mb-4">
-          <img src="assets/google-pay-logo.png" alt="Google Pay" class="h-8">
-          <button type="button" class="flex-1 bg-gray-100 border-none p-3 rounded-md cursor-pointer transition-all duration-300 hover:bg-gray-200" (click)="connectWallet('google-pay')">
-            Connect with Google Pay
-          </button>
-        </div>
       </div>
 
-      <div class="flex justify-end gap-4 mt-8">
-        <button type="button" class="py-3 px-8 border-none rounded-lg font-medium cursor-pointer transition-all duration-300 bg-gray-100 text-gray-600 hover:bg-gray-200" (click)="previousStep()">Back</button>
-        <button type="submit" class="py-3 px-8 border-none rounded-lg font-medium cursor-pointer transition-all duration-300 bg-blue-900 text-white hover:bg-blue-800">Continue</button>
+      <!-- Success Message -->
+      <div *ngIf="transactionComplete$ | async" class="text-center p-8 animate-scaleUp">
+        <i class="fas fa-check-circle text-6xl text-green-500 mb-4"></i>
+        <h3 class="text-green-500 mb-2 font-semibold">Deposit Successful!</h3>
+        <p class="text-gray-600 mb-8">{{ amount | currency:currencyCode }} has been added to your account</p>
+        <button class="bg-green-500 text-white py-3 px-8 rounded-lg cursor-pointer transition-colors hover:bg-green-600" routerLink="/dashboard">Back to Dashboard</button>
       </div>
-    </form>
-
-    <!-- Step 3: Confirmation -->
-    <div *ngIf="currentStep === 3">
-      <div>
-        <h3 class="text-blue-900 mt-0 font-semibold">Confirm Deposit</h3>
-        
-        <div class="mb-6">
-          <span class="text-gray-600 block mb-2 text-sm">Method:</span>
-          <h4 class="m-0 text-blue-900 font-semibold">{{ getMethodName(selectedMethod) }}</h4>
-        </div>
-
-        <div class="mb-6">
-          <span class="text-gray-600 block mb-2 text-sm">Amount:</span>
-          <h4 class="m-0 text-blue-900 font-semibold">{{ amount | currency:currencyCode }}</h4>
-        </div>
-
-        <div *ngIf="selectedMethod === 'card'" class="mb-6">
-          <span class="text-gray-600 block mb-2 text-sm">Card:</span>
-        <!--  <h4>**** **** **** {{ cardDetails.number?.slice(-4) }}</h4>
-      -->  </div>
-
-        <div class="bg-blue-50 text-blue-800 p-4 rounded-lg my-8 flex items-center gap-2" *ngIf="processingFee > 0">
-          <i class="fas fa-info-circle"></i>
-          A processing fee of {{ processingFee | currency:currencyCode }} will be applied
-        </div>
-      </div>
-
-      <div class="flex justify-end gap-4 mt-8">
-        <button type="button" class="py-3 px-8 border-none rounded-lg font-medium cursor-pointer transition-all duration-300 bg-gray-100 text-gray-600 hover:bg-gray-200" (click)="previousStep()">Back</button>
-        <button type="button" class="py-3 px-8 border-none rounded-lg font-medium cursor-pointer transition-all duration-300 bg-blue-900 text-white hover:bg-blue-800 disabled:bg-gray-400 disabled:cursor-not-allowed" 
-                (click)="processPayment()"
-                [disabled]="processing">
-          <span *ngIf="!processing">Confirm Deposit</span>
-          <span *ngIf="processing">Processing...</span>
-        </button>
-      </div>
-    </div>
-
-    <!-- Success Message -->
-    <div *ngIf="transactionComplete" class="text-center p-8">
-      <i class="fas fa-check-circle text-6xl text-green-500 mb-4"></i>
-      <h3 class="text-green-500 mb-2 font-semibold">Deposit Successful!</h3>
-      <p class="text-gray-600 mb-8">{{ amount | currency:currencyCode }} has been added to your account</p>
-      <button class="bg-green-500 text-white border-none py-3 px-8 rounded-lg cursor-pointer transition-all duration-300 hover:bg-green-600" routerLink="/dashboard">Back to Dashboard</button>
     </div>
   </div>
 </div>

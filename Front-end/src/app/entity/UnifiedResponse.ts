@@ -1,4 +1,3 @@
-
 export interface UnifiedResponse {
   data: { [key: string]: { [key: string]: string } };
   timeStamp: string; 
@@ -102,7 +101,7 @@ export interface Transaction {
   senderId?: string;
   category?: string;
   tags?: string[];
-  metadata?: Record<string, any>;
+  metadata?: Record<string, unknown>;
   createdAt: Date;
   updatedAt: Date;
   completedAt?: Date;
@@ -117,7 +116,7 @@ export interface Notification {
   type: 'info' | 'success' | 'warning' | 'error';
   read: boolean;
   actionUrl?: string;
-  metadata?: Record<string, any>;
+  metadata?: Record<string, unknown>;
   createdAt: Date;
   updatedAt: Date;
   expiresAt?: Date;
@@ -168,7 +167,7 @@ export interface User {
 export interface VerificationResponse {
   success: boolean;
   message: string;
-  data?: any;
+  data?: unknown;
 }
 
 export interface ResendCodeResponse {
@@ -349,7 +348,7 @@ export interface AuditLog {
   action: string;
   resource: string;
   resourceId?: string;
-  details: Record<string, any>;
+  details: Record<string, unknown>;
   ipAddress: string;
   userAgent: string;
   timestamp: Date;
@@ -378,7 +377,7 @@ export interface PaymentMethod {
   expiryDate?: string;
   isDefault: boolean;
   isActive: boolean;
-  metadata: Record<string, any>;
+  metadata: Record<string, unknown>;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -434,4 +433,73 @@ export interface User {
       push: boolean;
     };
   };
+}
+
+export interface ConversionFeeResponse {
+  fee: number;
+  feePercentage: number;
+  totalAmount: number;
+}
+
+export interface PopularCurrencyPair {
+  fromCurrency: string;
+  toCurrency: string;
+  conversionCount: number;
+  averageAmount: number;
+}
+
+export interface InvoiceStats {
+  totalInvoices: number;
+  totalAmount: number;
+  paidAmount: number;
+  pendingAmount: number;
+  overdueAmount: number;
+  currency: string;
+}
+
+export interface PaymentHistoryItem {
+  id: string;
+  amount: number;
+  currency: string;
+  status: string;
+  scheduledDate: Date;
+  processedDate?: Date;
+  failureReason?: string;
+}
+
+export interface TwoFactorSetupResponse {
+  success: boolean;
+  message: string;
+  qrCode?: string;
+  secretKey?: string;
+}
+
+export interface TwoFactorVerificationResponse {
+  success: boolean;
+  message: string;
+}
+
+export interface SecurityAlert {
+  id: string;
+  type: 'warning' | 'critical';
+  title: string;
+  message: string;
+  timestamp: Date;
+  isRead: boolean;
+}
+
+export interface DeviceSession {
+  id: string;
+  deviceName: string;
+  browser: string;
+  ipAddress: string;
+  lastActive: Date;
+  isCurrent: boolean;
+}
+
+export interface SecurityScore {
+  score: number;
+  maxScore: number;
+  percentage: number;
+  recommendations: string[];
 }

@@ -1,66 +1,38 @@
- <!-- Header -->
-  <header class="dashboard-header">
-    <div class="header-left">
-      <h1 class="app-title">PaymentApp</h1>
-    </div>
-    
-    <div class="header-right">
-      <!-- Notifications -->
-      <div class="notification-wrapper">
-        <button class="notification-btn" (click)="toggleNotifications()">
-          <span class="notification-icon">🔔</span>
-          <span class="notification-badge" *ngIf="unreadCount > 0">{{ unreadCount }}</span>
-        </button>
-        
-        <!-- Notifications Dropdown -->
-        <div class="notifications-dropdown" *ngIf="showNotifications">
-          <div class="notifications-header">
-            <h3>Notifications</h3>
-            <button class="clear-all-btn" (click)="clearAllNotifications()" *ngIf="notifications.length > 0">
-              Clear All
-            </button>
-          </div>
-          
-          <div class="notifications-list" *ngIf="notifications.length > 0; else noNotifications">
-            <div class="notification-item" 
-                 *ngFor="let notification of notifications" 
-                 [class.unread]="!notification.read"
-                 (click)="markAsRead(notification.id)">
-              <div class="notification-content">
-                <h4>{{ notification.title }}</h4>
-                <p>{{ notification.message }}</p>
-                <span class="notification-time">{{ notification.createdAt | date:'short' }}</span>
-              </div>
-            </div>
-          </div>
-          
-          <ng-template #noNotifications>
-            <div class="no-notifications">
-              <span class="empty-icon">📭</span>
-              <p>No notifications</p>
-            </div>
-          </ng-template>
-        </div>
+ <header class="bg-white border-b border-gray-200 shadow-sm sticky top-0 z-50" @fadeInDown>
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex items-center justify-between h-16">
+      <div class="flex items-center">
+        <a routerLink="/" class="flex items-center">
+          <img src="assets/img/logo.png" alt="TheMMPay" class="h-8 w-auto">
+        </a>
       </div>
       
-      <!-- User Menu -->
-      <div class="user-menu-wrapper">
-        <div class="user-avatar" (click)="toggleUserMenu()">
-          <span class="avatar-text">{{ userName.charAt(0).toUpperCase() }}</span>
+      <div class="flex items-center space-x-4">
+        <!-- Notifications -->
+        <div class="relative">
+          <button class="text-gray-600 hover:text-primary" (click)="toggleNotifications()">
+            <i class="fas fa-bell"></i>
+            <span *ngIf="unreadCount > 0" class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center">{{ unreadCount }}</span>
+          </button>
+          <div *ngIf="showNotifications" class="absolute right-0 mt-2 w-80 bg-white rounded-lg shadow-lg">
+            <!-- Notifications dropdown -->
+          </div>
         </div>
         
-        <!-- User Dropdown -->
-        <div class="user-dropdown" *ngIf="showUserMenu">
-          <div class="user-info">
-            <h4>{{ userName }}</h4>
-            <p>{{ user?.email }}</p>
+        <!-- User Menu -->
+        <div class="relative">
+          <button class="flex items-center space-x-2" (click)="toggleUserMenu()">
+            <div class="w-8 h-8 bg-primary rounded-full flex items-center justify-center text-white font-semibold">
+              {{ userName.charAt(0).toUpperCase() }}
+            </div>
+            <span class="hidden md:block">{{ userName }}</span>
+          </button>
+          <div *ngIf="showUserMenu" class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg">
+            <a routerLink="/profile" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Profile</a>
+            <button (click)="logout()" class="w-full text-left px-4 py-2 text-red-600 hover:bg-red-50">Logout</button>
           </div>
-          <hr>
-          <!--<button class="dropdown-item" (click)="logout()">
-            <span class="item-icon">🚪</span>
-            Logout
-          </button> -->
         </div>
       </div>
     </div>
-  </header>
+  </div>
+</header>

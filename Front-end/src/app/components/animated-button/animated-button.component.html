@@ -1,0 +1,22 @@
+<button
+  class="relative inline-flex items-center justify-center rounded-md font-medium cursor-pointer transition-all duration-200 ease-in-out overflow-hidden"
+  [ngClass]="{
+    'bg-primary text-white hover:bg-primary-dark': type === 'primary',
+    'bg-gray-100 text-gray-800 border border-gray-200 hover:bg-gray-200': type === 'secondary',
+    'bg-secondary text-white hover:bg-secondary-dark': type === 'success',
+    'bg-status-error text-white hover:bg-red-600': type === 'danger',
+    'px-4 py-2 text-xs': size === 'small',
+    'px-6 py-3 text-sm': size === 'medium',
+    'px-8 py-4 text-base': size === 'large',
+    'opacity-65 cursor-not-allowed': disabled || loading
+  }"
+  [disabled]="disabled || loading"
+  [@buttonState]="state"
+  (click)="onClick($event)">
+  <span *ngIf="loading" class="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></span>
+  <span *ngIf="!loading" class="flex items-center gap-2">
+    <i *ngIf="iconLeft" [class]="iconLeft"></i>
+    {{ label }}
+    <i *ngIf="iconRight" [class]="iconRight"></i>
+  </span>
+</button>

@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { BehaviorSubject } from '@angular/core';
 import { User } from '../../../entity/UnifiedResponse';
 
 
@@ -16,8 +16,14 @@ export class AuthStateService {
 
   constructor() {}
 
+  setTestUser(user: User): void {
+    this.currentUserSubject.next(user);
+    this.isAuthenticatedSubject.next(true);
+    console.log('AuthStateService: Test user set', user);
+  }
 
   setAuthenticatedUser(user: User): void {
+    console.log('AuthStateService: Setting authenticated user', user);
     this.currentUserSubject.next(user);
     this.isAuthenticatedSubject.next(true);
   }
@@ -25,12 +31,14 @@ export class AuthStateService {
 
   updateCurrentUser(user: User): void {
     if (this.isAuthenticatedSubject.value) {
+      console.log('AuthStateService: Updating current user', user);
       this.currentUserSubject.next(user);
     }
   }
 
 
   setAuthenticationStatus(isAuthenticated: boolean): void {
+    console.log('AuthStateService: Setting authentication status', isAuthenticated);
     this.isAuthenticatedSubject.next(isAuthenticated);
     if (!isAuthenticated) {
       this.currentUserSubject.next(null);
@@ -39,6 +47,7 @@ export class AuthStateService {
 
  
   resetAuthenticationState(): void {
+    console.log('AuthStateService: Resetting authentication state');
     this.currentUserSubject.next(null);
     this.isAuthenticatedSubject.next(false);
   }

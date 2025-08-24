@@ -16,7 +16,7 @@ export class ResponseExtractor {
     return response.data[dataKey] ? Object.keys(response.data[dataKey]) : [];
   }
 
-  static extractData(response: UnifiedResponse, dataKey: string, internalKey?: string): any {
+  static extractData(response: UnifiedResponse, dataKey: string, internalKey?: string): unknown {
     const availableDataKeys = this.getDataKeys(response);
     
     if (!dataKey || !response.data[dataKey]) {
@@ -24,7 +24,7 @@ export class ResponseExtractor {
     }
 
     const availableInternalKeys = this.getInternalKeys(response, dataKey);
-    let key = internalKey || availableInternalKeys[0];
+    const key = internalKey || availableInternalKeys[0];
 
     if (!key || !response.data[dataKey][key]) {
       throw new Error(`Internal key '${key}' not found. Available keys: ${availableInternalKeys.join(', ')}`);

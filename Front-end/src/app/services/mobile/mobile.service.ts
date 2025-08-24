@@ -1,6 +1,6 @@
 import { Injectable, NgZone } from '@angular/core';
 import { BehaviorSubject, Observable, fromEvent } from 'rxjs';
-import { debounceTime, distinctUntilChanged, filter } from 'rxjs/operators';
+import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 
 export interface TouchGesture {
   type: 'swipe' | 'pinch' | 'rotate' | 'longPress';
@@ -54,7 +54,7 @@ export class MobileService {
   private touchEndX = 0;
   private touchEndY = 0;
   private isLongPress = false;
-  private longPressTimer: any;
+  private longPressTimer: ReturnType<typeof setTimeout> | null;
   private readonly LONG_PRESS_DURATION = 500;
   private readonly SWIPE_THRESHOLD = 50;
   private readonly PINCH_THRESHOLD = 20;
@@ -287,7 +287,10 @@ export class MobileService {
     }
   }
 
-  private handleLongPressAction(gesture: TouchGesture): void {
+  private handleLongPressAction(
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    gesture: TouchGesture
+  ): void {
     this.triggerHapticFeedback('strong');
     // Could trigger context menu or other long press actions
   }

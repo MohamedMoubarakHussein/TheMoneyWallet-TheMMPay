@@ -8,8 +8,7 @@ import {
   query, 
   stagger, 
   keyframes, 
-  animation, 
-  useAnimation,
+  animation,
   AnimationReferenceMetadata
 } from '@angular/animations';
 

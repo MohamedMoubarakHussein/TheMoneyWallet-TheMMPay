@@ -1,72 +1,128 @@
-import { Component } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
+import { Observable, Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
+import { AddFundsService, PaymentMethod, BankAccount, CardDetails } from '../../services/add-funds.service';
+import { trigger, transition, style, animate, query, group } from '@angular/animations';
 
 @Component({
   selector: 'app-add-funds',
   standalone: true,
   imports: [CommonModule, FormsModule, RouterModule],
   templateUrl: './add-funds.component.html',
-
+  animations: [
+    trigger('stepAnimation', [
+      transition(':increment', [
+        style({ position: 'relative' }),
+        query(':enter, :leave', [
+          style({
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            width: '100%'
+          })
+        ]),
+        query(':enter', [
+          style({ left: '100%', opacity: 0 })
+        ]),
+        group([
+          query(':leave', [
+            animate('300ms ease-out', style({ left: '-100%', opacity: 0 }))
+          ]),
+          query(':enter', [
+            animate('300ms ease-out', style({ left: '0%', opacity: 1 }))
+          ])
+        ]),
+      ]),
+      transition(':decrement', [
+        style({ position: 'relative' }),
+        query(':enter, :leave', [
+          style({
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            width: '100%'
+          })
+        ]),
+        query(':enter', [
+          style({ left: '-100%', opacity: 0 })
+        ]),
+        group([
+          query(':leave', [
+            animate('300ms ease-out', style({ left: '100%', opacity: 0 }))
+          ]),
+          query(':enter', [
+            animate('300ms ease-out', style({ left: '0%', opacity: 1 }))
+          ])
+        ]),
+      ])
+    ])
+  ]
 })
-export class AddFundsComponent {
-  currentStep = 1;
-  selectedMethod: string = '';
+export class AddFundsComponent implements OnInit, OnDestroy {
+  currentStep$: Observable<number>;
+  selectedMethod$: Observable<string>;
+  amount$: Observable<number>;
+  processing$: Observable<boolean>;
+  transactionComplete$: Observable<boolean>;
+
+  paymentMethods: PaymentMethod[];
+  savedBanks: BankAccount[];
+  
   amount: number = 0;
-  processing = false;
-  transactionComplete = false;
+  cardDetails: CardDetails = { number: '', expiry: '', cvc: '' };
+  selectedBank: string = '';
+
   currencyCode = 'USD';
   currencySymbol = '$';
   processingFee = 2.5;
 
-  paymentMethods = [
-    { id: 'card', name: 'Credit/Debit Card', description: 'Instant deposit' },
-    { id: 'bank', name: 'Bank Transfer', description: '1-3 business days' },
-    { id: 'wallet', name: 'Digital Wallet', description: 'PayPal, Google Pay' }
-  ];
+  private destroy$ = new Subject<void>();
 
-  savedBanks = [
-    { id: '1', name: 'Chase Bank', last4: '1234' },
-    { id: '2', name: 'Bank of America', last4: '5678' }
-  ];
+  constructor(private addFundsService: AddFundsService) {
+    this.currentStep$ = this.addFundsService.getCurrentStep();
+    this.selectedMethod$ = this.addFundsService.getSelectedMethod();
+    this.amount$ = this.addFundsService.getAmount();
+    this.processing$ = this.addFundsService.isProcessing();
+    this.transactionComplete$ = this.addFundsService.isTransactionComplete();
+    this.paymentMethods = this.addFundsService.getPaymentMethods();
+    this.savedBanks = this.addFundsService.getSavedBanks();
+  }
 
-  cardDetails = {
-    number: '',
-    expiry: '',
-    cvc: ''
-  };
+  ngOnInit(): void {
+    this.amount$.pipe(takeUntil(this.destroy$)).subscribe(amount => this.amount = amount);
+  }
 
-  selectedBank = '';
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+    this.addFundsService.reset();
+  }
 
   selectMethod(methodId: string) {
-    this.selectedMethod = methodId;
+    this.addFundsService.selectMethod(methodId);
   }
 
   nextStep() {
-    if (this.currentStep === 1 && !this.selectedMethod) return;
-    this.currentStep++;
+    this.addFundsService.setAmount(this.amount);
+    this.addFundsService.nextStep();
   }
 
   previousStep() {
-    this.currentStep--;
+    this.addFundsService.previousStep();
   }
 
-  getMethodName(methodId: string) {
+  getMethodName(methodId: string): string {
     return this.paymentMethods.find(m => m.id === methodId)?.name || '';
   }
 
   processPayment() {
-    this.processing = true;
-    // Simulate payment processing
-    setTimeout(() => {
-      this.processing = false;
-      this.transactionComplete = true;
-    }, 2000);
+    this.addFundsService.processPayment(this.cardDetails, this.selectedBank);
   }
 
   connectWallet(walletType: string) {
-    // Implement wallet connection logic
     console.log(`Connecting to ${walletType}`);
   }
 }

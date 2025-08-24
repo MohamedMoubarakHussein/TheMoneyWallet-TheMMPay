@@ -1,11 +1,11 @@
-/* Import animation definitions */
-@import url('./assets/animations.css');
+
+
+
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* Custom base styles */
 @layer base {
   html {
     font-size: 16px;
@@ -24,7 +24,6 @@
     -moz-osx-font-smoothing: grayscale;
   }
 
-  /* Enhanced Typography */
   h1, h2, h3, h4, h5, h6 {
     font-family: 'Poppins', sans-serif;
     font-weight: 700;
@@ -67,14 +66,11 @@
   }
 }
 
-/* Modern Professional Theme Styles */
 @layer components {
-  /* Hero Section */
   .hero-section {
     @apply relative overflow-hidden min-h-screen flex items-center justify-center;
   }
 
-  /* Background Pattern */
   .bg-pattern {
     background-image: 
       radial-gradient(circle at 25% 25%, rgba(255,255,255,0.1) 2px, transparent 2px),
@@ -82,7 +78,6 @@
     background-size: 60px 60px;
   }
 
-  /* Floating Elements */
   .floating-element {
     @apply absolute rounded-full opacity-20;
     animation: float 6s ease-in-out infinite;
@@ -106,7 +101,6 @@
     animation-delay: 4s;
   }
 
-  /* Logo Container */
   .logo-container {
     @apply relative inline-block;
   }
@@ -121,7 +115,6 @@
     animation: pulse 3s ease-in-out infinite;
   }
 
-  /* Hero Title */
   .hero-title {
     @apply text-5xl lg:text-7xl xl:text-8xl font-bold leading-tight tracking-tight text-center;
   }
@@ -134,12 +127,10 @@
     @apply text-blue-200;
   }
 
-  /* Hero Subtitle */
   .hero-subtitle {
     @apply text-xl lg:text-2xl text-blue-100 mb-12 max-w-4xl mx-auto leading-relaxed;
   }
 
-  /* CTA Buttons */
   .cta-buttons {
     @apply flex flex-col sm:flex-row gap-6 justify-center items-center;
   }
@@ -164,7 +155,6 @@
     transform: translateX(5px);
   }
 
-  /* Scroll Indicator */
   .scroll-indicator {
     @apply absolute bottom-8 left-1/2 transform -translate-x-1/2 text-white;
   }
@@ -177,7 +167,6 @@
     @apply text-2xl text-center animate-bounce;
   }
 
-  /* Features Section */
   .features-section {
     @apply bg-gray-50;
   }
@@ -198,7 +187,6 @@
     @apply grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 lg:gap-12;
   }
 
-  /* Feature Cards */
   .feature-card {
     @apply bg-white rounded-2xl p-8 shadow-lg border border-gray-100 transition-all duration-500 hover:-translate-y-2 hover:shadow-xl relative overflow-hidden;
   }
@@ -227,7 +215,6 @@
     @apply text-blue-600 opacity-0 group-hover:opacity-100 transition-all duration-300 group-hover:translate-x-2;
   }
 
-  /* Stats Section */
   .stats-section {
     @apply bg-blue-900;
   }
@@ -265,72 +252,6 @@
   }
 }
 
-/* Animations */
-@keyframes float {
-  0%, 100% {
-    transform: translateY(0px);
-  }
-  50% {
-    transform: translateY(-20px);
-  }
-}
-
-@keyframes pulse {
-  0%, 100% {
-    opacity: 0.2;
-    transform: scale(1);
-  }
-  50% {
-    opacity: 0.4;
-    transform: scale(1.05);
-  }
-}
-
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(30px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes slideInLeft {
-  from {
-    opacity: 0;
-    transform: translateX(-30px);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
-}
-
-@keyframes slideInRight {
-  from {
-    opacity: 0;
-    transform: translateX(30px);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
-}
-
-@keyframes zoomIn {
-  from {
-    opacity: 0;
-    transform: scale(0.8);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1);
-  }
-}
-
-/* Utility Classes */
 .fade-in-up {
   animation: fadeInUp 0.6s ease-out;
 }
@@ -347,7 +268,6 @@
   animation: zoomIn 0.6s ease-out;
 }
 
-/* Responsive Design */
 @media (max-width: 768px) {
   .hero-title {
     @apply text-4xl lg:text-5xl;
@@ -370,80 +290,10 @@
   }
 }
 
-/* Enhanced Hover Effects */
-.feature-card:hover .feature-icon-wrapper {
-  transform: scale(1.1);
-}
-
 .feature-card:hover .icon-background {
   filter: brightness(1.1);
 }
 
-/* Smooth Transitions */
-* {
-  transition: all 0.3s ease;
-}
-
-/* Global Animation Classes */
-.animate-fade-in {
-  animation: fadeIn 0.6s ease-out;
-}
-
-.animate-slide-up {
-  animation: slideInUp 0.6s ease-out;
-}
-
-.animate-slide-down {
-  animation: slideInDown 0.6s ease-out;
-}
-
-.animate-slide-left {
-  animation: slideInLeft 0.6s ease-out;
-}
-
-.animate-slide-right {
-  animation: slideInRight 0.6s ease-out;
-}
-
-.animate-scale-in {
-  animation: scaleIn 0.4s ease-out;
-}
-
-.animate-bounce-in {
-  animation: bounceIn 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-}
-
-.animate-stagger-in {
-  animation: staggerIn 0.6s ease-out;
-}
-
-/* Hover Animations */
-.hover-lift {
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-.hover-lift:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-}
-
-.hover-scale {
-  transition: transform 0.3s ease;
-}
-
-.hover-scale:hover {
-  transform: scale(1.05);
-}
-
-.hover-rotate {
-  transition: transform 0.3s ease;
-}
-
-.hover-rotate:hover {
-  transform: rotate(5deg);
-}
-
-/* Loading Animations */
 .loading-pulse {
   animation: pulse 2s infinite;
 }
@@ -456,7 +306,6 @@
   animation: bounce 2s infinite;
 }
 
-/* Page Transitions */
 .page-enter {
   opacity: 0;
   transform: translateY(20px);
@@ -479,20 +328,17 @@
   transition: opacity 0.3s ease-out, transform 0.3s ease-out;
 }
 
-/* Focus States for Accessibility */
 .cta-primary:focus,
 .cta-secondary:focus {
   outline: 2px solid #3b82f6;
   outline-offset: 2px;
 }
 
-/* Loading States */
 .loading {
   opacity: 0.7;
   pointer-events: none;
 }
 
-/* Custom Scrollbar */
 ::-webkit-scrollbar {
   width: 8px;
 }
@@ -508,4 +354,31 @@
 
 ::-webkit-scrollbar-thumb:hover {
   background: #94a3b8;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  .features-section {
+    background: linear-gradient(135deg, #1a202c 0%, #2d3748 100%);
+  }
+  
+  .feature-card {
+    background: #2d3748;
+    color: #e2e8f0;
+  }
+  
+  .feature-title {
+    color: #e2e8f0;
+  }
+  
+  .feature-description {
+    color: #a0aec0;
+  }
 }

@@ -1,0 +1,33 @@
+<div class="inline-flex flex-col items-center font-sans transition-transform duration-300 hover:-translate-y-1" [ngClass]="color">
+  <div class="flex items-baseline">
+    <div class="font-medium mr-0.5" *ngIf="prefix">{{ prefix }}</div>
+    <div class="font-bold"
+      [ngClass]="{
+        'text-lg': size === 'small',
+        'text-3xl': size === 'medium',
+        'text-5xl': size === 'large',
+        'text-primary': color === 'primary',
+        'text-secondary': color === 'success',
+        'text-status-error': color === 'danger',
+        'text-status-warning': color === 'warning',
+        'text-cyan-500': color === 'info',
+        'text-text-dark': color === 'default'
+      }"
+    >{{ displayValue }}</div>
+    <div class="font-medium ml-0.5"
+      [ngClass]="{
+        'text-base': size === 'small',
+        'text-lg': size === 'medium',
+        'text-xl': size === 'large'
+      }"
+    *ngIf="suffix">{{ suffix }}</div>
+  </div>
+  <div class="font-medium mt-2 text-center"
+    [ngClass]="{
+      'text-xs': size === 'small',
+      'text-sm': size === 'medium',
+      'text-base': size === 'large',
+      'text-neutral-gray': color === 'default'
+    }"
+  *ngIf="label">{{ label }}</div>
+</div>

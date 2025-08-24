@@ -1,375 +1,40 @@
-<div class="budget-container" [@fadeInUp]>
-  <!-- Header Section -->
-  <div class="budget-header" [@slideInDown]>
-    <div class="header-content">
-      <div class="header-left">
-        <h1 class="page-title">
-          <span class="title-icon">💰</span>
-          Budget Management
-        </h1>
-        <p class="page-subtitle">Track and manage your spending budgets effectively</p>
+<div class="min-h-screen bg-gray-50 p-6 animate-fadeIn">
+  <div class="bg-white rounded-2xl shadow-lg p-8 mb-8 bg-gradient-to-br from-green-500 to-emerald-600 text-white" @fadeIn>
+    <!-- Header -->
+  </div>
+
+  <div class="space-y-8">
+    <div class="bg-white rounded-2xl shadow-lg p-6" @fadeIn>
+      <h3 class="text-xl font-bold text-gray-900 mb-6">Budget Analytics</h3>
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6" *ngIf="analytics$ | async as analytics">
+        <!-- Analytics Cards -->
       </div>
-      <div class="header-actions">
-        <div class="filter-controls">
-          <select 
-            [(ngModel)]="selectedPeriod" 
-            (change)="onPeriodChange()"
-            class="period-select"
-            [@scaleIn]>
-            <option value="daily">Daily</option>
-            <option value="weekly">Weekly</option>
-            <option value="monthly">Monthly</option>
-            <option value="yearly">Yearly</option>
-          </select>
-          
-          <select 
-            [(ngModel)]="categoryFilter" 
-            class="category-select"
-            [@scaleIn]>
-            <option value="all">All Categories</option>
-            <option *ngFor="let category of categories" [value]="category">{{ category }}</option>
-          </select>
-        </div>
-        
-        <button 
-          class="create-btn"
-          (click)="toggleCreateForm()"
-          [@bounceIn]>
-          <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
-          </svg>
-          Create Budget
-        </button>
+    </div>
+
+    <div class="bg-white rounded-2xl shadow-lg p-6" @fadeIn>
+      <!-- Search and Filter -->
+    </div>
+
+    <div *ngIf="(paginatedBudgets$ | async)?.length" class="space-y-6">
+      <div *ngFor="let budget of paginatedBudgets$ | async" class="bg-white rounded-2xl shadow-lg p-6" @fadeInUp>
+        <!-- Budget Card -->
       </div>
+    </div>
+
+    <div class="flex justify-between items-center bg-white rounded-2xl shadow-lg p-6" *ngIf="(totalPages$ | async)! > 1" @fadeInUp>
+      <!-- Pagination -->
     </div>
   </div>
 
-  <!-- Loading State -->
-  <div *ngIf="isLoading" class="loading-overlay" [@fadeIn]>
-    <div class="loading-spinner">
-      <div class="spinner"></div>
-      <p>Loading budgets...</p>
+  <ng-template #emptyState>
+    <div class="text-center py-16" @fadeInUp>
+      <!-- Empty State -->
     </div>
-  </div>
+  </ng-template>
 
-  <!-- Budget Content -->
-  <div class="budget-content" *ngIf="!isLoading">
-    <!-- Analytics Summary -->
-    <div class="analytics-summary" [@slideInUp] *ngIf="analytics">
-      <div class="summary-grid">
-        <div class="summary-card">
-          <div class="summary-icon total-budget">
-            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"></path>
-            </svg>
-          </div>
-          <div class="summary-info">
-            <h3>Total Budget</h3>
-            <p class="summary-value">${{ analytics.totalBudget | number:'1.0-2' }}</p>
-          </div>
-        </div>
-        
-        <div class="summary-card">
-          <div class="summary-icon spent">
-            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"></path>
-            </svg>
-          </div>
-          <div class="summary-info">
-            <h3>Total Spent</h3>
-            <p class="summary-value">${{ analytics.totalSpent | number:'1.0-2' }}</p>
-          </div>
-        </div>
-        
-        <div class="summary-card">
-          <div class="summary-icon remaining">
-            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path>
-            </svg>
-          </div>
-          <div class="summary-info">
-            <h3>Remaining</h3>
-                                    <p class="summary-value">${{ analytics.totalRemaining | number:'1.0-2' }}</p>
-          </div>
-        </div>
-        
-        <div class="summary-card">
-          <div class="summary-icon utilization">
-            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
-            </svg>
-          </div>
-          <div class="summary-info">
-            <h3>Utilization</h3>
-                                    <p class="summary-value">{{ analytics.utilizationRate | number:'1.0-1' }}%</p>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Create Budget Form -->
-    <div class="create-form-container" *ngIf="showCreateForm" [@slideInDown]>
-      <div class="form-card">
-        <div class="form-header">
-          <h3>{{ selectedBudget ? 'Edit Budget' : 'Create New Budget' }}</h3>
-          <button class="close-btn" (click)="resetForm()">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-            </svg>
-          </button>
-        </div>
-        
-        <form [formGroup]="budgetForm" (ngSubmit)="selectedBudget ? updateBudget(selectedBudget.id, budgetForm.value) : createBudget()" class="budget-form">
-          <div class="form-grid">
-            <div class="form-group">
-              <label for="name">Budget Name</label>
-              <input 
-                type="text" 
-                id="name" 
-                formControlName="name" 
-                placeholder="Enter budget name"
-                class="form-input">
-            </div>
-            
-            <div class="form-group">
-              <label for="amount">Amount</label>
-              <input 
-                type="number" 
-                id="amount" 
-                formControlName="amount" 
-                placeholder="0.00"
-                class="form-input">
-            </div>
-            
-            <div class="form-group">
-              <label for="currency">Currency</label>
-              <select id="currency" formControlName="currency" class="form-select">
-                <option value="USD">USD ($)</option>
-                <option value="EUR">EUR (€)</option>
-                <option value="GBP">GBP (£)</option>
-                <option value="JPY">JPY (¥)</option>
-              </select>
-            </div>
-            
-            <div class="form-group">
-              <label for="period">Period</label>
-              <select id="period" formControlName="period" class="form-select">
-                <option value="daily">Daily</option>
-                <option value="weekly">Weekly</option>
-                <option value="monthly">Monthly</option>
-                <option value="yearly">Yearly</option>
-              </select>
-            </div>
-            
-            <div class="form-group">
-              <label for="category">Category</label>
-              <select id="category" formControlName="category" class="form-select">
-                <option value="">Select Category</option>
-                <option value="Food & Dining">Food & Dining</option>
-                <option value="Transportation">Transportation</option>
-                <option value="Shopping">Shopping</option>
-                <option value="Entertainment">Entertainment</option>
-                <option value="Utilities">Utilities</option>
-                <option value="Healthcare">Healthcare</option>
-                <option value="Education">Education</option>
-                <option value="Travel">Travel</option>
-                <option value="Insurance">Insurance</option>
-                <option value="Other">Other</option>
-              </select>
-            </div>
-            
-            <div class="form-group">
-              <label for="startDate">Start Date</label>
-              <input 
-                type="date" 
-                id="startDate" 
-                formControlName="startDate" 
-                class="form-input">
-            </div>
-            
-            <div class="form-group">
-              <label for="endDate">End Date</label>
-              <input 
-                type="date" 
-                id="endDate" 
-                formControlName="endDate" 
-                class="form-input">
-            </div>
-          </div>
-          
-          <div class="form-actions">
-            <button type="button" class="cancel-btn" (click)="resetForm()">Cancel</button>
-            <button type="submit" class="submit-btn" [disabled]="!budgetForm.valid || isLoading">
-              {{ selectedBudget ? 'Update Budget' : 'Create Budget' }}
-            </button>
-          </div>
-        </form>
-      </div>
-    </div>
-
-    <!-- Search and Filters -->
-    <div class="search-filters" [@slideInUp]>
-      <div class="search-box">
-        <svg class="search-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-        </svg>
-        <input 
-          type="text" 
-          [(ngModel)]="searchQuery" 
-          placeholder="Search budgets..."
-          class="search-input">
-      </div>
-      
-      <div class="filter-actions">
-        <button class="filter-btn" [class.active]="categoryFilter === 'all'">
-          All ({{ budgets.length }})
-        </button>
-        <button 
-          *ngFor="let category of categories" 
-          class="filter-btn" 
-          [class.active]="categoryFilter === category"
-          (click)="categoryFilter = category">
-          {{ category }} ({{ getBudgetsByCategory(category).length }})
-        </button>
-      </div>
-    </div>
-
-    <!-- Budgets List -->
-    <div class="budgets-list" [@staggerIn]>
-      <div 
-        *ngFor="let budget of paginatedBudgets; let i = index" 
-        class="budget-card"
-        [@slideInUp]
-        [style.animation-delay]="i * 100 + 'ms'">
-        
-        <div class="budget-header">
-          <div class="budget-info">
-            <div class="budget-icon">
-              {{ getCategoryIcon(budget.category) }}
-            </div>
-            <div class="budget-details">
-              <h3 class="budget-name">{{ budget.name }}</h3>
-              <p class="budget-category">{{ budget.category }}</p>
-              <div class="budget-period">
-                <span class="period-icon">{{ getPeriodIcon(budget.period) }}</span>
-                <span>{{ budget.period | titlecase }}</span>
-              </div>
-            </div>
-          </div>
-          
-          <div class="budget-actions">
-            <button class="action-btn edit" (click)="editBudget(budget)" title="Edit Budget">
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
-              </svg>
-            </button>
-            <button class="action-btn delete" (click)="deleteBudget(budget.id)" title="Delete Budget">
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
-              </svg>
-            </button>
-          </div>
-        </div>
-        
-        <div class="budget-progress">
-          <div class="progress-info">
-            <div class="amount-info">
-              <span class="spent">${{ budget.spent | number:'1.0-2' }}</span>
-              <span class="separator">/</span>
-              <span class="total">${{ budget.amount | number:'1.0-2' }}</span>
-            </div>
-            <div class="utilization-info">
-              <span class="utilization-percentage">{{ getBudgetUtilization(budget) | number:'1.0-1' }}%</span>
-              <span class="utilization-status" [class]="getBudgetStatusColor(budget)">
-                {{ getBudgetStatusIcon(budget) }}
-              </span>
-            </div>
-          </div>
-          
-          <div class="progress-bar">
-            <div 
-              class="progress-fill" 
-              [style.width.%]="getBudgetUtilization(budget)"
-              [class]="getBudgetStatusColor(budget)">
-            </div>
-          </div>
-        </div>
-        
-        <div class="budget-footer">
-          <div class="budget-dates">
-            <span class="date-label">Period:</span>
-            <span class="date-range">
-              {{ budget.startDate | date:'MMM dd' }} - {{ budget.endDate | date:'MMM dd, yyyy' }}
-            </span>
-          </div>
-          
-          <div class="budget-controls">
-            <button 
-              class="control-btn reset" 
-              (click)="resetBudget(budget.id)"
-              title="Reset Budget">
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
-              </svg>
-            </button>
-            <button 
-              class="control-btn toggle" 
-              (click)="toggleBudgetStatus(budget.id)"
-              [class.active]="budget.isActive"
-              [title]="budget.isActive ? 'Pause Budget' : 'Activate Budget'">
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 9v6m4-6v6m7-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-              </svg>
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Pagination -->
-    <div class="pagination" *ngIf="totalPages > 1" [@slideInUp]>
-      <button 
-        class="pagination-btn" 
-        [disabled]="currentPage === 1"
-        (click)="previousPage()">
-        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
-        </svg>
-        Previous
-      </button>
-      
-      <div class="page-numbers">
-        <button 
-          *ngFor="let page of getPageNumbers()" 
-          class="page-btn" 
-          [class.active]="page === currentPage"
-          (click)="currentPage = page">
-          {{ page }}
-        </button>
-      </div>
-      
-      <button 
-        class="pagination-btn" 
-        [disabled]="currentPage === totalPages"
-        (click)="nextPage()">
-        Next
-        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-        </svg>
-      </button>
-    </div>
-
-    <!-- Empty State -->
-    <div class="empty-state" *ngIf="filteredBudgets.length === 0" [@slideInUp]>
-      <div class="empty-icon">💰</div>
-      <h3>No Budgets Found</h3>
-      <p>Create your first budget to start tracking your spending</p>
-      <button class="create-btn" (click)="toggleCreateForm()">
-        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
-        </svg>
-        Create Your First Budget
-      </button>
+  <div *ngIf="showCreateForm" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" @fadeIn>
+    <div class="bg-white rounded-2xl shadow-2xl max-w-4xl w-full" @scaleIn>
+      <!-- Form -->
     </div>
   </div>
 </div>

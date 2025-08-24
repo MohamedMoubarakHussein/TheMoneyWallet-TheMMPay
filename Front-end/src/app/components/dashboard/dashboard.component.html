@@ -1,176 +1,129 @@
 
-<!-- Enhanced Dashboard Container -->
-<div class="dashboard-container">
-  <!-- Decorative Background Elements -->
-  <div class="absolute top-10 left-10 w-64 h-64 bg-blue-500 rounded-full opacity-5 animate-float"></div>
-  <div class="absolute bottom-20 right-10 w-80 h-80 bg-green-500 rounded-full opacity-5 animate-float" style="animation-delay: 1s;"></div>
-  
-  <!-- Header Section -->
-  <div class="dashboard-header">
-    <div class="flex justify-between items-center px-4 sm:px-6 lg:px-8 py-6">
-      <div class="welcome-section animate-fade-in">
-        <h1 class="text-2xl sm:text-3xl font-bold">Welcome back, {{ currentUser?.firstName || 'User' }}!</h1>
-        <p class="text-gray-600 mt-1">Here's your financial overview</p>
-      </div>
-      
-      <!-- Mobile Quick Actions -->
-      <div class="flex gap-2 sm:hidden">
-        <button class="flex flex-col items-center justify-center w-16 h-16 bg-gradient-to-br from-blue-500 to-blue-700 text-white rounded-xl shadow-lg hover:shadow-xl transition-all" (click)="navigateTo('/send-money')" appHoverAnimation appRipple>
-          <span class="text-xl">📤</span>
-          <span class="text-xs mt-1">Send</span>
-        </button>
-        <button class="flex flex-col items-center justify-center w-16 h-16 bg-gradient-to-br from-green-500 to-green-700 text-white rounded-xl shadow-lg hover:shadow-xl transition-all" (click)="navigateTo('/add-funds')" appHoverAnimation appRipple>
-          <span class="text-xl">💰</span>
-          <span class="text-xs mt-1">Add</span>
-        </button>
-        <button class="flex flex-col items-center justify-center w-16 h-16 bg-gradient-to-br from-purple-500 to-purple-700 text-white rounded-xl shadow-lg hover:shadow-xl transition-all" (click)="navigateTo('/pay-bill')" appHoverAnimation appRipple>
-          <span class="text-xl">💳</span>
-          <span class="text-xs mt-1">Pay</span>
-        </button>
-      </div>
-    </div>
-  </div>
+<app-header></app-header>
 
-  <!-- Main Dashboard Content -->
-  <div class="dashboard-content">
-    <!-- Balance Overview Cards -->
-    <div class="balance-section">
-      <div class="section-header">
-        <h2 class="section-title animate-fade-in">Balance Overview</h2>
-        <button class="flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 rounded-lg shadow-sm hover:shadow-md transition-all disabled:opacity-50 animate-fade-in" (click)="refreshData()" [disabled]="isLoading" appHoverAnimation="pulse" appRipple>
-          <span class="text-lg">🔄</span>
-          <span class="hidden sm:inline">Refresh</span>
-        </button>
-      </div>
-      
-      <div class="balance-cards">
-        <!-- Total Balance Card -->
-        <div class="balance-card primary animate-fade-in" style="animation-delay: 100ms;" appHoverAnimation="glow" [glowColor]="'rgba(59, 130, 246, 0.3)'">
-          <div class="card-header">
-            <span class="card-icon">💰</span>
-            <span class="card-title">Total Balance</span>
-          </div>
-          <div class="card-amount">{{ getTotalBalance() | currency:'USD':'symbol':'1.2-2' }}</div>
-          <div class="card-change" [class.positive]="getBalanceChange() >= 0" [class.negative]="getBalanceChange() < 0">
-            <span class="change-icon mr-1">{{ getBalanceChange() >= 0 ? '↗' : '↘' }}</span>
-            <span class="change-amount">{{ getBalanceChange() | currency:'USD':'symbol':'1.2-2' }}</span>
-            <span class="change-period ml-1">this month</span>
-          </div>
-          
-          <!-- Balance Chart -->
-          <div class="mt-4 h-24">
-            <canvas #balanceChart></canvas>
-          </div>
+<div class="relative bg-neutral-light min-h-screen pt-16 pb-16" *ngIf="dashboardData$ | async as data">
+  <div class="absolute top-10 left-10 w-64 h-64 bg-primary rounded-full opacity-5 animate-float"></div>
+  <div class="absolute bottom-20 right-10 w-80 h-80 bg-secondary rounded-full opacity-5 animate-float"></div>
+
+  <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-8 relative z-10">
+    <div class="mb-8">
+      <div class="flex justify-between items-center py-6">
+        <div class="animate-fadeIn">
+          <h1 class="text-2xl sm:text-3xl font-bold text-transparent bg-clip-text bg-primary-gradient animate-fadeIn">Welcome back, {{ data.currentUser?.firstName || 'User' }}!</h1>
+          <p class="text-neutral-gray mt-1">Here's your financial overview</p>
         </div>
-
-        <!-- Primary Wallet Card -->
-        <div class="balance-card secondary animate-fade-in" style="animation-delay: 200ms;" *ngIf="getPrimaryWallet() as primaryWallet" appHoverAnimation="glow" [glowColor]="'rgba(16, 185, 129, 0.3)'">
-          <div class="card-header">
-            <span class="card-icon">🏦</span>
-            <span class="card-title">{{ primaryWallet.name || 'Primary Wallet' }}</span>
-          </div>
-          <div class="card-amount">{{ primaryWallet.balance | currency:primaryWallet.currency:'symbol':'1.2-2' }}</div>
-          <div class="card-status" [class]="primaryWallet.status">
-            {{ primaryWallet.status | titlecase }}
-          </div>
-          
-          <!-- Transaction Chart -->
-          <div class="mt-4 h-24">
-            <canvas #transactionChart></canvas>
-          </div>
-        </div>
-
-        <!-- Quick Stats Card -->
-        <div class="balance-card info animate-fade-in" style="animation-delay: 300ms;" appHoverAnimation="glow" [glowColor]="'rgba(249, 115, 22, 0.3)'">
-          <div class="card-header">
-            <span class="card-icon">📊</span>
-            <span class="card-title">Quick Stats</span>
-          </div>
-          <div class="grid grid-cols-2 gap-4">
-            <div class="text-center">
-              <div class="text-2xl font-bold text-gray-900">{{ getWalletCount() }}</div>
-              <div class="text-sm text-gray-600">Wallets</div>
-            </div>
-            <div class="text-center">
-              <div class="text-2xl font-bold text-gray-900">{{ getTransactionCount() }}</div>
-              <div class="text-sm text-gray-600">Transactions</div>
-            </div>
-          </div>
-          
-          <!-- Spending Breakdown -->
-          <div class="mt-4">
-            <h4 class="text-sm font-medium text-gray-600 mb-2">Monthly Spending</h4>
-            <div class="space-y-2">
-              <div>
-                <div class="flex justify-between text-xs mb-1">
-                  <span>Shopping</span>
-                  <span>35%</span>
-                </div>
-                <div class="w-full bg-gray-200 rounded-full h-2">
-                  <div class="bg-blue-600 h-2 rounded-full" style="width: 35%"></div>
-                </div>
-              </div>
-              <div>
-                <div class="flex justify-between text-xs mb-1">
-                  <span>Bills</span>
-                  <span>25%</span>
-                </div>
-                <div class="w-full bg-gray-200 rounded-full h-2">
-                  <div class="bg-purple-600 h-2 rounded-full" style="width: 25%"></div>
-                </div>
-              </div>
-              <div>
-                <div class="flex justify-between text-xs mb-1">
-                  <span>Food</span>
-                  <span>20%</span>
-                </div>
-                <div class="w-full bg-gray-200 rounded-full h-2">
-                  <div class="bg-green-600 h-2 rounded-full" style="width: 20%"></div>
-                </div>
-              </div>
-            </div>
-          </div>
+        <!-- Mobile Quick Actions -->
+        <div class="flex gap-2 sm:hidden">
+          <button class="inline-flex items-center gap-2 py-3 px-6 rounded-lg font-semibold text-text-light bg-primary-gradient shadow-lg transition-all duration-300 ease-in-out cursor-pointer hover:-translate-y-0.5 hover:shadow-xl active:translate-y-0 active:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed" (click)="navigateTo('/send-money')" appHoverAnimation appRipple>
+            <i class="fas fa-paper-plane"></i>
+            <span class="text-xs mt-1">Send</span>
+          </button>
+          <button class="inline-flex items-center gap-2 py-3 px-6 rounded-lg font-semibold text-text-light bg-secondary-gradient shadow-lg transition-all duration-300 ease-in-out cursor-pointer hover:-translate-y-0.5 hover:shadow-xl active:translate-y-0 active:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed" (click)="navigateTo('/add-funds')" appHoverAnimation appRipple>
+            <i class="fas fa-wallet"></i>
+            <span class="text-xs mt-1">Add</span>
+          </button>
+          <button class="inline-flex items-center gap-2 py-3 px-6 rounded-lg font-semibold text-text-light bg-primary-gradient shadow-lg transition-all duration-300 ease-in-out cursor-pointer hover:-translate-y-0.5 hover:shadow-xl active:translate-y-0 active:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed" (click)="navigateTo('/pay-bill')" appHoverAnimation appRipple>
+            <i class="fas fa-credit-card"></i>
+            <span class="text-xs mt-1">Pay</span>
+          </button>
         </div>
       </div>
     </div>
-
-    <!-- Recent Transactions Section -->
-    <div class="transactions-section">
-      <div class="section-header">
-        <h2 class="section-title animate-fade-in" style="animation-delay: 400ms;">Recent Transactions</h2>
-        <button class="flex items-center gap-1 text-blue-600 hover:text-blue-700 font-medium transition-colors animate-fade-in" style="animation-delay: 450ms;" (click)="navigateTo('/transactions')">
-          View All
-          <span class="text-lg">›</span>
-        </button>
-      </div>
-      
-      <div class="transactions-list" *ngIf="recentTransactions.length > 0; else noTransactions">
-        <div 
-          *ngFor="let transaction of recentTransactions.slice(0, 5); let i = index" 
-          class="transaction-item animate-slide-right"
-          [style.animation-delay]="(i * 100 + 500) + 'ms'"
-          (click)="viewTransaction(transaction)"
-          appHoverAnimation="scale"
-          [scale]="1.02"
-          appRipple
-          [rippleColor]="'rgba(0, 0, 0, 0.05)'">
-          <div class="flex items-center gap-4">
-            <div class="w-12 h-12 rounded-full flex items-center justify-center text-xl shadow-md">
-              {{ getTransactionIcon(transaction) }}
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <div class="lg:col-span-3">
+        <div class="flex justify-between items-center mb-6 relative">
+          <h2 class="text-2xl font-bold text-text-dark relative after:content-[''] after:absolute after:-bottom-2 after:left-0 after:w-10 after:h-1 after:bg-primary-gradient after:rounded-full">Balance Overview</h2>
+          <button class="inline-flex items-center gap-2 py-3 px-6 rounded-lg font-semibold bg-transparent border-2 border-primary text-primary shadow-none transition-all duration-300 ease-in-out cursor-pointer hover:bg-primary hover:text-text-light" (click)="refreshData()" [disabled]="isLoading$ | async" appHoverAnimation="pulse" appRipple>
+            <i class="fas fa-sync-alt"></i>
+            <span class="hidden sm:inline">Refresh</span>
+          </button>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div class="bg-white/90 backdrop-blur-lg rounded-2xl p-6 shadow-md border border-white/50 overflow-hidden relative transition-all duration-300 hover:shadow-xl hover:-translate-y-1 animate-fadeIn before:content-[''] before:absolute before:top-0 before:left-0 before:right-0 before:h-1 before:bg-primary-gradient before:z-10" appHoverAnimation="glow" [glowColor]="'rgba(59, 130, 246, 0.3)'">
+            <div class="flex items-center mb-4">
+              <span class="text-2xl mr-3 flex items-center justify-center w-10 h-10 bg-primary/10 rounded-xl">
+                <i class="fas fa-dollar-sign text-primary"></i>
+              </span>
+              <span class="font-semibold text-neutral-gray">Total Balance</span>
             </div>
-            <div class="flex-1">
-              <div class="flex justify-between items-start">
+            <div class="text-3xl font-bold mb-2 text-text-dark">{{ data.totalBalance | currency:'USD':'symbol':'1.2-2' }}</div>
+            <div class="inline-flex items-center py-1 px-2 rounded-full text-sm font-medium bg-status-success/10 text-secondary-dark">
+              <span class="mr-1">
+                <i class="fas fa-arrow-up"></i>
+              </span>
+              <span>$125.50</span>
+              <span class="ml-1">this month</span>
+            </div>
+            <div class="mt-4 h-24">
+              <canvas #balanceChart></canvas>
+            </div>
+          </div>
+          <div class="bg-white/90 backdrop-blur-lg rounded-2xl p-6 shadow-md border border-white/50 overflow-hidden relative transition-all duration-300 hover:shadow-xl hover:-translate-y-1 animate-fadeIn before:content-[''] before:absolute before:top-0 before:left-0 before:right-0 before:h-1 before:bg-secondary-gradient before:z-10" *ngIf="data.primaryWallet as primaryWallet" appHoverAnimation="glow" [glowColor]="'rgba(16, 185, 129, 0.3)'">
+            <div class="flex items-center mb-4">
+              <span class="text-2xl mr-3 flex items-center justify-center w-10 h-10 bg-secondary/10 rounded-xl">
+                <i class="fas fa-wallet text-secondary"></i>
+              </span>
+              <span class="font-semibold text-neutral-gray">{{ primaryWallet.name || 'Primary Wallet' }}</span>
+            </div>
+            <div class="text-3xl font-bold mb-2 text-text-dark">{{ primaryWallet.balance | currency:primaryWallet.currency:'symbol':'1.2-2' }}</div>
+            <div class="inline-flex items-center py-1 px-2 rounded-full text-xs font-semibold uppercase tracking-wider" [ngClass]="{
+              'bg-status-success/10 text-secondary-dark': primaryWallet.status === 'active',
+              'bg-status-error/10 text-status-error': primaryWallet.status === 'inactive',
+              'bg-yellow-500/10 text-yellow-500': primaryWallet.status === 'suspended',
+              'bg-gray-500/10 text-gray-500': primaryWallet.status === 'closed'
+            }">
+              {{ primaryWallet.status | titlecase }}
+            </div>
+            <div class="mt-4 h-24">
+              <canvas #transactionChart></canvas>
+            </div>
+          </div>
+          <div class="bg-white/90 backdrop-blur-lg rounded-2xl p-6 shadow-md border border-white/50 overflow-hidden relative transition-all duration-300 hover:shadow-xl hover:-translate-y-1 animate-fadeIn before:content-[''] before:absolute before:top-0 before:left-0 before:right-0 before:h-1 before:bg-accent-gradient-orange before:z-10" appHoverAnimation="glow" [glowColor]="'rgba(249, 115, 22, 0.3)'">
+            <div class="flex items-center mb-4">
+              <span class="text-2xl mr-3 flex items-center justify-center w-10 h-10 bg-accent-orange/10 rounded-xl">
+                <i class="fas fa-chart-pie text-accent-orange"></i>
+              </span>
+              <span class="font-semibold text-neutral-gray">Quick Stats</span>
+            </div>
+            <div class="grid grid-cols-2 gap-4">
+              <div class="text-center">
+                <div class="text-2xl font-bold text-gray-900">{{ data.walletCount }}</div>
+                <div class="text-sm text-gray-600">Wallets</div>
+              </div>
+              <div class="text-center">
+                <div class="text-2xl font-bold text-gray-900">{{ data.transactionCount }}</div>
+                <div class="text-sm text-gray-600">Transactions</div>
+              </div>
+            </div>
+            <!-- Spending Breakdown -->
+            <div class="mt-4">
+              <h4 class="text-sm font-medium text-gray-600 mb-2">Monthly Spending</h4>
+              <div class="space-y-2">
                 <div>
-                  <h4 class="font-semibold text-gray-900">{{ transaction.description || 'Transaction' }}</h4>
-                  <p class="text-sm text-gray-500">
-                    {{ transaction.createdAt | date:'MMM dd, yyyy' }} • 
-                    {{ transaction.status | titlecase }}
-                  </p>
+                  <div class="flex justify-between text-xs mb-1">
+                    <span>Shopping</span>
+                    <span>35%</span>
+                  </div>
+                  <div class="w-full bg-gray-200 rounded-full h-2">
+                    <div class="bg-blue-600 h-2 rounded-full" style="width: 35%"></div>
+                  </div>
                 </div>
-                <div class="text-right">
-                  <div class="font-bold text-lg" [class]="getTransactionType(transaction)">
-                    <span class="mr-1">{{ getTransactionSign(transaction) }}</span>
-                    {{ transaction.amount | currency:transaction.currency:'symbol':'1.2-2' }}
+                <div>
+                  <div class="flex justify-between text-xs mb-1">
+                    <span>Bills</span>
+                    <span>25%</span>
+                  </div>
+                  <div class="w-full bg-gray-200 rounded-full h-2">
+                    <div class="bg-purple-600 h-2 rounded-full" style="width: 25%"></div>
+                  </div>
+                </div>
+                <div>
+                  <div class="flex justify-between text-xs mb-1">
+                    <span>Food</span>
+                    <span>20%</span>
+                  </div>
+                  <div class="w-full bg-gray-200 rounded-full h-2">
+                    <div class="bg-green-600 h-2 rounded-full" style="width: 20%"></div>
                   </div>
                 </div>
               </div>
@@ -178,113 +131,145 @@
           </div>
         </div>
       </div>
-      
-      <ng-template #noTransactions>
-        <div class="no-transactions animate-scale-up" style="animation-delay: 500ms;">
-          <div class="empty-icon animate-float">📊</div>
-          <h3 class="text-xl font-semibold text-gray-900 mb-2">No transactions yet</h3>
-          <p class="text-gray-600 mb-6">Your transaction history will appear here</p>
-          <button class="px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-lg shadow-lg hover:shadow-xl transition-all" (click)="navigateTo('/send-money')">
-            Make your first transaction
+      <!-- Recent Transactions Section -->
+      <div class="lg:col-span-2">
+        <div class="flex justify-between items-center mb-6">
+          <h2 class="text-2xl font-bold text-text-dark relative after:content-[''] after:absolute after:-bottom-2 after:left-0 after:w-10 after:h-1 after:bg-primary-gradient after:rounded-full animate-fade-in">Recent Transactions</h2>
+          <button class="flex items-center gap-1 text-blue-600 hover:text-blue-700 font-medium transition-colors animate-fade-in" (click)="navigateTo('/transactions')">
+            View All
+            <i class="fas fa-arrow-right"></i>
           </button>
         </div>
-      </ng-template>
-    </div>
-
-    <!-- Quick Actions Section -->
-    <div class="quick-actions-section hidden sm:block">
-      <div class="section-header">
-        <h2 class="section-title animate-fade-in" style="animation-delay: 400ms;">Quick Actions</h2>
-      </div>
-      
-      <div class="actions-grid">
-        <div class="action-card animate-scale-up" style="animation-delay: 500ms;" (click)="navigateTo('/send-money')" appHoverAnimation="lift" appRipple [rippleColor]="'rgba(59, 130, 246, 0.2)'">
-          <div class="action-icon send">📤</div>
-          <h3 class="action-title">Send Money</h3>
-          <p class="action-description">Transfer funds to anyone, anywhere</p>
-        </div>
-        
-        <div class="action-card animate-scale-up" style="animation-delay: 600ms;" (click)="navigateTo('/add-funds')" appHoverAnimation="lift" appRipple [rippleColor]="'rgba(16, 185, 129, 0.2)'">
-          <div class="action-icon add">💰</div>
-          <h3 class="action-title">Add Funds</h3>
-          <p class="action-description">Top up your wallet instantly</p>
-        </div>
-        
-        <div class="action-card animate-scale-up" style="animation-delay: 700ms;" (click)="navigateTo('/pay-bill')" appHoverAnimation="lift" appRipple [rippleColor]="'rgba(139, 92, 246, 0.2)'">
-          <div class="action-icon pay">💳</div>
-          <h3 class="action-title">Pay Bills</h3>
-          <p class="action-description">Pay utilities and services</p>
-        </div>
-        
-        <div class="action-card animate-scale-up" style="animation-delay: 800ms;" (click)="navigateTo('/request-money')" appHoverAnimation="lift" appRipple [rippleColor]="'rgba(249, 115, 22, 0.2)'">
-          <div class="action-icon request">📥</div>
-          <h3 class="action-title">Request Money</h3>
-          <p class="action-description">Ask friends to send you money</p>
-        </div>
-      </div>
-    </div>
-
-    <!-- Wallets Overview Section -->
-    <div class="wallets-section" *ngIf="wallets.length > 0">
-      <div class="section-header">
-        <h2 class="section-title animate-fade-in" style="animation-delay: 900ms;">Your Wallets</h2>
-        <button class="flex items-center gap-1 text-blue-600 hover:text-blue-700 font-medium transition-colors animate-fade-in" style="animation-delay: 950ms;" (click)="navigateTo('/wallets')">
-          View All
-          <span class="text-lg">›</span>
-        </button>
-      </div>
-      
-      <div class="wallets-grid">
-        <div 
-          *ngFor="let wallet of wallets.slice(0, 3); let i = index" 
-          class="wallet-card animate-scale-up"
-          [style.animation-delay]="(i * 100 + 1000) + 'ms'"
-          (click)="selectWallet(wallet)"
-          appHoverAnimation="lift"
-          appRipple>
-          <div class="wallet-header">
-            <div class="flex items-center gap-3">
-              <span class="wallet-icon">🏦</span>
-              <span class="wallet-name">{{ wallet.name }}</span>
+        <div class="max-h-96 overflow-y-auto rounded-2xl bg-white/80 backdrop-blur-lg shadow-md" *ngIf="data.recentTransactions.length > 0; else noTransactions" [@listAnimation]="data.recentTransactions.length">
+          <div *ngFor="let transaction of data.recentTransactions.slice(0, 5); let i = index" class="p-4 border-b border-gray-200/70 cursor-pointer transition-all duration-200 hover:bg-gray-100/70 hover:translate-x-1" (click)="viewTransaction(transaction)" appHoverAnimation="scale" [scale]="1.02" appRipple [rippleColor]="'rgba(0, 0, 0, 0.05)'">
+            <div class="flex items-center gap-4">
+              <div class="w-12 h-12 rounded-full flex items-center justify-center text-xl shadow-md bg-gray-100/70">
+                <i class="fas" [ngClass]="getTransactionIcon(transaction)"></i>
+              </div>
+              <div class="flex-1">
+                <div class="flex justify-between items-start">
+                  <div>
+                    <h4 class="font-semibold text-gray-900">{{ transaction.description || 'Transaction' }}</h4>
+                    <p class="text-sm text-gray-500">
+                      {{ transaction.createdAt | date:'MMM dd, yyyy' }} • {{ transaction.status | titlecase }}
+                    </p>
+                  </div>
+                  <div class="text-right">
+                    <div class="font-bold text-lg" [class]="getTransactionType(transaction)">
+                      <span class="mr-1">{{ getTransactionSign(transaction) }}</span>
+                      {{ transaction.amount | currency:transaction.currency:'symbol':'1.2-2' }}
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
-            <span class="wallet-status" [class]="wallet.status">
-              {{ wallet.status | titlecase }}
-            </span>
           </div>
-          <div class="wallet-balance">
-            {{ wallet.balance | currency:wallet.currency:'symbol':'1.2-2' }}
+        </div>
+        <ng-template #noTransactions>
+          <div class="flex flex-col items-center justify-center p-8 text-center bg-white/80 backdrop-blur-lg rounded-2xl shadow-md animate-scale-up">
+            <div class="w-20 h-20 rounded-full bg-gray-100/70 flex items-center justify-center text-4xl text-gray-400 mb-4 animate-float">
+              <i class="fas fa-chart-bar"></i>
+            </div>
+            <h3 class="text-xl font-semibold text-gray-900 mb-2">No transactions yet</h3>
+            <p class="text-gray-600 mb-6">Your transaction history will appear here</p>
+            <button class="inline-flex items-center gap-2 py-3 px-6 rounded-lg font-semibold text-text-light bg-primary-gradient shadow-lg transition-all duration-300 ease-in-out cursor-pointer hover:-translate-y-0.5 hover:shadow-xl active:translate-y-0 active:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed" (click)="navigateTo('/send-money')">
+              Make your first transaction
+            </button>
           </div>
-          <div class="wallet-currency">{{ wallet.currency }}</div>
+        </ng-template>
+      </div>
+      <!-- Quick Actions Section -->
+      <div class="lg:col-span-1 hidden sm:block">
+        <div class="flex justify-between items-center mb-6">
+          <h2 class="text-2xl font-bold text-text-dark relative after:content-[''] after:absolute after:-bottom-2 after:left-0 after:w-10 after:h-1 after:bg-primary-gradient after:rounded-full animate-fade-in">Quick Actions</h2>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-1 gap-6">
+          <div class="p-6 text-center cursor-pointer relative overflow-hidden bg-white/90 backdrop-blur-lg rounded-2xl shadow-md border border-white/50 transition-all duration-300 hover:shadow-xl hover:-translate-y-1 animate-scale-up before:content-[''] before:absolute before:bottom-0 before:left-0 before:w-full before:h-0.5 before:bg-primary-gradient before:transform before:scale-x-0 before:origin-left before:transition-transform before:duration-300 before:ease-in-out hover:before:scale-x-100" (click)="navigateTo('/send-money')" appHoverAnimation="lift" appRipple [rippleColor]="'rgba(59, 130, 246, 0.2)'">
+            <div class="text-3xl mb-4 inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-primary/10 transition-all duration-300 group-hover:scale-110">
+              <i class="fas fa-paper-plane text-primary"></i>
+            </div>
+            <h3 class="text-lg font-semibold mb-2 text-text-dark">Send Money</h3>
+            <p class="text-sm text-neutral-gray">Transfer funds to anyone, anywhere</p>
+          </div>
+          <div class="p-6 text-center cursor-pointer relative overflow-hidden bg-white/90 backdrop-blur-lg rounded-2xl shadow-md border border-white/50 transition-all duration-300 hover:shadow-xl hover:-translate-y-1 animate-scale-up before:content-[''] before:absolute before:bottom-0 before:left-0 before:w-full before:h-0.5 before:bg-secondary-gradient before:transform before:scale-x-0 before:origin-left before:transition-transform before:duration-300 before:ease-in-out hover:before:scale-x-100" (click)="navigateTo('/add-funds')" appHoverAnimation="lift" appRipple [rippleColor]="'rgba(16, 185, 129, 0.2)'">
+            <div class="text-3xl mb-4 inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-secondary/10 transition-all duration-300 group-hover:scale-110">
+              <i class="fas fa-wallet text-secondary"></i>
+            </div>
+            <h3 class="text-lg font-semibold mb-2 text-text-dark">Add Funds</h3>
+            <p class="text-sm text-neutral-gray">Top up your wallet instantly</p>
+          </div>
+          <div class="p-6 text-center cursor-pointer relative overflow-hidden bg-white/90 backdrop-blur-lg rounded-2xl shadow-md border border-white/50 transition-all duration-300 hover:shadow-xl hover:-translate-y-1 animate-scale-up before:content-[''] before:absolute before:bottom-0 before:left-0 before:w-full before:h-0.5 before:bg-accent-gradient-purple before:transform before:scale-x-0 before:origin-left before:transition-transform before:duration-300 before:ease-in-out hover:before:scale-x-100" (click)="navigateTo('/pay-bill')" appHoverAnimation="lift" appRipple [rippleColor]="'rgba(139, 92, 246, 0.2)'">
+            <div class="text-3xl mb-4 inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-accent-purple/10 transition-all duration-300 group-hover:scale-110">
+              <i class="fas fa-credit-card text-accent-purple"></i>
+            </div>
+            <h3 class="text-lg font-semibold mb-2 text-text-dark">Pay Bills</h3>
+            <p class="text-sm text-neutral-gray">Pay utilities and services</p>
+          </div>
+          <div class="p-6 text-center cursor-pointer relative overflow-hidden bg-white/90 backdrop-blur-lg rounded-2xl shadow-md border border-white/50 transition-all duration-300 hover:shadow-xl hover:-translate-y-1 animate-scale-up before:content-[''] before:absolute before:bottom-0 before:left-0 before:w-full before:h-0.5 before:bg-accent-gradient-orange before:transform before:scale-x-0 before:origin-left before:transition-transform before:duration-300 before:ease-in-out hover:before:scale-x-100" (click)="navigateTo('/request-money')" appHoverAnimation="lift" appRipple [rippleColor]="'rgba(249, 115, 22, 0.2)'">
+            <div class="text-3xl mb-4 inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-accent-orange/10 transition-all duration-300 group-hover:scale-110">
+              <i class="fas fa-hand-holding-usd text-accent-orange"></i>
+            </div>
+            <h3 class="text-lg font-semibold mb-2 text-text-dark">Request Money</h3>
+            <p class="text-sm text-neutral-gray">Ask friends to send you money</p>
+          </div>
         </div>
       </div>
-    </div>
-
-    <!-- Notifications Section -->
-    <div class="notifications-section" *ngIf="getUnreadNotificationCount() > 0">
-      <div class="section-header">
-        <h2 class="section-title animate-fade-in" style="animation-delay: 900ms;">Notifications</h2>
-        <button class="flex items-center gap-1 text-blue-600 hover:text-blue-700 font-medium transition-colors animate-fade-in" style="animation-delay: 950ms;" (click)="navigateTo('/notifications')">
-          View All
-          <span class="text-lg">›</span>
-        </button>
+      <!-- Wallets Overview Section -->
+      <div class="lg:col-span-1" *ngIf="data.wallets.length > 0" [@listAnimation]="data.wallets.length">
+        <div class="flex justify-between items-center mb-6">
+          <h2 class="text-2xl font-bold text-text-dark relative after:content-[''] after:absolute after:-bottom-2 after:left-0 after:w-10 after:h-1 after:bg-primary-gradient after:rounded-full animate-fade-in">Your Wallets</h2>
+          <button class="flex items-center gap-1 text-blue-600 hover:text-blue-700 font-medium transition-colors animate-fade-in" (click)="navigateTo('/wallets')">
+            View All
+            <i class="fas fa-arrow-right"></i>
+          </button>
+        </div>
+        <div class="grid grid-cols-1 gap-6">
+          <div *ngFor="let wallet of data.wallets.slice(0, 3); let i = index" class="p-6 relative overflow-hidden cursor-pointer bg-white/90 backdrop-blur-lg rounded-2xl shadow-md border border-white/50 transition-all duration-300 hover:shadow-xl hover:-translate-y-1 animate-scale-up before:content-[''] before:absolute before:top-0 before:left-0 before:w-full before:h-full before:bg-gradient-to-r before:from-primary/5 before:to-secondary/5 before:z-[-1]" (click)="selectWallet(wallet)" appHoverAnimation="lift" appRipple>
+            <div class="flex justify-between items-center mb-6">
+              <div class="flex items-center gap-3">
+                <span class="text-2xl">
+                  <i class="fas fa-wallet text-primary"></i>
+                </span>
+                <span class="font-semibold text-text-dark">{{ wallet.name }}</span>
+              </div>
+              <span class="inline-flex items-center py-1 px-2 rounded-full text-xs font-semibold uppercase tracking-wider" [ngClass]="{
+                'bg-status-success/10 text-secondary-dark': wallet.status === 'active',
+                'bg-status-error/10 text-status-error': wallet.status === 'inactive',
+                'bg-yellow-500/10 text-yellow-500': wallet.status === 'suspended',
+                'bg-gray-500/10 text-gray-500': wallet.status === 'closed'
+              }">
+                {{ wallet.status | titlecase }}
+              </span>
+            </div>
+            <div class="text-2xl font-bold mb-1 text-text-dark">
+              {{ wallet.balance | currency:wallet.currency:'symbol':'1.2-2' }}
+            </div>
+            <div class="text-sm text-neutral-gray">{{ wallet.currency }}</div>
+          </div>
+        </div>
       </div>
-      
-      <div class="notifications-list">
-        <div 
-          *ngFor="let notification of getUnreadNotifications().slice(0, 3); let i = index" 
-          class="notification-item animate-slide-right"
-          [style.animation-delay]="(i * 100 + 1000) + 'ms'"
-          (click)="viewNotification(notification)">
-          <div class="flex items-start gap-4">
-            <div class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 shadow-md">
-              🔔
+      <!-- Notifications Section -->
+      <div class="lg:col-span-1" *ngIf="data.unreadNotificationCount > 0" [@listAnimation]="data.unreadNotificationCount">
+        <div class="flex justify-between items-center mb-6">
+          <h2 class="text-2xl font-bold text-text-dark relative after:content-[''] after:absolute after:-bottom-2 after:left-0 after:w-10 after:h-1 after:bg-primary-gradient after:rounded-full animate-fade-in">Notifications</h2>
+          <button class="flex items-center gap-1 text-blue-600 hover:text-blue-700 font-medium transition-colors animate-fade-in" (click)="navigateTo('/notifications')">
+            View All
+            <i class="fas fa-arrow-right"></i>
+          </button>
+        </div>
+        <div class="grid grid-cols-1 gap-6">
+          <div *ngFor="let notification of data.unreadNotifications.slice(0, 3); let i = index" class="p-4 relative overflow-hidden cursor-pointer bg-white/90 backdrop-blur-lg rounded-2xl shadow-md border border-white/50 transition-all duration-300 hover:shadow-xl hover:-translate-y-1 animate-scale-up before:content-[''] before:absolute before:top-0 before:left-0 before:w-full before:h-full before:bg-gradient-to-r before:from-blue-500/5 before:to-blue-300/5 before:z-[-1]" (click)="viewNotification(notification)">
+            <div class="flex items-start gap-4">
+              <div class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary shadow-md">
+                <i class="fas fa-bell"></i>
+              </div>
+              <div class="flex-1">
+                <h4 class="font-semibold text-gray-900 mb-1">{{ notification.title }}</h4>
+                <p class="text-sm text-gray-600 mb-2">{{ notification.message }}</p>
+                <span class="text-xs text-gray-500">{{ notification.createdAt | date:'short' }}</span>
+              </div>
+              <div class="w-2 h-2 bg-blue-600 rounded-full animate-pulse"></div>
             </div>
-            <div class="flex-1">
-              <h4 class="font-semibold text-gray-900 mb-1">{{ notification.title }}</h4>
-              <p class="text-sm text-gray-600 mb-2">{{ notification.message }}</p>
-              <span class="text-xs text-gray-500">{{ notification.createdAt | date:'short' }}</span>
-            </div>
-            <div class="w-2 h-2 bg-blue-600 rounded-full animate-pulse"></div>
           </div>
         </div>
       </div>
@@ -292,36 +277,35 @@
   </div>
 </div>
 
-<!-- Enhanced Loading Overlay -->
-<div class="loading-overlay" *ngIf="isLoading">
-  <div class="loading-spinner">
-    <div class="spinner"></div>
+<app-footer></app-footer>
+
+<div class="fixed top-0 left-0 w-full h-full bg-neutral-dark/80 backdrop-blur-lg flex items-center justify-center z-50 animate-fadeIn" *ngIf="isLoading$ | async">
+  <div class="flex flex-col items-center animate-fadeIn">
+    <div class="w-16 h-16 rounded-full relative bg-[conic-gradient(from_90deg_at_50%_50%,rgba(59,130,246,0.2)_0%,rgba(59,130,246,0.4)_25%,rgba(59,130,246,0.6)_50%,rgba(59,130,246,0.8)_75%,#3b82f6_100%)] animate-spin shadow-2xl">
+      <div class="absolute top-2 left-2 right-2 bottom-2 bg-neutral-dark/90 rounded-full shadow-inner"></div>
+    </div>
     <p class="text-white mt-4 font-medium">Loading your dashboard...</p>
-    <div class="loading-progress-container mt-4">
-      <div class="loading-progress-bar"></div>
+    <div class="w-52 h-1 bg-white/20 rounded-full overflow-hidden mt-4">
+      <div class="h-full bg-primary-gradient rounded-full animate-progress"></div>
     </div>
   </div>
 </div>
-
-<!-- Skeleton Loading State -->
-<div class="skeleton-container" *ngIf="isLoading">
-  <div class="skeleton-header">
-    <div class="skeleton-title shimmer"></div>
-    <div class="skeleton-subtitle shimmer"></div>
+<div class="absolute top-0 left-0 w-full h-full p-8 z-40 pointer-events-none flex flex-col gap-8" *ngIf="isLoading$ | async">
+  <div class="mb-4">
+    <div class="h-9 w-72 bg-neutral-light/10 rounded-md mb-3 shimmer"></div>
+    <div class="h-5 w-52 bg-neutral-light/10 rounded-md shimmer"></div>
   </div>
-  
-  <div class="skeleton-cards">
-    <div class="skeleton-card shimmer"></div>
-    <div class="skeleton-card shimmer"></div>
-    <div class="skeleton-card shimmer"></div>
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+    <div class="h-44 bg-neutral-light/10 rounded-2xl shimmer"></div>
+    <div class="h-44 bg-neutral-light/10 rounded-2xl shimmer"></div>
+    <div class="h-44 bg-neutral-light/10 rounded-2xl shimmer"></div>
   </div>
-  
-  <div class="skeleton-section">
-    <div class="skeleton-section-header shimmer"></div>
-    <div class="skeleton-list">
-      <div class="skeleton-list-item shimmer"></div>
-      <div class="skeleton-list-item shimmer"></div>
-      <div class="skeleton-list-item shimmer"></div>
+  <div class="mb-8">
+    <div class="h-8 w-52 bg-neutral-light/10 rounded-md mb-4 shimmer"></div>
+    <div class="flex flex-col gap-4">
+      <div class="h-20 bg-neutral-light/10 rounded-2xl shimmer"></div>
+      <div class="h-20 bg-neutral-light/10 rounded-2xl shimmer"></div>
+      <div class="h-20 bg-neutral-light/10 rounded-2xl shimmer"></div>
     </div>
   </div>
 </div>

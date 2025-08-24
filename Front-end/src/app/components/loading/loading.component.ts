@@ -8,7 +8,6 @@ import { LoadingService } from '../../services/loading-service.service';
   standalone: true,
   imports: [CommonModule],
   templateUrl: './loading.component.html',
-  styleUrls: ['./loading.component.scss'],
   animations: [
     trigger('fadeIn', [
       transition(':enter', [
@@ -22,12 +21,11 @@ import { LoadingService } from '../../services/loading-service.service';
   ]
 })
 export class LoadingComponent implements OnInit {
-  @Input() type: 'default' | 'dots' | 'progress' | 'bars' | 'pulse' = 'default';
-  @Input() message: string = 'Loading';
-  @Input() subtitle: string = '';
-  @Input() progress: number = 0;
+  @Input() type: 'default' | 'dots' | 'progress' = 'default';
+  @Input() message = 'Loading...';
+  @Input() progress = 0;
   
-  isLoading: boolean = false;
+  isLoading = false;
 
   constructor(private loadingService: LoadingService) {}
 
@@ -35,13 +33,5 @@ export class LoadingComponent implements OnInit {
     this.loadingService.isLoading$.subscribe(isLoading => {
       this.isLoading = isLoading;
     });
-  }
-
-  /**
-   * Updates the progress value for progress type spinner
-   * @param value Progress value (0-100)
-   */
-  updateProgress(value: number): void {
-    this.progress = Math.min(Math.max(0, value), 100);
   }
 }

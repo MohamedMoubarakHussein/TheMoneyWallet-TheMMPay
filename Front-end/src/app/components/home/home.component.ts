@@ -1,77 +1,58 @@
-import { Component, ChangeDetectionStrategy, OnInit, AfterViewInit } from '@angular/core';
+import { Component, AfterViewInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { HeaderComponent } from '../header/header.component';
 import { Router } from '@angular/router';
 import { FooterComponent } from '../footer/footer.component';
-
-declare var AOS: any;
+import { trigger, style, transition, animate } from '@angular/animations';
+import { HomeService } from '../../services/home.service';
+import { AuthService } from '../../services/auth/auth.service';
 
 @Component({
   selector: 'app-home',
   standalone: true,
-  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [CommonModule, RouterModule, HeaderComponent, FooterComponent],
   templateUrl: './home.component.html',
-  styleUrls: ['./home.component.css']
+  animations: [
+    trigger('fadeInDown', [
+      transition(':enter', [
+        style({ opacity: 0, transform: 'translateY(-20px)' }),
+        animate('1000ms ease-out', style({ opacity: 1, transform: 'translateY(0)' }))
+      ])
+    ]),
+    trigger('fadeInUp', [
+      transition(':enter', [
+        style({ opacity: 0, transform: 'translateY(20px)' }),
+        animate('1000ms ease-out', style({ opacity: 1, transform: 'translateY(0)' }))
+      ])
+    ]),
+    trigger('zoomIn', [
+      transition(':enter', [
+        style({ opacity: 0, transform: 'scale(0.8)' }),
+        animate('800ms ease-out', style({ opacity: 1, transform: 'scale(1)' }))
+      ])
+    ]),
+    trigger('slideInFromRight', [
+      transition(':enter', [
+        style({ opacity: 0, transform: 'translateX(100%)' }),
+        animate('1000ms ease-out', style({ opacity: 1, transform: 'translateX(0)' }))
+      ])
+    ])
+  ]
 })
-export class HomeComponent implements OnInit, AfterViewInit {
-  constructor(private router: Router) {}
-
-  ngOnInit() {
-    // Initialize AOS with enhanced configuration
-    if (typeof AOS !== 'undefined') {
-      AOS.init({
-        duration: 1000,
-        easing: 'ease-out-cubic',
-        once: false,
-        mirror: true,
-        anchorPlacement: 'top-center',
-        disable: 'mobile',  // Disable on mobile for better performance
-        startEvent: 'DOMContentLoaded'
-      });
-    }
-  }
+export class HomeComponent implements AfterViewInit {
+  constructor(private router: Router, private homeService: HomeService, private authService: AuthService) {}
 
   ngAfterViewInit() {
-    // Start counter animations when stats section comes into view
-    this.animateCounters();
+    console.log('HomeComponent: ngAfterViewInit called');
+    this.homeService.animateCounters();
   }
 
   goToSingUp() {
     this.router.navigate(['/signup']);
   }
 
-  private animateCounters() {
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          const counters = entry.target.querySelectorAll('.stat-number');
-          counters.forEach((element: any) => {
-            const target = parseInt(element.getAttribute('data-count'));
-            this.animateCounter(element, target);
-          });
-          observer.unobserve(entry.target);
-        }
-      });
-    }, { threshold: 0.5 });
-
-    const statsSection = document.querySelector('.stats-section');
-    if (statsSection) {
-      observer.observe(statsSection);
-    }
-  }
-
-  private animateCounter(element: any, target: number) {
-    let current = 0;
-    const increment = target / 100;
-    const timer = setInterval(() => {
-      current += increment;
-      if (current >= target) {
-        current = target;
-        clearInterval(timer);
-      }
-      element.textContent = Math.floor(current);
-    }, 20);
+  loginAsTestUser() {
+    this.authService.loginAsTestUser();
   }
 }

@@ -1,310 +1,46 @@
-<div class="analytics-container" [@fadeInUp]>
-  <!-- Header Section -->
-  <div class="analytics-header" [@slideInDown]>
-    <div class="header-content">
-      <div class="header-left">
-        <h1 class="page-title">
-          <span class="title-icon">📊</span>
-          Analytics Dashboard
-        </h1>
-        <p class="page-subtitle">Track your spending patterns and financial insights</p>
-      </div>
-      <div class="header-actions">
-        <div class="filter-controls">
-          <select 
-            [(ngModel)]="selectedPeriod" 
-            (change)="onPeriodChange()"
-            class="period-select"
-            [@scaleIn]>
-            <option value="week">This Week</option>
-            <option value="month">This Month</option>
-            <option value="quarter">This Quarter</option>
-            <option value="year">This Year</option>
-          </select>
-          
-          <select 
-            [(ngModel)]="selectedWallet" 
-            (change)="onWalletChange()"
-            class="wallet-select"
-            [@scaleIn]>
-            <option value="all">All Wallets</option>
-            <option value="primary">Primary Wallet</option>
-            <option value="savings">Savings Wallet</option>
-            <option value="business">Business Wallet</option>
-          </select>
-        </div>
-        
-        <button 
-          class="export-btn"
-          (click)="exportAnalytics()"
-          [@bounceIn]>
-          <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-          </svg>
-          Export Data
-        </button>
-      </div>
+<div class="min-h-screen bg-gray-50 p-6" *ngIf="analyticsData$ | async as data" @fadeInUp>
+  <!-- Header -->
+  <div class="flex justify-between items-center mb-8">
+    <div>
+      <h1 class="text-3xl font-bold text-text-dark">Analytics Dashboard</h1>
+      <p class="text-gray-600">Track your spending patterns and financial insights</p>
+    </div>
+    <div class="flex gap-4">
+      <select [(ngModel)]="selectedPeriod" (change)="onPeriodChange()" class="py-2 px-4 rounded-lg border-2 border-gray-200 focus:outline-none focus:border-primary">
+        <option value="week">This Week</option>
+        <option value="month">This Month</option>
+        <option value="year">This Year</option>
+      </select>
+      <button class="py-2 px-4 rounded-lg font-semibold bg-primary text-white hover:bg-primary-dark transition-colors" (click)="exportAnalytics()">Export</button>
     </div>
   </div>
 
-  <!-- Loading State -->
-  <div *ngIf="isLoading" class="loading-overlay" [@fadeIn]>
-    <div class="loading-spinner">
-      <div class="spinner"></div>
-      <p>Loading analytics...</p>
-    </div>
+  <!-- Loading -->
+  <div *ngIf="isLoading$ | async" class="flex justify-center items-center h-64">
+    <div class="animate-spin rounded-full h-16 w-16 border-b-2 border-primary"></div>
   </div>
 
-  <!-- Analytics Content -->
-  <div class="analytics-content" *ngIf="!isLoading">
+  <!-- Content -->
+  <div *ngIf="(isLoading$ | async) === false" class="space-y-12">
     <!-- Summary Cards -->
-    <div class="summary-grid" [@staggerIn]>
-      <!-- Total Spending Card -->
-      <div class="summary-card spending-card" [@slideInUp]>
-        <div class="card-header">
-          <div class="card-icon spending-icon">
-            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"></path>
-            </svg>
-          </div>
-          <div class="card-info">
-            <h3 class="card-title">Total Spending</h3>
-            <app-animated-counter
-              [value]="totalSpending"
-              [startValue]="0"
-              [duration]="1500"
-              [decimal]="2"
-              prefix="$"
-              [size]="'medium'"
-              [color]="'danger'"
-              [easing]="'easeOut'"
-            ></app-animated-counter>
-            <p class="card-change positive">+12.5% from last period</p>
-          </div>
-        </div>
-        <div class="card-chart">
-          <div class="mini-chart spending-chart"></div>
-        </div>
-      </div>
-
-      <!-- Income Card -->
-      <div class="summary-card income-card" [@slideInUp]>
-        <div class="card-header">
-          <div class="card-icon income-icon">
-            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 11l5-5m0 0l5 5m-5-5v12"></path>
-            </svg>
-          </div>
-          <div class="card-info">
-            <h3 class="card-title">Total Income</h3>
-            <app-animated-counter
-              [value]="totalIncome"
-              [startValue]="0"
-              [duration]="1500"
-              [decimal]="2"
-              prefix="$"
-              [size]="'medium'"
-              [color]="'success'"
-              [easing]="'easeOut'"
-            ></app-animated-counter>
-            <p class="card-change positive">+8.3% from last period</p>
-          </div>
-        </div>
-        <div class="card-chart">
-          <div class="mini-chart income-chart"></div>
-        </div>
-      </div>
-
-      <!-- Savings Card -->
-      <div class="summary-card savings-card" [@slideInUp]>
-        <div class="card-header">
-          <div class="card-icon savings-icon">
-            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path>
-            </svg>
-          </div>
-          <div class="card-info">
-            <h3 class="card-title">Total Savings</h3>
-            <app-animated-counter
-              [value]="totalSavings"
-              [startValue]="0"
-              [duration]="1500"
-              [decimal]="2"
-              prefix="$"
-              [size]="'medium'"
-              [color]="'primary'"
-              [easing]="'easeOut'"
-            ></app-animated-counter>
-            <p class="card-change positive">+15.2% from last period</p>
-          </div>
-        </div>
-        <div class="card-chart">
-          <div class="mini-chart savings-chart"></div>
-        </div>
-      </div>
-
-      <!-- Transactions Card -->
-      <div class="summary-card transactions-card" [@slideInUp]>
-        <div class="card-header">
-          <div class="card-icon transactions-icon">
-            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
-            </svg>
-          </div>
-          <div class="card-info">
-            <h3 class="card-title">Total Transactions</h3>
-            <app-animated-counter
-              [value]="totalTransactions"
-              [startValue]="0"
-              [duration]="1200"
-              [decimal]="0"
-              [size]="'medium'"
-              [color]="'warning'"
-              [easing]="'easeOut'"
-            ></app-animated-counter>
-            <p class="card-change positive">+5.7% from last period</p>
-          </div>
-        </div>
-        <div class="card-chart">
-          <div class="mini-chart transactions-chart"></div>
-        </div>
-      </div>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+      <!-- Cards here -->
     </div>
 
-    <!-- Charts Section -->
-    <div class="charts-section">
-      <!-- Spending by Category Chart -->
-      <div class="chart-container" [@slideInLeft]>
-        <div class="chart-header">
-          <h3 class="chart-title">Spending by Category</h3>
-          <div class="chart-actions">
-            <button class="chart-btn active">Chart</button>
-            <button class="chart-btn">Table</button>
-          </div>
-        </div>
-        <div class="chart-content">
-          <div class="category-chart">
-            <app-animated-chart
-              *ngIf="!isLoading"
-              [chartType]="'doughnut'"
-              [labels]="categoryChartData.labels"
-              [datasets]="categoryChartData.datasets"
-              [height]="'250px'"
-              [animationDuration]="1200"
-              [animationEnabled]="true"
-            ></app-animated-chart>
-            <div class="chart-placeholder" *ngIf="isLoading">
-              <div class="chart-icon">📊</div>
-              <p>Loading category data...</p>
-            </div>
-          </div>
-          <div class="category-legend">
-            <div class="legend-item" *ngFor="let category of spendingByCategory; let i = index">
-              <div class="legend-color" [style.background-color]="getCategoryColor(i)"></div>
-              <span class="legend-label">{{ category.name }}</span>
-              <span class="legend-value">${{ category.amount | number:'1.0-2' }}</span>
-            </div>
-          </div>
-        </div>
+    <!-- Charts -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+      <div class="bg-white p-6 rounded-2xl shadow-lg">
+        <h3 class="text-xl font-semibold text-text-dark mb-4">Spending by Category</h3>
+        <app-animated-chart [chartType]="'doughnut'" [datasets]="data.spendingByCategory.datasets" [labels]="data.spendingByCategory.labels | asStringArray"></app-animated-chart>
       </div>
-
-      <!-- Spending Trends Chart -->
-      <div class="chart-container" [@slideInRight]>
-        <div class="chart-header">
-          <h3 class="chart-title">Spending Trends</h3>
-          <div class="chart-actions">
-            <button class="chart-btn active">Line</button>
-            <button class="chart-btn">Bar</button>
-          </div>
-        </div>
-        <div class="chart-content">
-          <div class="trends-chart">
-            <app-animated-chart
-              *ngIf="!isLoading"
-              [chartType]="'line'"
-              [labels]="trendChartData.labels"
-              [datasets]="trendChartData.datasets"
-              [height]="'250px'"
-              [animationDuration]="1500"
-              [animationEnabled]="true"
-            ></app-animated-chart>
-            <div class="chart-placeholder" *ngIf="isLoading">
-              <div class="chart-icon">📈</div>
-              <p>Loading trend data...</p>
-            </div>
-          </div>
-        </div>
+      <div class="bg-white p-6 rounded-2xl shadow-lg">
+        <h3 class="text-xl font-semibold text-text-dark mb-4">Spending Trends</h3>
+        <app-animated-chart [chartType]="'line'" [datasets]="data.spendingTrends.datasets" [labels]="data.spendingTrends.labels | asStringArray"></app-animated-chart>
       </div>
     </div>
-
-    <!-- Income vs Expenses Chart -->
-    <div class="chart-container full-width" [@slideInUp]>
-      <div class="chart-header">
-        <h3 class="chart-title">Income vs Expenses</h3>
-        <div class="chart-actions">
-          <button class="chart-btn active">Bar</button>
-          <button class="chart-btn">Line</button>
-        </div>
-      </div>
-      <div class="chart-content">
-        <div class="income-expenses-chart">
-          <app-animated-chart
-            *ngIf="!isLoading"
-            [chartType]="'bar'"
-            [labels]="incomeExpenseChartData.labels"
-            [datasets]="incomeExpenseChartData.datasets"
-            [height]="'300px'"
-            [animationDuration]="1800"
-            [animationEnabled]="true"
-          ></app-animated-chart>
-          <div class="chart-placeholder" *ngIf="isLoading">
-            <div class="chart-icon">💰</div>
-            <p>Loading income and expense data...</p>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Wallet Performance -->
-    <div class="performance-section" [@slideInUp]>
-      <div class="section-header">
-        <h3 class="section-title">Wallet Performance</h3>
-        <p class="section-subtitle">Compare performance across your wallets</p>
-      </div>
-      <div class="performance-grid">
-        <div class="performance-card" *ngFor="let wallet of walletPerformance; let i = index" [@slideInUp]>
-          <div class="wallet-header">
-            <div class="wallet-icon">
-              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path>
-              </svg>
-            </div>
-            <div class="wallet-info">
-              <h4 class="wallet-name">{{ wallet.name }}</h4>
-              <p class="wallet-balance">${{ wallet.balance | number:'1.0-2' }}</p>
-            </div>
-          </div>
-          <div class="wallet-stats">
-            <div class="stat-item">
-              <span class="stat-label">Growth</span>
-              <app-progress-ring
-                [value]="wallet.growth"
-                [size]="70"
-                [thickness]="6"
-                [showValue]="true"
-                [valueUnit]="'%'"
-                [valuePrefix]="wallet.growth > 0 ? '+' : ''"
-                [color]="wallet.growth > 0 ? '#10b981' : '#ef4444'"
-                [animationDuration]="1500"
-              ></app-progress-ring>
-            </div>
-            <div class="stat-item">
-              <span class="stat-label">Transactions</span>
-              <span class="stat-value">{{ wallet.transactions }}</span>
-            </div>
-          </div>
-        </div>
-      </div>
+    <div class="bg-white p-6 rounded-2xl shadow-lg">
+      <h3 class="text-xl font-semibold text-text-dark mb-4">Income vs Expenses</h3>
+      <app-animated-chart [chartType]="'bar'" [datasets]="data.incomeVsExpenses.datasets" [labels]="data.incomeVsExpenses.labels | asStringArray"></app-animated-chart>
     </div>
   </div>
 </div>

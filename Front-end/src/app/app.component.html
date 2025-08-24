@@ -1,18 +1,18 @@
 <!-- Loading Overlay -->
-<div *ngIf="isLoading" class="loading-overlay" [@fadeIn]>
-  <div class="loading-spinner"></div>
-  <div class="loading-message">Loading...</div>
+<div *ngIf="isLoading" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[9999] backdrop-blur-sm animate-fade-in">
+  <div class="w-12 h-12 rounded-full border-4 border-white border-t-transparent animate-spin"></div>
+  <div class="mt-4 text-white text-sm font-medium">Loading...</div>
 </div>
 
 <!-- Main App Container -->
-<div class="min-h-screen bg-gray-100 flex flex-col" [@fadeIn]>
+<div class="min-h-screen bg-gray-100 flex flex-col">
   <!-- Mobile Navigation Component -->
   <app-mobile-navigation></app-mobile-navigation>
   
   <!-- Main Content Area -->
   <main class="flex-1">
     <!-- Router outlet container with animation binding -->
-    <div class="route-container" [@routeAnimations]="prepareRoute(outlet)">
+    <div class="relative min-h-full block w-full h-full" [@routeAnimations]="prepareRoute(outlet)">
       <router-outlet #outlet="outlet"></router-outlet>
     </div>
   </main>

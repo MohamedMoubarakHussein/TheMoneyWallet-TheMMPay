@@ -16,7 +16,7 @@ export interface CreateTransactionRequest {
   recipientPhone?: string;
   category?: string;
   tags?: string[];
-  metadata?: Record<string, any>;
+  metadata?: Record<string, unknown>;
 }
 
 export interface TransactionFilters {

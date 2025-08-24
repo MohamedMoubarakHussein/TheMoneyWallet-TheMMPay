@@ -1,49 +1,58 @@
-<header class="bg-white border-b border-gray-200 shadow-sm sticky top-0 z-50">
+<header class="bg-white border-b border-gray-200 shadow-sm sticky top-0 z-50" @fadeInDown>
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="flex items-center justify-between h-16">
         <div class="flex items-center">
-          <a href="/" class="flex items-center" style="text-decoration: none;">
+          <a routerLink="/" class="flex items-center">
             <img src="assets/img/logo.png" alt="TheMMPay" class="h-8 w-auto">
           </a>
         </div>
         
-        <div *ngIf="currentRoute === '/dashboard'" class="hidden md:block">
+        <div class="hidden md:block" *ngIf="isAuthenticated$ | async">
           <nav class="flex space-x-8">
-            <a href="#" class="text-gray-600 hover:text-blue-900 px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200">Send</a>
-            <a href="#" class="text-gray-600 hover:text-blue-900 px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200">Receive</a>
-            <a href="#" class="text-gray-600 hover:text-blue-900 px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200">Bills</a>
-            <a href="#" class="text-gray-600 hover:text-blue-900 px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200">Support</a>
+            <a routerLink="/send-money" class="text-gray-600 hover:text-primary px-3 py-2 rounded-md text-sm font-medium">Send</a>
+            <a routerLink="/request-money" class="text-gray-600 hover:text-primary px-3 py-2 rounded-md text-sm font-medium">Receive</a>
+            <a routerLink="/pay-bill" class="text-gray-600 hover:text-primary px-3 py-2 rounded-md text-sm font-medium">Bills</a>
+            <a routerLink="/support" class="text-gray-600 hover:text-primary px-3 py-2 rounded-md text-sm font-medium">Support</a>
           </nav>
         </div>
   
-        <div class="flex items-center space-x-4">
-          <button class="text-gray-600 hover:text-blue-900 px-4 py-2 rounded-lg text-sm font-medium transition-colors duration-200" (click)="goToSingIn()">Sign In</button>
-          <button class="bg-blue-900 text-white px-6 py-2 rounded-lg text-sm font-medium hover:bg-blue-800 transition-colors duration-200" (click)="goToSingUp()">Get Started</button>
+        <div class="flex items-center space-x-4" *ngIf="isAuthenticated$ | async">
+          <button class="text-gray-600 hover:text-primary px-4 py-2 rounded-lg text-sm font-medium" (click)="goTo('/dashboard')">Dashboard</button>
+          <button class="text-gray-600 hover:text-primary px-4 py-2 rounded-lg text-sm font-medium" (click)="logout()">Logout</button>
+        </div>
+
+        <div class="hidden md:flex items-center space-x-4" *ngIf="(isAuthenticated$ | async) === false">
+          <button class="text-gray-600 hover:text-primary px-4 py-2 rounded-lg text-sm font-medium" (click)="goTo('/signin')">Sign In</button>
+          <button class="bg-primary text-white px-6 py-2 rounded-lg text-sm font-medium hover:bg-primary-dark" (click)="goTo('/signup')">Get Started</button>
         </div>
   
         <div class="md:hidden">
-          <button class="text-gray-600 hover:text-blue-900 p-2 rounded-md" (click)="toggleMenu()">
-            <div class="w-6 h-6 flex flex-col justify-center items-center">
-              <div class="w-5 h-0.5 bg-current mb-1"></div>
-              <div class="w-5 h-0.5 bg-current mb-1"></div>
-              <div class="w-5 h-0.5 bg-current"></div>
-            </div>
+          <button class="text-gray-600 hover:text-primary p-2 rounded-md" (click)="toggleMenu()">
+            <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+            </svg>
           </button>
         </div>
       </div>
     </div>
   
-    <!-- Mobile Menu -->
-    <div class="md:hidden bg-white border-t border-gray-200" *ngIf="isMenuOpen">
+    <!-- Mobile Menu for Authenticated Users -->
+    <div class="md:hidden bg-white border-t" *ngIf="isMenuOpen && (isAuthenticated$ | async)">
       <div class="px-2 pt-2 pb-3 space-y-1">
-        <a href="#" class="block px-3 py-2 text-gray-600 hover:text-blue-900 text-base font-medium">Send</a>
-        <a href="#" class="block px-3 py-2 text-gray-600 hover:text-blue-900 text-base font-medium">Receive</a>
-        <a href="#" class="block px-3 py-2 text-gray-600 hover:text-blue-900 text-base font-medium">Bills</a>
-        <a href="#" class="block px-3 py-2 text-gray-600 hover:text-blue-900 text-base font-medium">Support</a>
-        <div class="pt-4 pb-3 border-t border-gray-200">
-          <button class="block w-full text-left px-3 py-2 text-gray-600 hover:text-blue-900 text-base font-medium">Sign In</button>
-          <button class="block w-full text-left px-3 py-2 text-blue-900 font-medium">Get Started</button>
-        </div>
+        <a routerLink="/send-money" class="block px-3 py-2 text-gray-600 hover:text-primary text-base font-medium">Send</a>
+        <a routerLink="/request-money" class="block px-3 py-2 text-gray-600 hover:text-primary text-base font-medium">Receive</a>
+        <a routerLink="/pay-bill" class="block px-3 py-2 text-gray-600 hover:text-primary text-base font-medium">Bills</a>
+        <a routerLink="/support" class="block px-3 py-2 text-gray-600 hover:text-primary text-base font-medium">Support</a>
+        <button class="block w-full text-left px-3 py-2 text-gray-600 hover:text-primary text-base font-medium" (click)="goTo('/dashboard'); toggleMenu()">Dashboard</button>
+        <button class="block w-full text-left px-3 py-2 text-gray-600 hover:text-primary text-base font-medium" (click)="logout(); toggleMenu()">Logout</button>
+      </div>
+    </div>
+
+    <!-- Mobile Menu for Unauthenticated Users -->
+    <div class="md:hidden bg-white border-t" *ngIf="isMenuOpen && (isAuthenticated$ | async) === false">
+      <div class="px-2 pt-2 pb-3 space-y-1">
+        <button class="block w-full text-left px-3 py-2 text-gray-600 hover:text-primary text-base font-medium" (click)="goTo('/signin'); toggleMenu()">Sign In</button>
+        <button class="block w-full text-left px-3 py-2 bg-primary text-white rounded-md text-base font-medium hover:bg-primary-dark" (click)="goTo('/signup'); toggleMenu()">Get Started</button>
       </div>
     </div>
   </header>

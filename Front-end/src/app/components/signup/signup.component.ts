@@ -4,6 +4,7 @@ import { FormBuilder, FormGroup, Validators, AbstractControlOptions, FormsModule
 import { Router, RouterModule } from '@angular/router';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Subject, debounceTime, takeUntil } from 'rxjs';
+import { trigger, transition, style, animate } from '@angular/animations';
 
 import { AuthService } from '../../services/auth/auth.service';
 import { AuthValidators } from '../../utilities/validation.utils';
@@ -23,10 +24,16 @@ import { UserService } from '../../services/userService/user-service.service';
     ComingSoonComponent
   ],
   templateUrl: './signup.component.html',
-
+  animations: [
+    trigger('fadeInUp', [
+      transition(':enter', [
+        style({ opacity: 0, transform: 'translateY(20px)' }),
+        animate('500ms ease-out', style({ opacity: 1, transform: 'translateY(0)' })),
+      ]),
+    ]),
+  ],
 })
 export class SignupComponent implements OnInit, OnDestroy {
-  //TODO EDITING AND ADDING THE GOOGLE OAUTH2
   showComingSoon = false;
   isSubmitting = false;
   serverErrorMessage = '';
@@ -35,24 +42,21 @@ export class SignupComponent implements OnInit, OnDestroy {
 
   constructor(
     private fb: FormBuilder,
-    // Replaced multiple service injections with single AuthService
     private authService: AuthService,
     private userService: UserService,
     private router: Router,
-    @Inject(PLATFORM_ID) private platformId: Object
+    @Inject(PLATFORM_ID) private platformId: object
   ) {
     this.initializeForm();
     this.setupDebouncedValidation();
   }
 
   ngOnInit(): void {
-    // Updated to use AuthService's currentUser$ observable
     this.authService.currentUser$
       .pipe(takeUntil(this.destroy$))
-      .subscribe((user: any) => {
+      .subscribe((user: User) => {
         if (user) this.handleAuthSuccess(user);
       });
-      // STEP 1: Listen for OAuth2 callback parameters
     this.handleOAuth2Callback();
   }
 
@@ -87,9 +91,9 @@ export class SignupComponent implements OnInit, OnDestroy {
 
     this.isSubmitting = true;
     this.serverErrorMessage = '';
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { confirmPassword, terms, ...signupData } = this.signupForm.value;
 
-    // Updated to use AuthService's signup method
     this.authService.signup(signupData).subscribe({
       next: () => {
         this.isSubmitting = false;
@@ -103,7 +107,7 @@ export class SignupComponent implements OnInit, OnDestroy {
     this.router.navigate(['/verification']);
   }
 
-  private handleAuthSuccess(user: any): void {
+  private handleAuthSuccess(user: User): void {
     this.isSubmitting = false;
     console.log('Authentication successful:', user);
     this.userService?.setCurrentUser?.(user);
@@ -159,7 +163,6 @@ export class SignupComponent implements OnInit, OnDestroy {
   btnApple = () => this.toggleComingSoon();
   toggleComingSoon = () => this.showComingSoon = !this.showComingSoon;
   
-  // Updated to use AuthService's isAuthenticated method
   isAuthenticated(): boolean { 
     return this.authService.isAuthenticated(); 
   }
@@ -173,11 +176,7 @@ export class SignupComponent implements OnInit, OnDestroy {
     this.destroy$.complete();
   }
 
-
-
-    // STEP 2: Handle OAuth2 callback from URL parameters
   private handleOAuth2Callback(): void {
-    // Only access browser APIs in browser environment
     if (!isPlatformBrowser(this.platformId)) {
       return;
     }
@@ -186,15 +185,11 @@ export class SignupComponent implements OnInit, OnDestroy {
     const token = urlParams.get('token');
     
     if (token) {
-      // Clear the URL parameters to clean up the browser history
       window.history.replaceState({}, document.title, window.location.pathname);
-      
-      // Process the OAuth2 token
       this.processOAuth2Token(token);
     }
   }
 
-  // STEP 3: Process OAuth2 token received from backend
   public processOAuth2Token(token: string): void {
     this.isSubmitting = true;
     this.authService.processOAuth2Token(token).subscribe({
@@ -205,21 +200,17 @@ export class SignupComponent implements OnInit, OnDestroy {
     });
   }
 
-  // STEP 4: Updated Google button to redirect to OAuth2 endpoint
   btnGoogle = () => {
-    // Only access browser APIs in browser environment
     if (!isPlatformBrowser(this.platformId)) {
       return;
     }
     
     this.isSubmitting = true;
-    // First-time generation (store in localStorage or secure storage)
     const device_id = localStorage.getItem("device_id") || crypto.randomUUID();
     localStorage.setItem("device_id", device_id);
 
     const device_name = `${navigator.platform} ${navigator.userAgent}`;
 
-    // Send these during OAuth flow
     const params = new URLSearchParams({
       device_id: device_id,
       device_name: device_name,

@@ -4,23 +4,29 @@ import { FormsModule } from '@angular/forms';
 import { HeaderComponent } from '../header/header.component';
 import { Router } from '@angular/router';
 import { ReactiveFormsModule, FormGroup, FormControl, Validators } from '@angular/forms';
-//import { AuthService } from '../../services/auth/auth.service';
-import { UserService } from '../../services/userService/user-service.service';
+import { AuthService } from '../../services/auth/auth.service';
 import { ComingSoonComponent } from '../coming-soon/coming-soon.component';
-
+import { trigger, transition, style, animate } from '@angular/animations';
 
 @Component({
   selector: 'app-signin',
   standalone: true,
-  imports: [CommonModule, FormsModule , ComingSoonComponent,HeaderComponent,ReactiveFormsModule],
+  imports: [CommonModule, FormsModule, ComingSoonComponent, HeaderComponent, ReactiveFormsModule],
   templateUrl: './signin.component.html',
-  styleUrls: ['./signin.component.css']
+  animations: [
+    trigger('fadeInUp', [
+      transition(':enter', [
+        style({ opacity: 0, transform: 'translateY(20px)' }),
+        animate('500ms ease-out', style({ opacity: 1, transform: 'translateY(0)' })),
+      ]),
+    ]),
+  ],
 })
-
 export class SigninComponent {
   showComingSoon = false;
   submitted = false;
   serverError = '';
+  isLoading = false;
 
   signinForm = new FormGroup({
     email: new FormControl('', [Validators.required, Validators.email]),
@@ -28,10 +34,7 @@ export class SigninComponent {
     rememberMe: new FormControl(false)
   });
 
-
-   constructor(// private authService: AuthService,
-    private router: Router,
-    private userService : UserService) {}
+  constructor(private authService: AuthService, private router: Router) {}
 
   onSubmit() {
     this.submitted = true;
@@ -40,72 +43,28 @@ export class SigninComponent {
     if (this.signinForm.invalid) {
       return;
     }
-    const { email, password, rememberMe } = this.signinForm.value;
-/*
-    this.authService.signin(
-      email ?? '',
-      password ?? ''
-    ).subscribe({
-      next: () => this.handleSuccess(),
-      error: (error: any) => this.handleError(error)
 
-        
-    });*/
-  }
+    this.isLoading = true;
+    const { email, password } = this.signinForm.value;
 
-
-
-  private handleSuccess(): void {
-    this.router.navigate(['/dashboard']);
-   /* this.userService.getCurrentUser().subscribe({
-      next: (user) => {
-        // Store user data in memory (not localStorage)
-        this.userService.setCurrentUser(user);
-       
-        // Navigate to dashboard with state
-        this.router.navigate(['/dashboard'], {
-          state: { 
-            user: user
-          }
-        });
+    this.authService.signin(email ?? '', password ?? '').subscribe({
+      next: () => this.router.navigate(['/dashboard']),
+      error: (error: HttpErrorResponse) => {
+        this.serverError = error.message || 'An unexpected error occurred.';
+        this.isLoading = false;
       },
-      error: (error) => {
-      
-        this.serverError ='An unexpected error occurred.';
+      complete: () => {
+        this.isLoading = false;
       }
-    });*/
+    });
   }
-
-
-  private handleError(err: any) {
-    console.log(err.message);
-    if (err.status === 400) {
-      this.serverError = 'Invalid email or password';
-    } else if (err.status === 0) {
-      this.serverError = 'Unable to connect to the server. Please check your internet connection.';
-    } else {
-      this.serverError = 'An unexpected error occurred. Please try again later.';
-    }
-    
-    this.signinForm.get('password')?.reset();
-  }
-
 
   clearServerError() {
     if (this.serverError) {
       this.serverError = '';
     }
   }
+
   btnSoon = () => this.toggleComingSoon();
   toggleComingSoon = () => this.showComingSoon = !this.showComingSoon;
-
 }
-
-
-
-
-
-
-
- 
-

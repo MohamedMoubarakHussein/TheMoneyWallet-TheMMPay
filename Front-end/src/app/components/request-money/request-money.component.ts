@@ -1,72 +1,76 @@
-import { Component } from '@angular/core';
+import { Component, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { RouterModule } from '@angular/router';
-
-interface Contact {
-  id: string;
-  name: string;
-  email: string;
-  avatar: string;
-}
-
-interface Currency {
-  code: string;
-  name: string;
-  symbol: string;
-}
+import { RouterModule, Router } from '@angular/router';
+import { Observable, Subject } from 'rxjs';
+import { RequestMoneyService, Contact, Currency, RequestMoneyForm } from '../../services/request-money.service';
+import { trigger, style, transition, animate } from '@angular/animations';
 
 @Component({
   selector: 'app-request-money',
   standalone: true,
   imports: [CommonModule, FormsModule, RouterModule],
   templateUrl: './request-money.component.html',
-
+  animations: [
+    trigger('fadeInUp', [
+      transition(':enter', [
+        style({ opacity: 0, transform: 'translateY(20px)' }),
+        animate('500ms ease-out', style({ opacity: 1, transform: 'translateY(0)' }))
+      ])
+    ]),
+  ]
 })
-export class RequestMoneyComponent {
-  currentStep = 1;
-  requestSent = false;
-  currencies: Currency[] = [
-    { code: 'USD', name: 'US Dollar', symbol: '$' },
-    { code: 'EUR', name: 'Euro', symbol: '€' }
-  ];
-  selectedCurrency = 'USD';
-  requestAmount = 0;
-  requestNote = '';
-  newRecipientEmail = '';
+export class RequestMoneyComponent implements OnDestroy {
+  currentStep$: Observable<number>;
+  requestSent$: Observable<boolean>;
   
-  recentContacts: Contact[] = [
-    { id: '1', name: 'John Doe', email: 'john@example.com', avatar: 'assets/avatar1.png' },
-    { id: '2', name: 'Jane Smith', email: 'jane@example.com', avatar: 'assets/avatar2.png' }
-  ];
-  selectedContact?: Contact;
+  recentContacts: Contact[];
+  currencies: Currency[];
+  
+  formData: RequestMoneyForm = {
+    newRecipientEmail: '',
+    requestAmount: 0,
+    selectedCurrency: 'USD',
+    requestNote: ''
+  };
 
-  selectContact(contact: Contact) {
-    this.selectedContact = contact;
-    this.newRecipientEmail = '';
+  private destroy$ = new Subject<void>();
+
+  constructor(private requestMoneyService: RequestMoneyService, private router: Router) {
+    this.currentStep$ = this.requestMoneyService.getCurrentStep();
+    this.requestSent$ = this.requestMoneyService.isRequestSent();
+    this.recentContacts = this.requestMoneyService.recentContacts;
+    this.currencies = this.requestMoneyService.currencies;
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+    this.requestMoneyService.reset();
   }
 
   nextStep() {
-    if (this.currentStep < 3) this.currentStep++;
+    this.requestMoneyService.nextStep(this.formData);
   }
 
   previousStep() {
-    this.currentStep = Math.max(1, this.currentStep - 1);
-  }
-
-  copyPaymentLink() {
-    // Implement copy functionality
-    console.log('Payment link copied');
+    this.requestMoneyService.previousStep();
   }
 
   sendRequest() {
-    // Simulate API call
-    setTimeout(() => {
-      this.requestSent = true;
-    }, 1500);
+    this.requestMoneyService.sendRequest().subscribe();
+  }
+
+  selectContact(contact: Contact) {
+    this.formData.selectedContact = contact;
+    this.formData.newRecipientEmail = '';
   }
 
   get currencySymbol() {
-    return this.currencies.find(c => c.code === this.selectedCurrency)?.symbol || '$';
+    return this.currencies.find(c => c.code === this.formData.selectedCurrency)?.symbol || '$';
+  }
+  
+  copyPaymentLink() {
+    // Implement copy functionality
   }
 }
