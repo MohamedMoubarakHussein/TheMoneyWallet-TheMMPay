@@ -101,7 +101,7 @@ export class SecurityService {
 
   // Enable two-factor authentication
   enableTwoFactor(): Observable<{ success: boolean; message: string }> {
-    return this.http.post<ApiResponse<any>>(`${this.apiUrl}/2fa/enable`, {})
+    return this.http.post<ApiResponse<{ success: boolean; message: string }>>(`${this.apiUrl}/2fa/enable`, {})
       .pipe(
         map(response => response.data),
         catchError(this.handleError)
