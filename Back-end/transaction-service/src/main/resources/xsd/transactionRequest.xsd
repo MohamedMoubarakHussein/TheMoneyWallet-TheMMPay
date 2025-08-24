@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           targetNamespace="http://themoneywallet.com/transactionservice/request"
+           xmlns:tns="http://themoneywallet.com/transactionservice/request"
+           elementFormDefault="qualified">
+
+    <xs:element name="TransactionRequest">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="transactionType" type="tns:TransactionType"/>
+                <xs:element name="senderUserId" type="xs:string"/>
+                <xs:element name="receiverUserId" type="xs:string"/>
+                <xs:element name="amount" type="xs:decimal"/>
+                <xs:element name="currency" type="xs:string"/>
+                <xs:element name="description" type="xs:string" minOccurs="0"/>
+                <xs:element name="referenceId" type="xs:string" minOccurs="0"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:simpleType name="TransactionType">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="DEPOSIT"/>
+            <xs:enumeration value="WITHDRAWAL"/>
+            <xs:enumeration value="TRANSFER"/>
+            <xs:enumeration value="PAYMENT"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+</xs:schema>

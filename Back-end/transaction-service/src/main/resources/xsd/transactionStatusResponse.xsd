@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           targetNamespace="http://themoneywallet.com/transactionservice/status"
+           xmlns:tns="http://themoneywallet.com/transactionservice/status"
+           xmlns:common="http://themoneywallet.com/transactionservice/common"
+           elementFormDefault="qualified">
+
+    <xs:import namespace="http://themoneywallet.com/transactionservice/common"
+               schemaLocation="commonTypes.xsd"/>
+
+    <xs:element name="TransactionStatusResponse">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="transactionId" type="xs:string"/>
+                <xs:element name="status" type="common:TransactionStatus"/>
+                <xs:element name="details" type="xs:string" minOccurs="0"/>
+                <xs:element name="lastUpdated" type="xs:dateTime"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+</xs:schema>
