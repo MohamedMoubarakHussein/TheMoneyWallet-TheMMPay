@@ -1,15 +1,14 @@
 package com.themoneywallet.notificationservice.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.themoneywallet.notificationservice.dto.response.UnifiedResponse;
+import com.themoneywallet.sharedUtilities.dto.response.UnifiedResponse;
 import com.themoneywallet.notificationservice.entity.Notification;
 import com.themoneywallet.notificationservice.entity.fixed.ResponseKey;
 import com.themoneywallet.notificationservice.event.Event;
 import com.themoneywallet.notificationservice.event.UserEventDto;
 import com.themoneywallet.notificationservice.repository.NotificationRepository;
-import com.themoneywallet.notificationservice.service.notificationservices.EmailService;
-import com.themoneywallet.notificationservice.utilites.UnifidResponseHandler;
-import com.themoneywallet.notificationservice.utilites.shared.JwtValidator;
+import com.themoneywallet.sharedUtilities.utilities.UnifidResponseHandler;
+import com.themoneywallet.sharedUtilities.utilities.defination.TokenValidator;
 
 import jakarta.mail.MessagingException;
 
@@ -29,9 +28,8 @@ public class NotificationService {
 
     private final NotificationRepository notificationRepo;
     private final UnifidResponseHandler uResponseHandler;
-    private final EmailService emailService;
     private final ObjectMapper objectMapper;
-    private final JwtValidator jwtValidator;
+    private final TokenValidator tokenValidator;
 
 
 
@@ -48,23 +46,26 @@ public class NotificationService {
     }
 
     public ResponseEntity<UnifiedResponse> getAllUserNotifications(String token) {
-        String userId = this.jwtValidator.getUserId(token);
+        java.util.UUID uid = this.tokenValidator.getUserId(token);
+        String userId = uid != null ? uid.toString() : null;
         if(userId == null)
-            return this.uResponseHandler.generateFailedResponse("error", "your token has expired. please logout and login again.", "NOTK11001");
+            return this.uResponseHandler.generateFailedResponse("error", "your token has expired. please logout and login again.", "NOTK11001", "String", HttpStatus.UNAUTHORIZED);
         return this.uResponseHandler.generateSuccessResponse( "notification",notificationRepo.findByUserId(userId), HttpStatus.OK);
     }
 
     public ResponseEntity<UnifiedResponse> getUnreadNotifications(String token) {
-        String userId = this.jwtValidator.getUserId(token);
+        java.util.UUID uid2 = this.tokenValidator.getUserId(token);
+        String userId = uid2 != null ? uid2.toString() : null;
         if(userId == null)
-            return this.uResponseHandler.generateFailedResponse("error", "your token has expired. please logout and login again.", "NOTK11002");
+            return this.uResponseHandler.generateFailedResponse("error", "your token has expired. please logout and login again.", "NOTK11002", "String", HttpStatus.UNAUTHORIZED);
         return this.uResponseHandler.generateSuccessResponse( "notification",notificationRepo.findByUserIdAndReadFalse(userId), HttpStatus.OK);
             
     }
  
     public void markNotificationRead(String token ,String  NotificationId) {
        
-       String userId = this.jwtValidator.getUserId(token);
+       java.util.UUID uid3 = this.tokenValidator.getUserId(token);
+       String userId = uid3 != null ? uid3.toString() : null;
         notificationRepo
             .findById(NotificationId)
             .ifPresent(notification -> {

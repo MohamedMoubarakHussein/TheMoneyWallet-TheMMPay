@@ -1,6 +1,6 @@
 package com.themoneywallet.notificationservice.controller;
 
-import com.themoneywallet.notificationservice.dto.response.UnifiedResponse;
+import com.themoneywallet.sharedUtilities.dto.response.UnifiedResponse;
 import com.themoneywallet.notificationservice.service.NotificationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
