@@ -1,8 +1,0 @@
-/home/mohamed/Desktop/TheMoneyWallet-TheMMPay/Back-end/gateway/src/main/java/com/gatewayApi/config/CustomBean.java
-/home/mohamed/Desktop/TheMoneyWallet-TheMMPay/Back-end/gateway/src/main/java/com/gatewayApi/config/SecurityConfig.java
-/home/mohamed/Desktop/TheMoneyWallet-TheMMPay/Back-end/gateway/src/main/java/com/gatewayApi/exception/JwtExpiredTokenException.java
-/home/mohamed/Desktop/TheMoneyWallet-TheMMPay/Back-end/gateway/src/main/java/com/gatewayApi/Gateway.java
-/home/mohamed/Desktop/TheMoneyWallet-TheMMPay/Back-end/gateway/src/main/java/com/gatewayApi/Service/shared/JwtValidator.java
-/home/mohamed/Desktop/TheMoneyWallet-TheMMPay/Back-end/gateway/src/main/java/com/gatewayApi/Service/OpenedAndSecuredPathsService.java
-/home/mohamed/Desktop/TheMoneyWallet-TheMMPay/Back-end/gateway/src/main/java/com/gatewayApi/config/HandleException.java
-/home/mohamed/Desktop/TheMoneyWallet-TheMMPay/Back-end/gateway/src/main/java/com/gatewayApi/config/security/AuthenticationFilter.java

@@ -1,8 +1,0 @@
-com/gatewayApi/exception/JwtExpiredTokenException.class
-com/gatewayApi/Service/shared/JwtValidator.class
-com/gatewayApi/config/SecurityConfig.class
-com/gatewayApi/config/security/AuthenticationFilter.class
-com/gatewayApi/Gateway.class
-com/gatewayApi/config/CustomBean.class
-com/gatewayApi/Service/OpenedAndSecuredPathsService.class
-com/gatewayApi/config/HandleException.class
