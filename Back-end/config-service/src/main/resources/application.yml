@@ -4,13 +4,6 @@ server:
 spring:
   application:
     name: config-server
-  cloud:
-    config:
-      server:
-        native:
-          search-locations: classpath:/spring-config/
-          add-label-locations: true
-        bootstrap: true
   profiles:
     active: native
   
