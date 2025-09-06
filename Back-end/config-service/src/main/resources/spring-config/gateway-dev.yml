@@ -6,7 +6,6 @@ logging:
     org.springframework.cloud.gateway: DEBUG
     reactor.netty: DEBUG
 
-# Include shared configurations
 include:
   - shared/security-config.yml
   - shared/logging-config.yml

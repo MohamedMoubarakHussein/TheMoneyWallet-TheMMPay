@@ -21,51 +21,7 @@ spring:
             exposed-headers:
             - Set-Cookie
             - Authorization
-      routes:
-        - id: auth-service
-          uri: lb://authentication-service
-          predicates:
-            - Path=/auth/**
-          filters:
-            - StripPrefix=1
-        - id: dashboard-service
-          uri: lb://dashboard-service
-          predicates:
-            - Path=/dashboard/**
-          filters:
-            - StripPrefix=1
-        - id: wallet-service
-          uri: lb://wallet-service
-          predicates:
-            - Path=/wallet/**
-          filters:
-            - StripPrefix=1
-        - id: transaction-service
-          uri: lb://transaction-service
-          predicates:
-            - Path=/transaction/**
-          filters:
-            - StripPrefix=1
-        - id: user-service
-          uri: lb://user-management-service
-          predicates:
-            - Path=/user/**
-          filters:
-            - StripPrefix=1
-        - id: history-service
-          uri: lb://history-service
-          predicates:
-            - Path=/history/**
-          filters:
-            - StripPrefix=1
-        - id: notification-service
-          uri: lb://notification-service
-          predicates:
-            - Path=/notification/**
-          filters:
-            - StripPrefix=1
 
-# Swagger configuration for API gateway
 springdoc:
   swagger-ui:
     urls:
@@ -84,7 +40,6 @@ springdoc:
       - name: Wallet Service
         url: /wallet/v3/api-docs
 
-# Management endpoints
 management:
   endpoints:
     web:
@@ -94,7 +49,6 @@ management:
     health:
       show-details: always
 
-# Include shared configurations
 include:
   - shared/security-config.yml
   - shared/logging-config.yml
