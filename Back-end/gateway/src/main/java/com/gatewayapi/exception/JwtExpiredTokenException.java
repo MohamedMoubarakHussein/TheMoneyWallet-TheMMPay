@@ -1,4 +1,4 @@
-package com.gatewayApi.exception;
+package com.gatewayapi.exception;
 
 public class JwtExpiredTokenException  extends Exception{
 

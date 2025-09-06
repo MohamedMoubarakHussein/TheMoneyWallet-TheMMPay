@@ -1,4 +1,4 @@
-package com.gatewayApi.config;
+package com.gatewayapi.config;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;

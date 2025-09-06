@@ -1,9 +1,3 @@
-FROM openjdk:17-slim
-
-WORKDIR /app
-
-COPY target/gateway.jar app.jar
-
-EXPOSE 8080
-
+FROM openjdk:21-jdk-slim
+COPY target/*.jar app.jar
 ENTRYPOINT ["java", "-jar", "app.jar"]

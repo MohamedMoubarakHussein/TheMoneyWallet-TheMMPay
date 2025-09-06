@@ -1,4 +1,4 @@
-package com.gatewayApi.Service;
+package com.gatewayapi.Service;
 
 import java.util.List;
 import org.springframework.http.server.reactive.ServerHttpRequest;
@@ -28,12 +28,7 @@ public class OpenedAndSecuredPathsService {
         "/transaction/ws/**"
     );
 
-    /**
-     * Determines if a request is targeting a secured endpoint.
-     * 
-     * @param request The incoming HTTP request
-     * @return true if the endpoint requires authentication, false otherwise
-     */
+   
     public Boolean isSecuredEndPoint(ServerHttpRequest request) {
         String path = request.getURI().getPath();
         return OpenedAndSecuredPathsService.openEndPoints

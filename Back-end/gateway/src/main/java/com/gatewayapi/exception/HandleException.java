@@ -1,4 +1,4 @@
-package com.gatewayApi.config;
+package com.gatewayapi.exception;
 
 import java.util.Date;
 import java.util.HashMap;

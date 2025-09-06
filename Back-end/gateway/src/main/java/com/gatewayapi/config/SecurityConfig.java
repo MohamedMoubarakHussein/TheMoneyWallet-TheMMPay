@@ -1,6 +1,5 @@
-package com.gatewayApi.config;
+package com.gatewayapi.config;
 
-import com.gatewayApi.config.security.AuthenticationFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cloud.gateway.filter.ratelimit.RedisRateLimiter;
 import org.springframework.cloud.gateway.route.RouteLocator;
@@ -8,6 +7,8 @@ import org.springframework.cloud.gateway.route.builder.RouteLocatorBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
+
+import com.gatewayapi.config.security.AuthenticationFilter;
 
 @Configuration
 @RequiredArgsConstructor
@@ -21,13 +22,10 @@ public class SecurityConfig {
         return routeBuilder
             .routes()
             .route("auth-service", r ->
-                r
-                    .path("/auth/**")
-                    .filters(f -> f
-                            .filter(this.filter)
-                            .circuitBreaker(cb -> cb.setName("authServiceCb").setFallbackUri("forward:/fallback"))
-                            .requestRateLimiter(config -> config
-                                    .setRateLimiter(redisRateLimiter)
+                r.path("/auth/**")
+                 .filters(f -> f.filter(this.filter)
+                                .circuitBreaker(cb -> cb.setName("authServiceCb").setFallbackUri("forward:/fallback"))
+                                .requestRateLimiter(config -> config.setRateLimiter(redisRateLimiter)
                                     .setStatusCode(HttpStatus.TOO_MANY_REQUESTS))
                     )
                     .uri("lb://authentication-service")

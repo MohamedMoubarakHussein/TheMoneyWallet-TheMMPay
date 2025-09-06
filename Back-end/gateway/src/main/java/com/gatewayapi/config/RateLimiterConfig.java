@@ -1,4 +1,4 @@
-package com.gatewayApi.config;
+package com.gatewayapi.config;
 
 import org.springframework.cloud.gateway.filter.ratelimit.RedisRateLimiter;
 import org.springframework.cloud.gateway.filter.ratelimit.KeyResolver;
@@ -7,7 +7,7 @@ import org.springframework.context.annotation.Configuration;
 import reactor.core.publisher.Mono;
 
 @Configuration
-public class GatewayResilienceConfig {
+public class RateLimiterConfig {
 
     // 10 requests per second with burst capacity 20 per user/ip
     @Bean
